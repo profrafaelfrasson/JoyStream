@@ -37,6 +37,7 @@ public class AtualizarPerfilServlet extends HttpServlet {
         // Obter parâmetros do formulário
         String nome = request.getParameter("nome");
         String senha = request.getParameter("senha");
+        String senhaAtual = request.getParameter("senhaAtual");
         Part avatarPart = request.getPart("avatar");
 
         // Validar nome
@@ -65,15 +66,28 @@ public class AtualizarPerfilServlet extends HttpServlet {
             avatarBase64 = usuarioAtual.getAvatar();
         }
 
-        // Atualizar objeto usuário
+        // Buscar usuário atualizado do banco para garantir senha correta
+        UsuarioDAO dao = new UsuarioDAO();
+        Usuario usuarioBanco = dao.buscarPorEmail(usuarioAtual.getEmail());
+
         usuarioAtual.setNome(nome);
-        if (senha != null && !senha.trim().isEmpty()) {
-            usuarioAtual.setSenha(senha);
-        }
         usuarioAtual.setAvatar(avatarBase64);
 
+        // Se o usuário quer alterar a senha
+        if (senha != null && !senha.trim().isEmpty()) {
+            System.out.println("Senha atual digitada: [" + senhaAtual + "]");
+            System.out.println("Senha no banco: [" + usuarioBanco.getSenha() + "]");
+            if (senhaAtual == null || senhaAtual.isEmpty() || !senhaAtual.equals(usuarioBanco.getSenha())) {
+                request.setAttribute("erro", "Para alterar a senha, informe corretamente sua senha atual.");
+                request.getRequestDispatcher("perfil.jsp").forward(request, response);
+                return;
+            }
+            usuarioAtual.setSenha(senha);
+        } else {
+            usuarioAtual.setSenha(usuarioBanco.getSenha());
+        }
+
         // Atualizar no banco de dados
-        UsuarioDAO dao = new UsuarioDAO();
         boolean sucesso = dao.atualizarPerfil(usuarioAtual);
 
         if (sucesso) {

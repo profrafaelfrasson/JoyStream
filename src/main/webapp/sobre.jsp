@@ -147,6 +147,10 @@
             margin: 10px 0;
         }
 
+        .team-member p {
+            text-align: center;
+        }
+
         .footer {
             background-color: #1f1f1f;
             text-align: center;

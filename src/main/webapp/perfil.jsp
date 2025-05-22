@@ -258,6 +258,9 @@
 
     <div class="profile-container">
         <div class="profile-card">
+            <% String erro = (String) request.getAttribute("erro"); if (erro != null && !erro.trim().isEmpty()) { %>
+                <div class="alert alert-danger" style="text-align:center; margin-bottom: 20px;"> <%= erro %> </div>
+            <% } %>
             <form id="profileForm" action="atualizar-perfil" method="post" enctype="multipart/form-data">
                 <div class="profile-header">
                     <div class="avatar-upload">
@@ -279,6 +282,11 @@
                 <div class="mb-3">
                     <label for="email" class="form-label">E-mail</label>
                     <input type="email" class="form-control" id="email" value="<%= usuario.getEmail() %>" disabled>
+                </div>
+                <div class="mb-3">
+                    <label for="senhaAtual" class="form-label">Senha Atual</label>
+                    <input type="password" class="form-control" id="senhaAtual" name="senhaAtual" autocomplete="current-password">
+                    <small class="text-muted">Obrigatório para alterar a senha</small>
                 </div>
                 <div class="mb-3">
                     <label for="senha" class="form-label">Nova Senha</label>
@@ -319,12 +327,16 @@
             e.preventDefault();
             const senha = document.getElementById('senha').value;
             const confirmarSenha = document.getElementById('confirmarSenha').value;
+            const senhaAtual = document.getElementById('senhaAtual').value;
 
             if (senha && senha !== confirmarSenha) {
                 alert('As senhas não coincidem!');
                 return;
             }
-
+            if (senha && (!senhaAtual || senhaAtual.trim() === '')) {
+                alert('Para alterar a senha, preencha sua senha atual.');
+                return;
+            }
             this.submit();
         });
 
