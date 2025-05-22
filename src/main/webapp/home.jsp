@@ -102,16 +102,40 @@
             text-align: center;
             padding: 80px 20px;
             background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=2071&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.2;
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
         }
 
         .hero h1 {
             font-size: 3em;
             margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            color: #f1c40f;
         }
 
         .hero p {
             font-size: 1.2em;
-            color: #ccc;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
 
         .games {
@@ -209,10 +233,12 @@
         </nav>
     </header>
 
-    <section class="hero">
-        <h1>Bem-vindo à JoyStream</h1>
-        <p>Descubra, recomende e compartilhe os melhores jogos com seus amigos.</p>
-    </section>
+    <div class="hero">
+        <div class="hero-content">
+            <h1>Bem-vindo ao JoyStream</h1>
+            <p>Descubra, recomende e compartilhe seus jogos favoritos</p>
+        </div>
+    </div>
 
     <section class="games">
         <div class="game-card">
