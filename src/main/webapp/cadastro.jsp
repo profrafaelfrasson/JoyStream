@@ -1,9 +1,10 @@
-<!-- <%@ page contentType="text/html;charset=UTF-8" language="java" %> -->
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="pt-br">
 
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro</title>
     <link rel="icon" type="image/x-icon" href="assets/img/logo.ico">
@@ -36,7 +37,7 @@
                     <%= request.getAttribute("erroCadastro") %>
                 </p>
                 <% } %>
-                    <form id="formCadastro" action="CadastroServlet" method="post">
+                    <form id="formCadastro" action="CadastroServlet" method="post" accept-charset="UTF-8">
                         <div class="form-outline mb-4">
                             <input type="text" id="nome" name="nome" class="form-control" autocomplete="name" autofocus
                                 required />
@@ -44,7 +45,9 @@
                         </div>
 
                         <div class="form-outline mb-4">
-                            <input type="email" id="email" name="email" class="form-control" autocomplete="email"
+                            <input type="text" id="email" name="email" class="form-control" autocomplete="email"
+                                pattern="[a-zA-Z0-9._%+-áàâãéèêíïóôõöúüçÁÀÂÃÉÈÊÍÏÓÔÕÖÚÜÇ]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+                                title="Por favor, insira um endereço de email válido"
                                 required />
                             <label class="form-label" for="email">Email</label>
                         </div>

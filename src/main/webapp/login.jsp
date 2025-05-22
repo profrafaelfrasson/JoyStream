@@ -28,30 +28,32 @@
         </nav>
     </header>
 
-
-
-
     <section class="hero">
+        <div class="auth-card" id="loginForm">
+            <h2>Login</h2>
+            <form action="login" method="post" accept-charset="UTF-8">
+                <div class="form-outline mb-4">
+                    <input type="text" id="email" name="email" class="form-control" autocomplete="email" 
+                        pattern="[a-zA-Z0-9._%+-áàâãéèêíïóôõöúüçÁÀÂÃÉÈÊÍÏÓÔÕÖÚÜÇ]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+                        title="Por favor, insira um endereço de email válido"
+                        autofocus required />
+                    <label class="form-label" for="email">Email</label>
+                </div>
 
-            <div class="auth-card" id="loginForm">
-                <h2>Login</h2>
+                <div class="form-outline mb-4">
+                    <input type="password" id="senha" name="senha" class="form-control" required />
+                    <label class="form-label" for="senha">Senha</label>
+                </div>
 
-                            <form action="login" method="post">
-                                <div class="form-outline mb-4">
-                                    <input type="email" id="email" name="email" class="form-control" autocomplete="email" autofocus required />
-                                    <label class="form-label" for="email">Email</label>
-                                </div>
+                <div class="form-check mb-4">
+                    <input class="form-check-input" type="checkbox" id="mostrarSenha" />
+                    <label class="form-check-label" for="mostrarSenha">Mostrar senha</label>
+                </div>
 
-                                <div class="form-outline mb-4">
-                                    <input type="password" id="senha" name="senha" class="form-control" required />
-                                    <label class="form-label" for="senha">Senha</label>
-                                </div>
-
-                                <button type="submit" class="btn btn-primary mb-4">Entrar</button>
-                            </form>
-                            <a href="cadastro.jsp" class="auth-link" id="goToRegister">Não tem conta? Cadastre-se</a>
-            </div>
-
+                <button type="submit" class="btn btn-primary mb-4">Entrar</button>
+            </form>
+            <a href="cadastro.jsp" class="auth-link" id="goToRegister">Não tem conta? Cadastre-se</a>
+        </div>
     </section>
 
     <footer class="footer">
@@ -66,17 +68,24 @@
 
     <script src="assets/js/alert.js"></script>
     <script src="assets/js/auto-focus.js"></script>
-    <%
-            String erroLogin = (String) request.getAttribute("erroLogin");
-            if (erroLogin != null) {
-                erroLogin = erroLogin.replace("'", "\\'").replace("\"", "\\\"");
-                erroLogin = erroLogin.replace("\n", "\\n").replace("\r", "\\r"); // Evita quebras de linha problemáticas
-        %>
-                <script>alertResult('error', '<%= erroLogin %>');</script>
-        <%
-            }
-        %>
 
+    <script>
+        document.getElementById("mostrarSenha").addEventListener("change", function () {
+            const tipo = this.checked ? "text" : "password";
+            document.getElementById("senha").type = tipo;
+        });
+    </script>
+
+    <%
+        String erroLogin = (String) request.getAttribute("erroLogin");
+        if (erroLogin != null) {
+            erroLogin = erroLogin.replace("'", "\\'").replace("\"", "\\\"");
+            erroLogin = erroLogin.replace("\n", "\\n").replace("\r", "\\r"); // Evita quebras de linha problemáticas
+    %>
+            <script>alertResult('error', '<%= erroLogin %>');</script>
+    <%
+        }
+    %>
 </body>
 
 </html>

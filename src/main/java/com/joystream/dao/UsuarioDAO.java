@@ -4,9 +4,9 @@ import com.joystream.model.Usuario;
 import java.sql.*;
 
 public class UsuarioDAO {
-    private String jdbcURL = "jdbc:mysql://localhost:3306/joystream_db";
+    private String jdbcURL = "jdbc:mysql://localhost:3306/joystream2_db?useUnicode=true&characterEncoding=UTF-8&useSSL=false&collation=utf8mb4_bin";
     private String jdbcUsername = "root";
-    private String jdbcPassword = "";
+    private String jdbcPassword = "123456789";
 
     private static final String INSERT_SQL = "INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)";
     private static final String SELECT_SQL = "SELECT * FROM usuarios WHERE email = ? AND senha = ?";
