@@ -1,10 +1,19 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="com.joystream.model.Usuario" %>
+<%@ page import="org.json.JSONObject" %>
+<%@ page import="java.util.List" %>
 <%@ page session="true" %>
 <%
     Usuario usuario = (Usuario) session.getAttribute("usuario");
     boolean logado = (usuario != null);
     String avatarUrl = (usuario != null && usuario.getAvatar() != null && !usuario.getAvatar().isEmpty()) ? ("data:image/png;base64," + usuario.getAvatar()) : (request.getContextPath() + "/assets/img/default-avatar.png");
+    
+    // Recebe os jogos do Servlet
+    List<JSONObject> jogos = (List<JSONObject>) request.getAttribute("jogos");
+    Integer totalPages = (Integer) request.getAttribute("total_pages");
+    Integer currentPage = (Integer) request.getAttribute("current_page");
+    if (totalPages == null) totalPages = 1;
+    if (currentPage == null) currentPage = 1;
 %>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -160,6 +169,40 @@
             margin-top: 10px;
         }
 
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+            padding: 20px;
+        }
+
+        .pagination a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            background-color: #1f1f1f;
+            transition: background-color 0.3s;
+        }
+
+        .pagination a:hover {
+            background-color: #2a2a2a;
+        }
+
+        .pagination a.active {
+            background-color: #f1c40f;
+            color: black;
+        }
+
+        .no-games {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            background-color: #1f1f1f;
+            border-radius: 10px;
+        }
+
         .form-control, .form-select {
             background-color: #2a2a2a;
             border: 1px solid #3a3a3a;
@@ -269,67 +312,43 @@
 
     <div class="main-content">
         <div class="filters">
-            <form id="filterForm">
+            <form action="jogos" method="GET">
                 <div class="search-box">
-                    <div class="form-outline">
-                        <input type="search" id="searchInput" class="form-control" placeholder="Pesquisar jogos..." />
-                    </div>
+                    <input type="text" class="form-control" name="busca" placeholder="Buscar jogos..." value="<%= request.getParameter("busca") != null ? request.getParameter("busca") : "" %>">
                 </div>
 
                 <div class="filter-section">
                     <h3>Plataforma</h3>
-                    <select class="form-select" id="plataforma">
+                    <select class="form-select" name="plataforma">
                         <option value="">Todas</option>
-                        <option value="pc">PC</option>
-                        <option value="ps5">PlayStation 5</option>
-                        <option value="xbox">Xbox Series</option>
-                        <option value="switch">Nintendo Switch</option>
+                        <option value="4" <%= "4".equals(request.getParameter("plataforma")) ? "selected" : "" %>>PC</option>
+                        <option value="187" <%= "187".equals(request.getParameter("plataforma")) ? "selected" : "" %>>PlayStation 5</option>
+                        <option value="1" <%= "1".equals(request.getParameter("plataforma")) ? "selected" : "" %>>Xbox One</option>
+                        <option value="7" <%= "7".equals(request.getParameter("plataforma")) ? "selected" : "" %>>Nintendo Switch</option>
                     </select>
                 </div>
 
                 <div class="filter-section">
                     <h3>Gênero</h3>
-                    <select class="form-select" id="genero">
+                    <select class="form-select" name="genero">
                         <option value="">Todos</option>
-                        <option value="acao">Ação</option>
-                        <option value="aventura">Aventura</option>
-                        <option value="rpg">RPG</option>
-                        <option value="estrategia">Estratégia</option>
-                        <option value="esportes">Esportes</option>
-                        <option value="corrida">Corrida</option>
-                    </select>
-                </div>
-
-                <div class="filter-section">
-                    <h3>Modo de Jogo</h3>
-                    <select class="form-select" id="modo">
-                        <option value="">Todos</option>
-                        <option value="single">Single Player</option>
-                        <option value="multi">Multiplayer</option>
-                        <option value="both">Ambos</option>
+                        <option value="4" <%= "4".equals(request.getParameter("genero")) ? "selected" : "" %>>Ação</option>
+                        <option value="3" <%= "3".equals(request.getParameter("genero")) ? "selected" : "" %>>Aventura</option>
+                        <option value="5" <%= "5".equals(request.getParameter("genero")) ? "selected" : "" %>>RPG</option>
+                        <option value="2" <%= "2".equals(request.getParameter("genero")) ? "selected" : "" %>>Tiro</option>
+                        <option value="10" <%= "10".equals(request.getParameter("genero")) ? "selected" : "" %>>Estratégia</option>
                     </select>
                 </div>
 
                 <div class="filter-section">
                     <h3>Nota Mínima</h3>
-                    <select class="form-select" id="nota">
-                        <option value="0">Qualquer</option>
-                        <option value="7">7+</option>
-                        <option value="8">8+</option>
-                        <option value="9">9+</option>
+                    <select class="form-select" name="nota">
+                        <option value="">Qualquer</option>
+                        <option value="90" <%= "90".equals(request.getParameter("nota")) ? "selected" : "" %>>90+</option>
+                        <option value="80" <%= "80".equals(request.getParameter("nota")) ? "selected" : "" %>>80+</option>
+                        <option value="70" <%= "70".equals(request.getParameter("nota")) ? "selected" : "" %>>70+</option>
+                        <option value="60" <%= "60".equals(request.getParameter("nota")) ? "selected" : "" %>>60+</option>
                     </select>
-                </div>
-
-                <div class="filter-section">
-                    <h3>Preço</h3>
-                    <div class="row">
-                        <div class="col-6">
-                            <input type="number" class="form-control" id="precoMin" placeholder="Min" min="0" step="0.01">
-                        </div>
-                        <div class="col-6">
-                            <input type="number" class="form-control" id="precoMax" placeholder="Max" min="0" step="0.01">
-                        </div>
-                    </div>
                 </div>
 
                 <button type="submit" class="btn btn-primary w-100">Aplicar Filtros</button>
@@ -337,9 +356,56 @@
         </div>
 
         <div class="games-list">
-            <!-- A lista de jogos será preenchida dinamicamente quando implementarmos o backend -->
+            <% if (jogos != null && !jogos.isEmpty()) { %>
+                <% for (JSONObject jogo : jogos) { %>
+                    <div class="game-card">
+                        <img src="<%= jogo.getJSONArray("short_screenshots").length() > 0 ? jogo.getJSONArray("short_screenshots").getJSONObject(0).getString("image") : "assets/img/default-game.png" %>" alt="<%= jogo.getString("name") %>">
+                        <div class="game-info">
+                            <h3 class="game-title"><%= jogo.getString("name") %></h3>
+                            <div class="game-details">
+                                <p>Lançamento: <%= jogo.getString("released") %></p>
+                                <% if (jogo.has("metacritic")) { %>
+                                    <p>Nota: <%= jogo.getInt("metacritic") %></p>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                <% } %>
+            <% } else { %>
+                <div class="no-games">
+                    <p>Nenhum jogo encontrado com os filtros selecionados.</p>
+                </div>
+            <% } %>
         </div>
     </div>
+
+    <% if (totalPages > 1) { %>
+        <div class="pagination">
+            <% int startPage = Math.max(1, currentPage - 2);
+               int endPage = Math.min(totalPages, currentPage + 2);
+               if (startPage > 1) { %>
+                   <a href="jogos?pagina=1&plataforma=<%= request.getParameter("plataforma") != null ? request.getParameter("plataforma") : "" %>&genero=<%= request.getParameter("genero") != null ? request.getParameter("genero") : "" %>&nota=<%= request.getParameter("nota") != null ? request.getParameter("nota") : "" %>&busca=<%= request.getParameter("busca") != null ? request.getParameter("busca") : "" %>">1</a>
+                   <% if (startPage > 2) { %>
+                       <span>...</span>
+                   <% } %>
+            <% } %>
+            <% if (currentPage > 1) { %>
+                <a href="jogos?pagina=<%= currentPage - 1 %>&plataforma=<%= request.getParameter("plataforma") != null ? request.getParameter("plataforma") : "" %>&genero=<%= request.getParameter("genero") != null ? request.getParameter("genero") : "" %>&nota=<%= request.getParameter("nota") != null ? request.getParameter("nota") : "" %>&busca=<%= request.getParameter("busca") != null ? request.getParameter("busca") : "" %>">&laquo; Anterior</a>
+            <% } %>
+            <% for (int i = startPage; i <= endPage; i++) { %>
+                <a href="jogos?pagina=<%= i %>&plataforma=<%= request.getParameter("plataforma") != null ? request.getParameter("plataforma") : "" %>&genero=<%= request.getParameter("genero") != null ? request.getParameter("genero") : "" %>&nota=<%= request.getParameter("nota") != null ? request.getParameter("nota") : "" %>&busca=<%= request.getParameter("busca") != null ? request.getParameter("busca") : "" %>" class="<%= i == currentPage ? "active" : "" %>"><%= i %></a>
+            <% } %>
+            <% if (endPage < totalPages) { %>
+                <% if (endPage < totalPages - 1) { %>
+                    <span>...</span>
+                <% } %>
+                <a href="jogos?pagina=<%= totalPages %>&plataforma=<%= request.getParameter("plataforma") != null ? request.getParameter("plataforma") : "" %>&genero=<%= request.getParameter("genero") != null ? request.getParameter("genero") : "" %>&nota=<%= request.getParameter("nota") != null ? request.getParameter("nota") : "" %>&busca=<%= request.getParameter("busca") != null ? request.getParameter("busca") : "" %>"><%= totalPages %></a>
+            <% } %>
+            <% if (currentPage < totalPages) { %>
+                <a href="jogos?pagina=<%= currentPage + 1 %>&plataforma=<%= request.getParameter("plataforma") != null ? request.getParameter("plataforma") : "" %>&genero=<%= request.getParameter("genero") != null ? request.getParameter("genero") : "" %>&nota=<%= request.getParameter("nota") != null ? request.getParameter("nota") : "" %>&busca=<%= request.getParameter("busca") != null ? request.getParameter("busca") : "" %>">Próxima &raquo;</a>
+            <% } %>
+        </div>
+    <% } %>
 
     <footer class="footer">
         &copy; 2025 JoyStream. Todos os direitos reservados.
@@ -347,11 +413,12 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.js"></script>
     <script>
-        document.getElementById('filterForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            // Aqui você implementará a lógica de filtro quando tiver o backend pronto
-            console.log('Filtros aplicados');
-        });
+    window.onload = function() {
+        // Se não há nenhum parâmetro na URL, submete o formulário automaticamente
+        if (!window.location.search) {
+            document.querySelector('.filters form').submit();
+        }
+    };
     </script>
 </body>
 </html> 
