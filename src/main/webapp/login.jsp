@@ -1,4 +1,10 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="com.joystream.model.Usuario" %>
+<%@ page session="true" %>
+<%
+    Usuario usuario = (Usuario) session.getAttribute("usuario");
+    boolean logado = (usuario != null);
+%>
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -18,6 +24,31 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <link rel="stylesheet" href="assets/css/style.css">
+
+    <style>
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-name {
+            color: #f1c40f;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 8px 15px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+    </style>
 </head>
 
 <body>
@@ -40,17 +71,18 @@
                     <label class="form-label" for="email">Email</label>
                 </div>
 
-                <div class="form-outline mb-4">
-                    <input type="password" id="senha" name="senha" class="form-control" required />
-                    <label class="form-label" for="senha">Senha</label>
+                <div class="mb-3">
+                    <label for="senha" class="form-label">Senha</label>
+                    <input type="password" class="form-control" id="senha" name="senha" required>
+                    <div class="form-check mt-2">
+                        <input class="form-check-input" type="checkbox" id="mostrarSenha">
+                        <label class="form-check-label" for="mostrarSenha">Mostrar senha</label>
+                    </div>
                 </div>
-
-                <div class="form-check mb-4">
-                    <input class="form-check-input" type="checkbox" id="mostrarSenha" />
-                    <label class="form-check-label" for="mostrarSenha">Mostrar senha</label>
+                <div class="mb-3">
+                    <a href="recuperar-senha.jsp" class="text-warning">Esqueci minha senha</a>
                 </div>
-
-                <button type="submit" class="btn btn-primary mb-4">Entrar</button>
+                <button type="submit" class="btn btn-primary w-100">Entrar</button>
             </form>
             <a href="cadastro.jsp" class="auth-link" id="goToRegister">Não tem conta? Cadastre-se</a>
         </div>
@@ -78,14 +110,32 @@
 
     <%
         String erroLogin = (String) request.getAttribute("erroLogin");
+        if (erroLogin == null) {
+            erroLogin = (String) session.getAttribute("erroLogin");
+        }
         if (erroLogin != null) {
             erroLogin = erroLogin.replace("'", "\\'").replace("\"", "\\\"");
             erroLogin = erroLogin.replace("\n", "\\n").replace("\r", "\\r"); // Evita quebras de linha problemáticas
     %>
             <script>alertResult('error', '<%= erroLogin %>');</script>
     <%
+            // Limpar a mensagem de erro da sessão após exibi-la
+            session.removeAttribute("erroLogin");
         }
     %>
+
+    <% if (logado) { %>
+        <div class="dropdown">
+            <div class="user-info">
+                <img src="<%= request.getContextPath() %>/assets/img/default-avatar.png" alt="Avatar" class="user-avatar">
+                <span class="user-name"><%= usuario.getNome() %></span>
+            </div>
+            <div class="dropdown-content">
+                <a href="perfil.jsp">Meu Perfil</a>
+                <a href="logout.jsp">Sair</a>
+            </div>
+        </div>
+    <% } %>
 </body>
 
 </html>

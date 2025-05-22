@@ -11,7 +11,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JoyStream - Recomende e descubra jogos</title>
+    <title>Sobre - JoyStream</title>
     <link rel="icon" type="image/x-icon" href="assets/img/img/logo.ico">
     <style>
         body {
@@ -98,51 +98,53 @@
             background-color: #2a2a2a;
         }
 
-        .hero {
+        .about-content {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #1f1f1f;
+            border-radius: 10px;
+        }
+
+        .about-content h1 {
+            color: #f1c40f;
             text-align: center;
-            padding: 80px 20px;
-            background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+            margin-bottom: 30px;
         }
 
-        .hero h1 {
-            font-size: 3em;
-            margin-bottom: 10px;
+        .about-content p {
+            line-height: 1.6;
+            margin-bottom: 20px;
+            text-align: justify;
         }
 
-        .hero p {
-            font-size: 1.2em;
-            color: #ccc;
+        .team-section {
+            margin-top: 40px;
         }
 
-        .games {
+        .team-section h2 {
+            color: #f1c40f;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .team-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
-            padding: 40px;
+            margin-top: 20px;
         }
 
-        .game-card {
-            background-color: #1e1e1e;
-            border-radius: 10px;
-            padding: 15px;
+        .team-member {
+            background-color: #2a2a2a;
+            padding: 20px;
+            border-radius: 8px;
             text-align: center;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .game-card:hover {
-            transform: scale(1.03);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-        }
-
-        .game-card img {
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            object-fit: cover;
-            border-radius: 5px;
-        }
-
-        .game-card h3 {
-            margin: 10px 0 5px;
+        .team-member h3 {
+            color: #f1c40f;
+            margin: 10px 0;
         }
 
         .footer {
@@ -150,6 +152,7 @@
             text-align: center;
             padding: 20px;
             color: #777;
+            margin-top: 40px;
         }
 
         .user-avatar {
@@ -209,31 +212,45 @@
         </nav>
     </header>
 
-    <section class="hero">
-        <h1>Bem-vindo à JoyStream</h1>
-        <p>Descubra, recomende e compartilhe os melhores jogos com seus amigos.</p>
-    </section>
+    <div class="about-content">
+        <h1>Sobre o JoyStream</h1>
+        <p>O JoyStream é uma plataforma desenvolvida como projeto acadêmico para a Univinte Fucap, com o objetivo de criar um espaço onde os amantes de jogos possam descobrir, recomendar e compartilhar suas experiências com diferentes títulos.</p>
+        
+        <p>Nossa plataforma oferece uma interface intuitiva e moderna, permitindo que os usuários explorem uma vasta biblioteca de jogos, filtrem por diferentes categorias e compartilhem suas opiniões com a comunidade.</p>
 
-    <section class="games">
-        <div class="game-card">
-            <img src="<%= request.getContextPath() %>/assets/img/game1.jpg" alt="Assassin's Creed">
-            <h3>Assassin's Creed</h3>
-            <p>Uma aventura histórica com parkour e combate furtivo.</p>
+        <div class="team-section">
+            <h2>Nossa Equipe</h2>
+            <div class="team-grid">
+                <div class="team-member">
+                    <h3>Manoel</h3>
+                    <p>Desenvolvedor</p>
+                </div>
+                <div class="team-member">
+                    <h3>Patrick</h3>
+                    <p>Desenvolvedor</p>
+                </div>
+                <div class="team-member">
+                    <h3>Vitória</h3>
+                    <p>Analista e QA</p>
+                </div>
+                <div class="team-member">
+                    <h3>Felipe</h3>
+                    <p>Líder do Projeto</p>
+                </div>
+                <div class="team-member">
+                    <h3>Ana Carolina</h3>
+                    <p>Banco de Dados</p>
+                </div>
+                <div class="team-member">
+                    <h3>Ewellim</h3>
+                    <p>Banco de Dados</p>
+                </div>
+            </div>
         </div>
-        <div class="game-card">
-            <img src="<%= request.getContextPath() %>/assets/img/game2.jpg" alt="League of Legends">
-            <h3>League of Legends</h3>
-            <p>O maior MOBA competitivo do mundo.</p>
-        </div>
-        <div class="game-card">
-            <img src="<%= request.getContextPath() %>/assets/img/game3.jpg" alt="The Sims">
-            <h3>The Sims</h3>
-            <p>O clássico simulador de vida virtual.</p>
-        </div>
-    </section>
+    </div>
 
     <footer class="footer">
         &copy; 2025 JoyStream. Todos os direitos reservados.
     </footer>
 </body>
-</html>
+</html> 

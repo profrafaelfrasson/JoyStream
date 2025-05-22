@@ -31,6 +31,7 @@ public class CadastroServlet extends HttpServlet {
         usuario.setNome(nome);
         usuario.setEmail(email);
         usuario.setSenha(senha);
+        usuario.setAvatar("");
 
         UsuarioDAO dao = new UsuarioDAO();
         boolean sucesso = dao.cadastrar(usuario);

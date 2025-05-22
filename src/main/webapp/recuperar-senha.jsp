@@ -11,14 +11,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JoyStream - Recomende e descubra jogos</title>
+    <title>Recuperar Senha - JoyStream</title>
     <link rel="icon" type="image/x-icon" href="assets/img/img/logo.ico">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.css" rel="stylesheet">
     <style>
         body {
             margin: 0;
             font-family: 'Segoe UI', sans-serif;
             background-color: #121212;
             color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         header {
@@ -98,51 +102,67 @@
             background-color: #2a2a2a;
         }
 
-        .hero {
-            text-align: center;
-            padding: 80px 20px;
-            background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+        .auth-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
 
-        .hero h1 {
-            font-size: 3em;
-            margin-bottom: 10px;
-        }
-
-        .hero p {
-            font-size: 1.2em;
-            color: #ccc;
-        }
-
-        .games {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            padding: 40px;
-        }
-
-        .game-card {
-            background-color: #1e1e1e;
+        .auth-box {
+            background-color: #1f1f1f;
+            padding: 30px;
             border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .game-card:hover {
-            transform: scale(1.03);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-        }
-
-        .game-card img {
             width: 100%;
-            aspect-ratio: 16 / 9;
-            object-fit: cover;
-            border-radius: 5px;
+            max-width: 400px;
         }
 
-        .game-card h3 {
-            margin: 10px 0 5px;
+        .auth-box h2 {
+            color: #f1c40f;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-control {
+            background-color: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .form-control:focus {
+            background-color: #2a2a2a;
+            border-color: #f1c40f;
+            color: white;
+            box-shadow: 0 0 0 0.25rem rgba(241, 196, 15, 0.25);
+        }
+
+        .form-label {
+            color: #ddd;
+        }
+
+        .btn-primary {
+            background-color: #f1c40f;
+            border-color: #f1c40f;
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            background-color: #f39c12;
+            border-color: #f39c12;
+        }
+
+        .auth-link {
+            display: block;
+            text-align: center;
+            color: #f1c40f;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+
+        .auth-link:hover {
+            text-decoration: underline;
         }
 
         .footer {
@@ -209,31 +229,32 @@
         </nav>
     </header>
 
-    <section class="hero">
-        <h1>Bem-vindo à JoyStream</h1>
-        <p>Descubra, recomende e compartilhe os melhores jogos com seus amigos.</p>
-    </section>
-
-    <section class="games">
-        <div class="game-card">
-            <img src="<%= request.getContextPath() %>/assets/img/game1.jpg" alt="Assassin's Creed">
-            <h3>Assassin's Creed</h3>
-            <p>Uma aventura histórica com parkour e combate furtivo.</p>
+    <div class="auth-container">
+        <div class="auth-box">
+            <h2>Recuperar Senha</h2>
+            <form id="recoveryForm">
+                <div class="mb-3">
+                    <label for="email" class="form-label">E-mail</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Enviar Link de Recuperação</button>
+            </form>
+            <a href="login.jsp" class="auth-link">Voltar para o Login</a>
         </div>
-        <div class="game-card">
-            <img src="<%= request.getContextPath() %>/assets/img/game2.jpg" alt="League of Legends">
-            <h3>League of Legends</h3>
-            <p>O maior MOBA competitivo do mundo.</p>
-        </div>
-        <div class="game-card">
-            <img src="<%= request.getContextPath() %>/assets/img/game3.jpg" alt="The Sims">
-            <h3>The Sims</h3>
-            <p>O clássico simulador de vida virtual.</p>
-        </div>
-    </section>
+    </div>
 
     <footer class="footer">
         &copy; 2025 JoyStream. Todos os direitos reservados.
     </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.js"></script>
+    <script>
+        document.getElementById('recoveryForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Aqui você implementará a lógica de recuperação de senha quando tiver o backend pronto
+            alert('Se o e-mail estiver cadastrado, você receberá um link para redefinir sua senha.');
+            this.reset();
+        });
+    </script>
 </body>
-</html>
+</html> 

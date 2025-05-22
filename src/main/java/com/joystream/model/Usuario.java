@@ -5,6 +5,16 @@ public class Usuario {
     private String nome;
     private String email;
     private String senha;
+    private String avatar;
+
+    public Usuario() {
+    }
+
+    public Usuario(String nome, String email, String senha) {
+        this.nome = nome;
+        this.email = email;
+        this.senha = senha;
+    }
 
     // Getters e Setters
     public int getId() { return id; }
@@ -18,4 +28,12 @@ public class Usuario {
 
     public String getSenha() { return senha; }
     public void setSenha(String senha) { this.senha = senha; }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
 }
