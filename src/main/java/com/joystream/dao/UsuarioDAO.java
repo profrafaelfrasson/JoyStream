@@ -115,36 +115,28 @@ public class UsuarioDAO {
     }
 
     public boolean atualizarPerfil(Usuario usuario) {
-        String sql = "UPDATE usuarios SET nome = ?, senha = ?, avatar = ? WHERE id = ?";
+        String sql = "UPDATE usuarios SET nome = ?, avatar = ? WHERE id = ?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
             stmt.setString(1, usuario.getNome());
+            stmt.setString(2, usuario.getAvatar());
+            stmt.setInt(3, usuario.getId());
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
-            // Buscar o hash atual do banco
-            Usuario usuarioAtual = buscarPorEmail(usuario.getEmail());
-            if (usuarioAtual == null) {
-                return false;
-            }
-
-            String senhaParaSalvar;
-            // Se a senha atual não estiver no formato BCrypt, converte
-            if (!usuarioAtual.getSenha().startsWith("$2")) {
-                senhaParaSalvar = BCrypt.hashpw(usuario.getSenha(), BCrypt.gensalt());
-            } else {
-                // Se a senha informada for diferente do hash atual, gera novo hash
-                if (!BCrypt.checkpw(usuario.getSenha(), usuarioAtual.getSenha())) {
-                    senhaParaSalvar = BCrypt.hashpw(usuario.getSenha(), BCrypt.gensalt());
-                } else {
-                    // Se for igual, mantém o hash antigo
-                    senhaParaSalvar = usuarioAtual.getSenha();
-                }
-            }
-
-            stmt.setString(2, senhaParaSalvar);
-            stmt.setString(3, usuario.getAvatar());
-            stmt.setInt(4, usuario.getId());
-
+    public boolean atualizarSenha(Usuario usuario) {
+        String sql = "UPDATE usuarios SET senha = ? WHERE id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            String senhaHash = BCrypt.hashpw(usuario.getSenha(), BCrypt.gensalt());
+            stmt.setString(1, senhaHash);
+            stmt.setInt(2, usuario.getId());
+            
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();

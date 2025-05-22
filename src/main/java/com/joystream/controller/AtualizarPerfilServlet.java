@@ -2,6 +2,7 @@ package com.joystream.controller;
 
 import com.joystream.dao.UsuarioDAO;
 import com.joystream.model.Usuario;
+import org.mindrot.jbcrypt.BCrypt;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -73,22 +74,19 @@ public class AtualizarPerfilServlet extends HttpServlet {
         usuarioAtual.setNome(nome);
         usuarioAtual.setAvatar(avatarBase64);
 
+        // Atualizar no banco de dados
+        boolean sucesso = dao.atualizarPerfil(usuarioAtual);
+
         // Se o usuário quer alterar a senha
         if (senha != null && !senha.trim().isEmpty()) {
-            System.out.println("Senha atual digitada: [" + senhaAtual + "]");
-            System.out.println("Senha no banco: [" + usuarioBanco.getSenha() + "]");
-            if (senhaAtual == null || senhaAtual.isEmpty() || !senhaAtual.equals(usuarioBanco.getSenha())) {
+            if (senhaAtual == null || senhaAtual.isEmpty() || !BCrypt.checkpw(senhaAtual, usuarioBanco.getSenha())) {
                 request.setAttribute("erro", "Para alterar a senha, informe corretamente sua senha atual.");
                 request.getRequestDispatcher("perfil.jsp").forward(request, response);
                 return;
             }
             usuarioAtual.setSenha(senha);
-        } else {
-            usuarioAtual.setSenha(usuarioBanco.getSenha());
+            sucesso = sucesso && dao.atualizarSenha(usuarioAtual);
         }
-
-        // Atualizar no banco de dados
-        boolean sucesso = dao.atualizarPerfil(usuarioAtual);
 
         if (sucesso) {
             // Atualizar sessão
