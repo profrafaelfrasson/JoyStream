@@ -60,6 +60,9 @@ public class AtualizarPerfilServlet extends HttpServlet {
                 byte[] bytes = buffer.toByteArray();
                 avatarBase64 = Base64.getEncoder().encodeToString(bytes);
             }
+        } else {
+            // Se não enviou novo avatar, mantém o antigo
+            avatarBase64 = usuarioAtual.getAvatar();
         }
 
         // Atualizar objeto usuário
@@ -67,9 +70,7 @@ public class AtualizarPerfilServlet extends HttpServlet {
         if (senha != null && !senha.trim().isEmpty()) {
             usuarioAtual.setSenha(senha);
         }
-        if (avatarBase64 != null) {
-            usuarioAtual.setAvatar(avatarBase64);
-        }
+        usuarioAtual.setAvatar(avatarBase64);
 
         // Atualizar no banco de dados
         UsuarioDAO dao = new UsuarioDAO();
