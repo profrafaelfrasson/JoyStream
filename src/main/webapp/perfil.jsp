@@ -328,6 +328,10 @@
                     <label for="confirmarSenha" class="form-label">Confirmar Nova Senha</label>
                     <input type="password" class="form-control" id="confirmarSenha" name="confirmarSenha">
                 </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="mostrarSenhaPerfil">
+                    <label class="form-check-label" for="mostrarSenhaPerfil">Mostrar senhas</label>
+                </div>
                 <button type="submit" class="btn btn-primary">Salvar Alterações</button>
             </form>
         </div>
@@ -409,6 +413,13 @@
             }
             return true;
         }
+
+        document.getElementById('mostrarSenhaPerfil').addEventListener('change', function () {
+            const tipo = this.checked ? 'text' : 'password';
+            document.getElementById('senhaAtual').type = tipo;
+            document.getElementById('senha').type = tipo;
+            document.getElementById('confirmarSenha').type = tipo;
+        });
     </script>
 </body>
 </html> 

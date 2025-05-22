@@ -27,6 +27,8 @@
             align-items: center;
             justify-content: space-between;
             padding: 15px 30px;
+            position: relative;
+            z-index: 10;
         }
 
         header img {
@@ -62,10 +64,10 @@
             display: none;
             position: absolute;
             right: 0;
-            background-color: #2a2a2a;
+            background-color: #2a2a2a !important;
             min-width: 100px;
             box-shadow: 0px 8px 16px rgba(0,0,0,0.3);
-            z-index: 1;
+            z-index: 1000;
             border-radius: 5px;
         }
 
