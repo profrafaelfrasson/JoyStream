@@ -37,7 +37,7 @@
                     <%= request.getAttribute("erroCadastro") %>
                 </p>
                 <% } %>
-                    <form id="formCadastro" action="CadastroServlet" method="post" accept-charset="UTF-8">
+                    <form id="formCadastro" action="CadastroServlet" method="post" accept-charset="UTF-8" onsubmit="return validarCadastro();">
                         <div class="form-outline mb-4">
                             <input type="text" id="nome" name="nome" class="form-control" autocomplete="name" autofocus
                                 required />
@@ -108,6 +108,29 @@
             document.getElementById("senha").type = tipo;
             document.getElementById("confirmarSenha").type = tipo;
         });
+
+        function validarCadastro() {
+            var email = document.getElementById('email').value.trim();
+            var senha = document.getElementById('senha').value;
+            var nome = document.getElementById('nome').value.trim();
+            var erro = '';
+
+            var emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+            if (!emailRegex.test(email)) {
+                erro += 'E-mail inválido.\n';
+            }
+            if (nome.length < 2) {
+                erro += 'Nome muito curto.\n';
+            }
+            if (senha.length < 6 || !/[a-zA-Z]/.test(senha) || !/\d/.test(senha)) {
+                erro += 'A senha deve ter pelo menos 6 caracteres, incluindo letras e números.\n';
+            }
+            if (erro) {
+                alert(erro);
+                return false;
+            }
+            return true;
+        }
     </script>
 </body>
 

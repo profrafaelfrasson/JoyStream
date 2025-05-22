@@ -2,6 +2,7 @@ package com.joystream.dao;
 
 import com.joystream.model.Usuario;
 import java.sql.*;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class UsuarioDAO {
     private static final String INSERT_SQL = "INSERT INTO usuarios (nome, email, senha, avatar) VALUES (?, ?, ?, ?)";
@@ -33,7 +34,8 @@ public class UsuarioDAO {
              PreparedStatement stmt = conn.prepareStatement(INSERT_SQL)) {
             stmt.setString(1, usuario.getNome());
             stmt.setString(2, usuario.getEmail());
-            stmt.setString(3, usuario.getSenha());
+            String senhaHash = BCrypt.hashpw(usuario.getSenha(), BCrypt.gensalt());
+            stmt.setString(3, senhaHash);
             stmt.setString(4, usuario.getAvatar());
             stmt.executeUpdate();
             return true;
@@ -46,18 +48,20 @@ public class UsuarioDAO {
 
     public Usuario login(String email, String senha) {
         try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(SELECT_SQL)) {
+             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM usuarios WHERE email = ?")) {
             stmt.setString(1, email);
-            stmt.setString(2, senha);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                Usuario u = new Usuario();
-                u.setId(rs.getInt("id"));
-                u.setNome(rs.getString("nome"));
-                u.setEmail(rs.getString("email"));
-                u.setSenha(rs.getString("senha"));
-                u.setAvatar(rs.getString("avatar"));
-                return u;
+                String senhaHash = rs.getString("senha");
+                if (BCrypt.checkpw(senha, senhaHash)) {
+                    Usuario u = new Usuario();
+                    u.setId(rs.getInt("id"));
+                    u.setNome(rs.getString("nome"));
+                    u.setEmail(rs.getString("email"));
+                    u.setSenha(senhaHash);
+                    u.setAvatar(rs.getString("avatar"));
+                    return u;
+                }
             }
         } catch (SQLException e) {
             System.out.println("Erro no login:");

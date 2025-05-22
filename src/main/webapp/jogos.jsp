@@ -14,6 +14,18 @@
     Integer currentPage = (Integer) request.getAttribute("current_page");
     if (totalPages == null) totalPages = 1;
     if (currentPage == null) currentPage = 1;
+
+    StringBuilder baseUrl = new StringBuilder("jogos?");
+    if (request.getParameter("plataforma") != null && !request.getParameter("plataforma").isEmpty())
+        baseUrl.append("plataforma=").append(request.getParameter("plataforma")).append("&");
+    if (request.getParameter("genero") != null && !request.getParameter("genero").isEmpty())
+        baseUrl.append("genero=").append(request.getParameter("genero")).append("&");
+    if (request.getParameter("nota") != null && !request.getParameter("nota").isEmpty())
+        baseUrl.append("nota=").append(request.getParameter("nota")).append("&");
+    if (request.getParameter("busca") != null && !request.getParameter("busca").isEmpty())
+        baseUrl.append("busca=").append(request.getParameter("busca")).append("&");
+
+    Boolean erroApi = (Boolean) request.getAttribute("erroApi");
 %>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -282,6 +294,11 @@
     </style>
 </head>
 <body>
+    <div id="loader" style="display:none;justify-content:center;align-items:center;height:100vh;position:fixed;width:100vw;z-index:999;background:rgba(18,18,18,0.95);">
+      <div class="spinner-border text-warning" role="status" style="width: 4rem; height: 4rem;">
+        <span class="visually-hidden">Carregando...</span>
+      </div>
+    </div>
     <header>
         <img src="<%= request.getContextPath() %>/assets/img/logo.png" alt="Logo JoyStream">
         <nav>
@@ -356,7 +373,11 @@
         </div>
 
         <div class="games-list">
-            <% if (jogos != null && !jogos.isEmpty()) { %>
+            <% if (erroApi != null && erroApi) { %>
+                <div class="no-games">
+                    <p>Não foi possível carregar os jogos no momento. Tente novamente mais tarde.</p>
+                </div>
+            <% } else if (jogos != null && !jogos.isEmpty()) { %>
                 <% for (JSONObject jogo : jogos) { %>
                     <div class="game-card">
                         <img src="<%= jogo.getJSONArray("short_screenshots").length() > 0 ? jogo.getJSONArray("short_screenshots").getJSONObject(0).getString("image") : "assets/img/default-game.png" %>" alt="<%= jogo.getString("name") %>">
@@ -367,7 +388,22 @@
                                 <% if (jogo.has("metacritic")) { %>
                                     <p>Nota: <%= jogo.getInt("metacritic") %></p>
                                 <% } %>
+                                <% if (jogo.has("platforms")) { %>
+                                    <p>Plataformas: 
+                                        <% for (int p = 0; p < jogo.getJSONArray("platforms").length(); p++) { %>
+                                            <%= jogo.getJSONArray("platforms").getJSONObject(p).getJSONObject("platform").getString("name") %><%= p < jogo.getJSONArray("platforms").length() - 1 ? ", " : "" %>
+                                        <% } %>
+                                    </p>
+                                <% } %>
+                                <% if (jogo.has("genres")) { %>
+                                    <p>Gêneros: 
+                                        <% for (int g = 0; g < jogo.getJSONArray("genres").length(); g++) { %>
+                                            <%= jogo.getJSONArray("genres").getJSONObject(g).getString("name") %><%= g < jogo.getJSONArray("genres").length() - 1 ? ", " : "" %>
+                                        <% } %>
+                                    </p>
+                                <% } %>
                             </div>
+                            <a href="detalhe.jsp?id=<%= jogo.getInt("id") %>" class="btn btn-primary mt-2 w-100">Ver Detalhes</a>
                         </div>
                     </div>
                 <% } %>
@@ -379,34 +415,6 @@
         </div>
     </div>
 
-    <% if (totalPages > 1) { %>
-        <div class="pagination">
-            <% int startPage = Math.max(1, currentPage - 2);
-               int endPage = Math.min(totalPages, currentPage + 2);
-               if (startPage > 1) { %>
-                   <a href="jogos?pagina=1&plataforma=<%= request.getParameter("plataforma") != null ? request.getParameter("plataforma") : "" %>&genero=<%= request.getParameter("genero") != null ? request.getParameter("genero") : "" %>&nota=<%= request.getParameter("nota") != null ? request.getParameter("nota") : "" %>&busca=<%= request.getParameter("busca") != null ? request.getParameter("busca") : "" %>">1</a>
-                   <% if (startPage > 2) { %>
-                       <span>...</span>
-                   <% } %>
-            <% } %>
-            <% if (currentPage > 1) { %>
-                <a href="jogos?pagina=<%= currentPage - 1 %>&plataforma=<%= request.getParameter("plataforma") != null ? request.getParameter("plataforma") : "" %>&genero=<%= request.getParameter("genero") != null ? request.getParameter("genero") : "" %>&nota=<%= request.getParameter("nota") != null ? request.getParameter("nota") : "" %>&busca=<%= request.getParameter("busca") != null ? request.getParameter("busca") : "" %>">&laquo; Anterior</a>
-            <% } %>
-            <% for (int i = startPage; i <= endPage; i++) { %>
-                <a href="jogos?pagina=<%= i %>&plataforma=<%= request.getParameter("plataforma") != null ? request.getParameter("plataforma") : "" %>&genero=<%= request.getParameter("genero") != null ? request.getParameter("genero") : "" %>&nota=<%= request.getParameter("nota") != null ? request.getParameter("nota") : "" %>&busca=<%= request.getParameter("busca") != null ? request.getParameter("busca") : "" %>" class="<%= i == currentPage ? "active" : "" %>"><%= i %></a>
-            <% } %>
-            <% if (endPage < totalPages) { %>
-                <% if (endPage < totalPages - 1) { %>
-                    <span>...</span>
-                <% } %>
-                <a href="jogos?pagina=<%= totalPages %>&plataforma=<%= request.getParameter("plataforma") != null ? request.getParameter("plataforma") : "" %>&genero=<%= request.getParameter("genero") != null ? request.getParameter("genero") : "" %>&nota=<%= request.getParameter("nota") != null ? request.getParameter("nota") : "" %>&busca=<%= request.getParameter("busca") != null ? request.getParameter("busca") : "" %>"><%= totalPages %></a>
-            <% } %>
-            <% if (currentPage < totalPages) { %>
-                <a href="jogos?pagina=<%= currentPage + 1 %>&plataforma=<%= request.getParameter("plataforma") != null ? request.getParameter("plataforma") : "" %>&genero=<%= request.getParameter("genero") != null ? request.getParameter("genero") : "" %>&nota=<%= request.getParameter("nota") != null ? request.getParameter("nota") : "" %>&busca=<%= request.getParameter("busca") != null ? request.getParameter("busca") : "" %>">Próxima &raquo;</a>
-            <% } %>
-        </div>
-    <% } %>
-
     <footer class="footer">
         &copy; 2025 JoyStream. Todos os direitos reservados.
     </footer>
@@ -414,11 +422,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.js"></script>
     <script>
     window.onload = function() {
-        // Se não há nenhum parâmetro na URL, submete o formulário automaticamente
+        document.getElementById('loader').style.display = 'none';
+    };
+    document.addEventListener('DOMContentLoaded', function() {
+        // Só mostra o loader no primeiro acesso (sem filtros/pagina)
         if (!window.location.search) {
+            document.getElementById('loader').style.display = 'flex';
             document.querySelector('.filters form').submit();
         }
-    };
+    });
     </script>
 </body>
 </html> 

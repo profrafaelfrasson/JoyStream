@@ -230,6 +230,37 @@
         .avatar-upload label:hover {
             background-color: #f39c12;
         }
+
+        @media (max-width: 700px) {
+            .profile-container {
+                padding: 5px;
+            }
+            .profile-card {
+                padding: 10px;
+            }
+            .profile-header {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+            .profile-avatar {
+                width: 100px;
+                height: 100px;
+            }
+            .profile-info h2 {
+                font-size: 1.2em;
+            }
+            .profile-info p {
+                font-size: 0.95em;
+            }
+            .mb-3, .form-control, .form-label {
+                width: 100%;
+                font-size: 1em;
+            }
+            .btn-primary {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -261,7 +292,7 @@
             <% String erro = (String) request.getAttribute("erro"); if (erro != null && !erro.trim().isEmpty()) { %>
                 <div class="alert alert-danger" style="text-align:center; margin-bottom: 20px;"> <%= erro %> </div>
             <% } %>
-            <form id="profileForm" action="atualizar-perfil" method="post" enctype="multipart/form-data">
+            <form id="profileForm" action="atualizar-perfil" method="post" enctype="multipart/form-data" onsubmit="return validarPerfil();">
                 <div class="profile-header">
                     <div class="avatar-upload">
                         <img src="<%= avatarUrl %>" alt="Avatar" class="profile-avatar">
@@ -313,6 +344,17 @@
         document.getElementById('avatar-input').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
+                // Validação de tamanho (máx 2MB) e formato
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('O avatar deve ter no máximo 2MB.');
+                    e.target.value = '';
+                    return;
+                }
+                if (!file.type.startsWith('image/')) {
+                    alert('Selecione um arquivo de imagem válido.');
+                    e.target.value = '';
+                    return;
+                }
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     document.querySelector('.profile-avatar').src = e.target.result;
@@ -349,6 +391,23 @@
             alert('Perfil atualizado com sucesso!');
         } else if (erro && erro !== 'null' && erro.trim() !== '') {
             alert(erro);
+        }
+
+        function validarPerfil() {
+            var nome = document.getElementById('nome').value.trim();
+            var senha = document.getElementById('senha').value;
+            var erro = '';
+            if (nome.length < 2) {
+                erro += 'Nome muito curto.\n';
+            }
+            if (senha.length > 0 && (senha.length < 6 || !/[a-zA-Z]/.test(senha) || !/\d/.test(senha))) {
+                erro += 'A nova senha deve ter pelo menos 6 caracteres, incluindo letras e números.\n';
+            }
+            if (erro) {
+                alert(erro);
+                return false;
+            }
+            return true;
         }
     </script>
 </body>
