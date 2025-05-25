@@ -7,8 +7,8 @@
 }
 
 :root {
-  --height-header: 5rem;
-  --height-footer: 3.5rem;
+    --height-header: 5rem;
+    --height-footer: 3.5rem;
   --color-primary: #f1c40f;
   --color-bg-dark: #1f1f1f;
   --color-bg-darker: #262626;

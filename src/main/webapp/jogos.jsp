@@ -169,6 +169,9 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 20px;
+            padding-bottom: 7rem;
+            align-content: space-between;
+    position: relative;
         }
 
         .game-card {
@@ -177,6 +180,9 @@
             overflow: hidden;
             transition: transform 0.2s;
             position: relative;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
 
         .game-card:hover {
@@ -191,6 +197,10 @@
 
         .game-info {
             padding: 15px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            position: relative;
         }
 
         .game-title {
@@ -201,6 +211,8 @@
         .game-details {
             color: #aaa;
             font-size: 0.9em;
+            margin-bottom: 15px;
+            height: 100%;
         }
 
         .game-price {
@@ -209,30 +221,41 @@
             margin-top: 10px;
         }
 
+        .game-info .btn {
+            margin-top: auto;
+        }
+
         .pagination {
-            display: flex;
+            margin: 2rem 0;
             justify-content: center;
-            gap: 10px;
-            margin: 20px 0;
-            padding: 20px;
         }
 
-        .pagination a {
-            color: white;
-            text-decoration: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            background-color: #1f1f1f;
-            transition: background-color 0.3s;
-        }
-
-        .pagination a:hover {
+        .pagination .page-item .page-link {
             background-color: #2a2a2a;
+            border-color: #3a3a3a;
+            color: #f1c40f;
+            padding: 0.75rem 1rem;
+            margin: 0 0.25rem;
+            border-radius: 0.25rem;
+            transition: all 0.3s ease;
         }
 
-        .pagination a.active {
+        .pagination .page-item .page-link:hover {
+            background-color: #3a3a3a;
+            border-color: #4a4a4a;
+            color: #f1c40f;
+        }
+
+        .pagination .page-item.active .page-link {
             background-color: #f1c40f;
-            color: black;
+            border-color: #f1c40f;
+            color: #000;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            background-color: #1f1f1f;
+            border-color: #2a2a2a;
+            color: #666;
         }
 
         .no-games {
@@ -253,7 +276,6 @@
             background-color: #2a2a2a;
             border-color: #f1c40f;
             color: white;
-            box-shadow: 0 0 0 0.25rem rgba(241, 196, 15, 0.25);
         }
 
         .form-label {
@@ -321,29 +343,33 @@
         }
 
         .select2-container--default .select2-selection--multiple {
-            background-color: #2a2a2a;
-            border: 1px solid #3a3a3a;
-            color: white;
+            background-color: #2a2a2a !important;
+            border: 1px solid #3a3a3a !important;
         }
         
         .select2-container--default .select2-selection--multiple .select2-selection__choice {
-            background-color: #f1c40f;
-            color: black;
-            border: none;
+            background-color: #3a3a3a !important;
+            border: 1px solid #4a4a4a !important;
+            color: white !important;
         }
         
         .select2-dropdown {
-            background-color: #2a2a2a;
-            border: 1px solid #3a3a3a;
+            background-color: #2a2a2a !important;
+            border: 1px solid #3a3a3a !important;
         }
         
-        .select2-container--default .select2-results__option {
-            color: white;
+        .select2-search__field {
+            background-color: #3a3a3a !important;
+            color: white !important;
+        }
+        
+        .select2-results__option {
+            color: white !important;
         }
         
         .select2-container--default .select2-results__option--highlighted[aria-selected] {
-            background-color: #f1c40f;
-            color: black;
+            background-color: #f1c40f !important;
+            color: black !important;
         }
         
         .filter-group {
@@ -451,6 +477,16 @@
 
         .favorite-btn.active i {
             color: #fff;
+        }
+
+        .nav-pagination {
+            position: absolute;
+    bottom: 0;
+    height: 5rem;
+    left: 0;
+    margin-inline: auto;
+    left: 50%;
+    transform: translateX(-50%);
         }
     </style>
 </head>
@@ -595,8 +631,73 @@
                     <p>Nenhum jogo encontrado com os filtros selecionados.</p>
                 </div>
             <% } %>
+            <!-- Pagination moved outside main-content -->
+    <% if (jogos != null && !jogos.isEmpty()) { %>
+        <nav aria-label="Navegação de páginas" class="mt-4 nav-pagination">
+            <ul class="pagination pagination-circle justify-content-center">
+                <!-- Previous button -->
+                <li class="page-item <%= currentPage == 1 ? "disabled" : "" %>">
+                    <a class="page-link pagination-link" href="<%= baseUrl.toString() %>pagina=<%= currentPage - 1 %>" tabindex="-1" aria-disabled="<%= currentPage == 1 %>">
+                        <i class="fas fa-chevron-left"></i>
+                        <span class="sr-only">Anterior</span>
+                    </a>
+                </li>
+
+                <!-- First page -->
+                <li class="page-item <%= currentPage == 1 ? "active" : "" %>">
+                    <a class="page-link pagination-link" href="<%= baseUrl.toString() %>pagina=1">1</a>
+                </li>
+
+                <!-- Ellipsis if needed -->
+                <% if (currentPage > 3) { %>
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                <% } %>
+
+                <!-- Pages around current page -->
+                <% 
+                int startPage = Math.max(2, currentPage - 1);
+                int endPage = Math.min(totalPages - 1, currentPage + 1);
+                for (int i = startPage; i <= endPage; i++) { 
+                    if (i > 1 && i < totalPages) { 
+                %>
+                    <li class="page-item <%= i == currentPage ? "active" : "" %>">
+                        <a class="page-link pagination-link" href="<%= baseUrl.toString() %>pagina=<%= i %>"><%= i %></a>
+                    </li>
+                <% 
+                    }
+                } 
+                %>
+
+                <!-- Ellipsis if needed -->
+                <% if (currentPage < totalPages - 2) { %>
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                <% } %>
+
+                <!-- Last page if not first page -->
+                <% if (totalPages > 1) { %>
+                    <li class="page-item <%= currentPage == totalPages ? "active" : "" %>">
+                        <a class="page-link pagination-link" href="<%= baseUrl.toString() %>pagina=<%= totalPages %>"><%= totalPages %></a>
+                    </li>
+                <% } %>
+
+                <!-- Next button -->
+                <li class="page-item <%= currentPage == totalPages ? "disabled" : "" %>">
+                    <a class="page-link pagination-link" href="<%= baseUrl.toString() %>pagina=<%= currentPage + 1 %>" aria-disabled="<%= currentPage == totalPages %>">
+                        <i class="fas fa-chevron-right"></i>
+                        <span class="sr-only">Próxima</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    <% } %>
         </div>
     </div>
+
+    
 
     <footer class="footer">
         &copy; 2025 JoyStream. Todos os direitos reservados.
@@ -647,6 +748,17 @@
                 }
             });
         }
+
+        // Add click event listener for pagination links
+        document.querySelectorAll('.pagination-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                if (!this.parentElement.classList.contains('disabled')) {
+                    e.preventDefault();
+                    showLoader();
+                    window.location.href = this.href;
+                }
+            });
+        });
     });
 
     function showLoader() {
@@ -720,6 +832,27 @@
     window.onload = function() {
         hideLoader();
     };
+
+    // Function to handle form submission and reset pagination
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchForm = document.querySelector('form');
+        if (searchForm) {
+            searchForm.addEventListener('submit', function(e) {
+                // Remove any existing page parameter from the form
+                const pageInput = searchForm.querySelector('input[name="page"]');
+                if (pageInput) {
+                    pageInput.remove();
+                }
+                
+                // Always add pagina=1 when submitting the form
+                const newPageInput = document.createElement('input');
+                newPageInput.type = 'hidden';
+                newPageInput.name = 'page';
+                newPageInput.value = '1';
+                searchForm.appendChild(newPageInput);
+            });
+        }
+    });
     </script>
 </body>
 </html> 
