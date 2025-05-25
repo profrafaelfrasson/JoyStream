@@ -9,6 +9,10 @@ public class Jogo {
     private String imagemUrl;
     private boolean destaque;
     private List<String> screenshots;
+    private String generos;
+    private String plataformas;
+    private Double nota;
+    private String dataLancamento;
 
     // Construtor
     public Jogo() {}
@@ -60,5 +64,38 @@ public class Jogo {
 
     public void setScreenshots(List<String> screenshots) {
         this.screenshots = screenshots;
+    }
+
+    // Novos getters e setters
+    public String getGeneros() {
+        return generos;
+    }
+
+    public void setGeneros(String generos) {
+        this.generos = generos;
+    }
+
+    public String getPlataformas() {
+        return plataformas;
+    }
+
+    public void setPlataformas(String plataformas) {
+        this.plataformas = plataformas;
+    }
+
+    public Double getNota() {
+        return nota;
+    }
+
+    public void setNota(Double nota) {
+        this.nota = nota;
+    }
+
+    public String getDataLancamento() {
+        return dataLancamento;
+    }
+
+    public void setDataLancamento(String dataLancamento) {
+        this.dataLancamento = dataLancamento;
     }
 } 

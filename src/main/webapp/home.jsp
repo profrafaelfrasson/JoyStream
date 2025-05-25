@@ -4,6 +4,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="com.joystream.service.JogoService" %>
 <%@ page session="true" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%
     Usuario usuario = (Usuario) session.getAttribute("usuario");
     boolean logado = (usuario != null);
@@ -12,6 +13,19 @@
     // Buscar jogos em destaque
     JogoService jogoService = new JogoService();
     List<Jogo> jogosDestaque = jogoService.buscarJogosDestaque();
+    
+    // Buscar jogos recomendados se o usuário estiver logado
+    List<Jogo> jogosRecomendados = null;
+    if (logado && usuario.getId() > 0) {
+        System.out.println("Usuário logado com ID: " + usuario.getId());
+        jogosRecomendados = jogoService.buscarJogosRecomendados(usuario.getId());
+        System.out.println("Jogos recomendados encontrados: " + (jogosRecomendados != null ? jogosRecomendados.size() : "null"));
+    } else {
+        System.out.println("Usuário não está logado ou ID inválido");
+    }
+    
+    request.setAttribute("jogosDestaque", jogosDestaque);
+    request.setAttribute("jogosRecomendados", jogosRecomendados);
 %>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -21,104 +35,13 @@
     <title>JoyStream - Recomende e descubra jogos</title>
     <link rel="icon" type="image/x-icon" href="<%= request.getContextPath() %>/assets/img/logo.ico">
     <link rel="stylesheet" href="./assets/css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        html, body {
-            overflow-x: hidden !important;
-            width: 100vw;
-            max-width: 100vw;
-            margin: 0;
-            font-family: 'Segoe UI', sans-serif;
-            background: #262626;
-            color: white;
-        }
-
-        header {
-            /* background-color: #1f1f1f;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px 30px; */
-            position: relative;
-            z-index: 10;
-        }
-
-        /* header img {
-            height: 50px;
-        } */
-
-        nav {
-            /* display: flex;
-            align-items: center; */
-            gap: 20px;
-        }
-
-        nav a, .user-name {
-            /* color: #f1c40f;
-            text-decoration: none; */
-            /* font-weight: bold;
-            cursor: pointer; */
-            padding: 8px 15px;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-
-        nav a:hover, .user-name:hover {
-            background-color: #2a2a2a;
-        }
-
-        /* .dropdown {
-            position: relative;
-            display: inline-block;
-        } */
-
-        /* .dropdown-content {
-            display: none;
-            position: absolute;
-            right: 0;
-            background-color: #2a2a2a !important;
-            min-width: 100px;
-            box-shadow: 0px 8px 16px rgba(0,0,0,0.3);
-            z-index: 1000;
-            border-radius: 5px;
-        } */
-
-        /* .dropdown-content a {
-            color: white;
-            padding: 10px;
-            text-decoration: none;
-            display: block;
-        } */
-
-        /* .dropdown:hover .dropdown-content {
-            display: block;
-        } */
-
-        /* ESTE NÃO TEM NO ARQUIVO CSS -------------------------------------------------- */
-        .nav-links {
-            display: flex;
-            gap: .3rem;
-        }
-
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            padding: 8px 15px;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-
-        .nav-links a:hover {
-            background-color: #2a2a2a;
-            color: #f1c40f;
-        }
-
-
-
+        /* ===== HERO SECTION ===== */
         .hero {
             text-align: center;
             padding: 80px 20px;
-            /* background: linear-gradient(to right, #0f2027, #203a43, #2c5364); */
             position: relative;
             height: auto;
         }
@@ -138,7 +61,7 @@
             z-index: 1;
         }
 
-        /* .hero-content {
+        .hero-content {
             position: relative;
             z-index: 2;
         }
@@ -147,79 +70,124 @@
             font-size: 3em;
             margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-            color: #f1c40f;
+            color: var(--color-primary);
         }
 
         .hero p {
             font-size: 1.2em;
-            color: #fff;
+            color: var(--color-text);
             text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-        } */
-
-        .games {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            padding: 40px;
         }
 
         .game-card {
-            background-color: #1e1e1e;
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            background: #fff;
+            transition: transform 0.3s ease;
+            height: auto;
         }
 
         .game-card:hover {
-            transform: scale(1.03);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            transform: translateY(-5px);
         }
 
-        .game-card img {
+        .game-image {
             width: 100%;
-            aspect-ratio: 16 / 9;
-            object-fit: cover;
-            border-radius: 5px;
-        }
-
-        .game-card h3 {
-            margin: 10px 0 5px;
-        }
-
-        /* .footer {
-            background-color: #1f1f1f;
-            text-align: center;
-            padding: 20px;
-            color: #777;
-        } */
-
-        .user-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
+            height: 200px;
             object-fit: cover;
         }
 
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .game-info {
+            padding: 15px;
         }
 
-        .user-name {
-            color: #f1c40f;
-            text-decoration: none;
+        .game-title {
+            /* font-size: 1.2rem;
             font-weight: bold;
+            margin-bottom: 10px;
+            color: #333; */
+
+            
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+            line-height: 1.2;
+
+
+            line-height: 1.2;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .game-meta {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .metacritic-score {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .score-high {
+            background-color: #6c3;
+            color: white;
+        }
+
+        .score-medium {
+            background-color: #fc3;
+            color: white;
+        }
+
+        .score-low {
+            background-color: #f66;
+            color: white;
+        }
+
+        .section-title {
+            color: #f1c40f;
+            font-size: 22px;
+            font-weight: bold;
+            margin: 30px 0 20px;
+            padding: 0 15px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            left: 15px;
+            bottom: -8px;
+            width: 60%;
+            height: 2px;
+            background: #f1c40f;
+        }
+
+        .more-info-btn {
+            width: 100%;
+            padding: 8px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
-            padding: 8px 15px;
-            border-radius: 4px;
             transition: background-color 0.3s;
         }
 
-        .user-name:hover {
-            background-color: #2a2a2a;
+        .more-info-btn:hover {
+            background-color: #0056b3;
         }
+
+        
 
         .featured-games {
             padding: 40px;
@@ -315,169 +283,682 @@
         }
 
         .featured-carousel-section {
-            background: transparent;
-            padding: 32px 0;
-            width: 100%;
-            margin: 10px 0 32px 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            overflow-x: hidden;
+            padding: 30px 0;
+            background: var(--color-bg-dark);
+            margin-bottom: 20px;
         }
-        .carousel-title {
-            color: #fff;
-            font-size: 2.1em;
-            font-weight: bold;
-            text-shadow: 2px 2px 8px #000, 0 1px 0 #222;
-            letter-spacing: 1px;
-            margin: 32px 0 24px 0;
-            text-align: left;
-            width: 100%;
-            max-width: 1100px;
-            padding-left: 24px;
-        }
-        .featured-carousel-container {
-            width: 100%;
-            max-width: 1100px;
+
+        .carousel-container {
+            position: relative;
+            max-width: 1000px;
             margin: 0 auto;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow-x: hidden;
+            padding: 20px 0;
         }
+
         .featured-carousel {
-            position: relative;
-            display: flex;
-            flex-direction: row;
-            align-items: stretch;
-            background: #222222;
-            border-radius: 18px;
+            background: #222;
+            border-radius: 6px;
             overflow: hidden;
-            min-height: 340px;
-            width: 100%;
-            margin: 0 auto 32px auto;
-            box-shadow: 0 0 32px 16px rgba(0,0,0,0.22);
+            position: relative;
+            min-height: 400px;
+            box-shadow: 10px 10px 20px #000000ab;
         }
+
         .carousel-slide {
+            display: none;
             width: 100%;
-            display: flex;
-            flex-direction: row;
-            align-items: stretch;
-            position: absolute;
-            left: 0;
-            top: 0;
             opacity: 0;
-            pointer-events: none;
-            z-index: 1;
-            transition: opacity 0.5s cubic-bezier(.4,0,.2,1);
-            height: 100%;
+            transition: opacity 0.5s ease;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
         }
+
         .carousel-slide.active {
+            display: flex;
             opacity: 1;
-            pointer-events: auto;
+            position: relative;
             z-index: 2;
+        }
+
+        .carousel-main {
+            flex: 2;
+            height: 400px;
             position: relative;
         }
-        .carousel-main {
-            flex: 2.2;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: none;
-            height: 100%;
-        }
+
         .carousel-banner {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            max-height: 340px;
-            border-radius: 18px;
-            box-shadow: none;
         }
+
         .carousel-info {
             flex: 1;
-            padding: 32px 24px 24px 24px;
+            padding: 25px;
+            background: rgba(0, 0, 0, 0.85);
+            min-width: 250px;
+            max-width: 300px;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start;
-            background: #222222;
-            height: 100%;
-            min-width: 260px;
-            border-radius: 0 18px 18px 0;
+            justify-content: space-between;
         }
-        .carousel-info h2 {
-            color: #fff !important;
-            font-size: 1.5em;
-            margin-bottom: 10px;
+
+        .carousel-info-top {
+            flex-grow: 1;
+        }
+
+        .carousel-info-bottom {
+            margin-top: 20px;
+        }
+
+        .carousel-button {
+            background: linear-gradient(45deg, var(--color-primary), #f39c12);
+            color: #000;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
             font-weight: bold;
-            text-shadow: 1px 1px 4px #000a;
-        }
-        .carousel-thumbnails {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 14px;
             display: flex;
-            gap: 6px;
-            margin: 12px 0;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(241, 196, 15, 0.3);
         }
-        .carousel-thumbnails img {
-            width: 48px;
-            height: 32px;
-            object-fit: cover;
-            border-radius: 4px;
-            border: 2px solid #222;
+
+        .carousel-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(241, 196, 15, 0.4);
+            background: linear-gradient(45deg, #f39c12, var(--color-primary));
         }
-        .carousel-tags .tag {
-            background: #3a4b5c;
-            color: #fff;
-            border-radius: 3px;
-            padding: 2px 8px;
-            margin-right: 4px;
-            font-size: 0.9em;
+
+        .carousel-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(241, 196, 15, 0.3);
         }
+
+        .carousel-button i {
+            font-size: 16px;
+            transition: transform 0.3s ease;
+        }
+
+        .carousel-button:hover i {
+            transform: translateX(3px);
+        }
+
         .carousel-arrow {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            background: rgba(0,0,0,0.7);
-            border: none;
-            color: #fff;
-            font-size: 2.5em;
-            padding: 0 16px;
-            cursor: pointer;
-            z-index: 30;
-            height: 56px;
-            width: 56px;
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid rgba(241, 196, 15, 0.5);
             border-radius: 50%;
+            color: #f1c40f;
+            font-size: 18px;
+            cursor: pointer;
+            z-index: 100;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            opacity: 1;
-            transition: opacity 0.2s;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(4px);
         }
-        .carousel-arrow.left { left: 0; }
-        .carousel-arrow.right { right: 0; }
-        @media (min-width: 1200px) {
-            .carousel-arrow.left { left: -72px; }
-            .carousel-arrow.right { right: -72px; }
+
+        .carousel-arrow:hover {
+            background: rgba(241, 196, 15, 0.2);
+            border-color: #f1c40f;
+            transform: translateY(-50%) scale(1.1);
         }
-        @media (max-width: 1200px) {
-            .featured-carousel-container { max-width: 98vw; }
-            .carousel-title { padding-left: 8px; }
+
+        .carousel-arrow:active {
+            transform: translateY(-50%) scale(0.95);
         }
-        @media (max-width: 700px) {
-            .featured-carousel, .carousel-banner {
-                min-height: 180px;
-                max-height: 180px;
+
+        .carousel-arrow.prev {
+            left: 15px;
+        }
+
+        .carousel-arrow.next {
+            right: 15px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
             }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .carousel-info h2,
+        .carousel-info .game-meta {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .carousel-info .game-meta:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .carousel-info .game-meta:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        .carousel-thumbnails {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+            animation: fadeIn 0.5s ease-out 0.3s forwards;
+        }
+
+        .carousel-thumbnails img {
+            width: 60px;
+            height: 34px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .carousel-thumbnails img:hover {
+            border-color: #f1c40f;
+            transform: scale(1.05);
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            padding: 15px;
+        }
+
+        .game-card {
+            background: #333;
+            border-radius: 6px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            max-width: 300px;
+            margin: 0 auto;
+            height: auto;
+            box-shadow: 10px 10px 20px #000000ab;
+        }
+
+        .game-image-container {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            overflow: hidden;
+        }
+
+        .game-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .game-info {
+            padding: 12px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-meta {
+            color: #ccc;
+            font-size: 12px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .game-meta i {
+            width: 14px;
+        }
+
+        .metacritic-score {
+            display: inline-block;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        .score-high { background-color: #6c3; }
+        .score-medium { background-color: #fc3; }
+        .score-low { background-color: #f66; }
+
+        .more-info-btn {
+            background: #f1c40f;
+            color: #000;
+            border: none;
+            padding: 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-top: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .more-info-btn i {
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .games-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 10px;
+                padding: 10px;
+            }
+
+            .game-title {
+                font-size: 14px;
+            }
+
+            .game-meta {
+                font-size: 11px;
+            }
+
+            .carousel-button {
+                padding: 10px 16px;
+                font-size: 13px;
+            }
+
+            .carousel-button i {
+                font-size: 14px;
+            }
+
             .carousel-info {
-                padding: 10px 6px;
-                min-width: 120px;
+                padding: 20px;
             }
-            .carousel-thumbnails img {
-                width: 32px;
-                height: 20px;
+        }
+
+        @media (max-width: 480px) {
+            .games-grid {
+                grid-template-columns: repeat(2, 1fr);
+        }
+
+        .carousel-arrow {
+                width: 35px;
+                height: 35px;
+                font-size: 16px;
             }
-            .carousel-title { font-size: 1.2em; }
+        }
+
+        /* Estilos atualizados para as seções de jogos */
+        .games-section {
+            padding: 40px 0;
+            background: var(--color-bg-dark);
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .games-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 60px;
+            position: relative;
+        }
+
+        .games-grid {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            padding: 20px 0;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .games-grid::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Fade effect for grid edges */
+        .games-container::before,
+        .games-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 60px;
+            pointer-events: none;
+            z-index: 2;
+            transition: opacity 0.3s ease;
+        }
+
+        .games-container::before {
+            left: 0;
+            background: linear-gradient(to right, var(--color-bg-dark) 0%, rgba(26,26,26,0) 100%);
+        }
+
+        .games-container::after {
+            right: 0;
+            background: linear-gradient(to left, var(--color-bg-dark) 0%, rgba(26,26,26,0) 100%);
+        }
+
+        /* ===== GAME CARDS ===== */
+        .game-card {
+            flex: 0 0 300px;
+            scroll-snap-align: center;
+            background: var(--color-bg-light);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            min-width: 300px;
+            max-width: 300px;
+            opacity: 0.6; /* Cards laterais mais escuros */
+            transform: scale(0.9); /* Cards laterais menores */
+            transition: all 0.3s ease;
+        }
+
+        .game-card.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .game-image-container {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%;
+            overflow: hidden;
+        }
+
+        .game-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .game-info {
+            padding: 15px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: linear-gradient(to bottom, rgba(51,51,51,0.9), #333);
+        }
+
+
+        .game-meta {
+            color: var(--color-text);
+            font-size: 13px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            opacity: 0.9;
+        }
+
+        .game-meta i {
+            color: var(--color-primary);
+            width: 16px;
+        }
+
+        .metacritic-score {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 14px;
+            margin-top: 8px;
+            width: fit-content;
+        }
+
+        .more-info-btn {
+            width: 100%;
+            background: linear-gradient(45deg, #f1c40f, #f39c12);
+            color: #000;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            margin-top: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .more-info-btn:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(45deg, #f39c12, #f1c40f);
+        }
+
+        .scroll-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid rgba(241, 196, 15, 0.5);
+            border-radius: 50%;
+            color: #f1c40f;
+            font-size: 18px;
+            cursor: pointer;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(4px);
+        }
+
+        .scroll-button:hover {
+            background: rgba(241, 196, 15, 0.2);
+            border-color: #f1c40f;
+        }
+
+        .scroll-button.prev {
+            left: 10px;
+        }
+
+        .scroll-button.next {
+            right: 10px;
+        }
+
+        @media (max-width: 1400px) {
+            .games-container {
+                padding: 0 50px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .games-container {
+                padding: 0 40px;
+            }
+
+            .game-card {
+                flex: 0 0 260px;
+                min-width: 260px;
+                max-width: 260px;
+            }
+
+            .games-grid {
+                padding: 20px calc(50% - 130px); /* Centraliza os cards */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .games-container {
+                padding: 0 30px;
+            }
+
+            .game-card {
+                flex: 0 0 220px;
+                min-width: 220px;
+                max-width: 220px;
+            }
+
+            .games-grid {
+                padding: 20px calc(50% - 110px); /* Centraliza os cards */
+            }
+
+            .games-container::before,
+            .games-container::after {
+                width: 40px; /* Degradê menor em telas pequenas */
+            }
+        }
+
+        /* Estilos para os cards recomendados */
+        .recommended-card {
+            position: relative;
+        }
+
+        .recommendation-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(45deg, var(--color-primary), #f39c12);
+            color: #000;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 2;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .compatibility-score {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.8);
+            color: var(--color-text);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 2;
+        }
+
+        .compatibility-score i {
+            color: var(--color-primary);
+            margin-right: 4px;
+        }
+
+        .recommendation-info {
+            padding: 10px;
+            background: rgba(0,0,0,0.8);
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+
+        .recommendation-reason {
+            color: var(--color-text);
+            margin-bottom: 6px;
+        }
+
+        .recommendation-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 6px;
+        }
+
+        .recommendation-tag {
+            background: rgba(241, 196, 15, 0.2);
+            color: var(--color-primary);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+
+        /* ===== RESPONSIVE STYLES ===== */
+        @media (max-width: 1400px) {
+            .games-container {
+                padding: 0 50px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .games-container {
+                padding: 0 40px;
+            }
+
+            .game-card {
+                flex: 0 0 260px;
+                min-width: 260px;
+                max-width: 260px;
+            }
+
+            .games-grid {
+                padding: 20px calc(50% - 130px);
+            }
+
+            .carousel-button {
+                padding: 10px 16px;
+                font-size: 13px;
+            }
+
+            .carousel-button i {
+                font-size: 14px;
+            }
+
+            .carousel-info {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .games-container {
+                padding: 0 30px;
+            }
+
+            .game-card {
+                flex: 0 0 220px;
+                min-width: 220px;
+                max-width: 220px;
+            }
+
+            .games-grid {
+                padding: 20px calc(50% - 110px);
+            }
+
+            .games-container::before,
+            .games-container::after {
+                width: 40px;
+            }
         }
     </style>
 </head>
@@ -486,11 +967,13 @@
         <img src="<%= request.getContextPath() %>/assets/img/logo.png" alt="Logo JoyStream">
         <nav>
             <div class="nav-links">
-                <a href="home.jsp">HOME</a>
-                <a href="perfil.jsp">PERFIL</a>
-                <a href="jogos.jsp">JOGOS</a>
-                <a href="suporte.jsp">SUPORTE</a>
-                <a href="sobre.jsp">SOBRE</a>
+                <a href="<%= request.getContextPath() %>/home.jsp">HOME</a>
+                <a href="<%= request.getContextPath() %>/jogos.jsp">JOGOS</a>
+                <% if (logado) { %>
+                    <a href="<%= request.getContextPath() %>/perfil.jsp">PERFIL</a>
+                <% } %>
+                <a href="<%= request.getContextPath() %>/suporte.jsp">SUPORTE</a>
+                <a href="<%= request.getContextPath() %>/sobre.jsp">SOBRE</a>
             </div>
             <% if (logado) { %>
                 <div class="dropdown">
@@ -499,17 +982,20 @@
                         <span class="user-name"><%= usuario.getNome() %></span>
                     </div>
                     <div class="dropdown-content">
-                        <a href="perfil.jsp">Meu Perfil</a>
-                        <a href="favoritos.jsp">Favoritos</a>
-                        <a href="logout.jsp">Sair</a>
+                        <a href="<%= request.getContextPath() %>/perfil.jsp">Meu Perfil</a>
+                        <a href="<%= request.getContextPath() %>/favoritos.jsp">Favoritos</a>
+                        <a href="<%= request.getContextPath() %>/logout.jsp">Sair</a>
                     </div>
                 </div>
             <% } else { %>
-                <a href="login.jsp">Login</a>
-                <a href="cadastro.jsp">Registrar</a>
+                <div class="auth-buttons">
+                    <a href="<%= request.getContextPath() %>/login.jsp" class="btn btn-outline-warning">Login</a>
+                    <a href="<%= request.getContextPath() %>/cadastro.jsp" class="btn btn-warning">Registrar</a>
+                </div>
             <% } %>
         </nav>
     </header>
+    
 
     <main>
 
@@ -519,58 +1005,168 @@
             <p>Descubra, recomende e compartilhe seus jogos favoritos</p>
         </div>
     </div>
-
+    <div class="games-section">
+        <div class="games-container">
     <section class="featured-carousel-section">
-        <div class="carousel-title">Destaques e Recomendados</div>
-        <div class="featured-carousel-container">
-            <button class="carousel-arrow left" onclick="carouselPrev()">&lt;</button>
-            <div id="featured-carousel" class="featured-carousel">
+        <h2 class="section-title">Destaques e Recomendados</h2>
+        <div class="carousel-container">
+            <button class="carousel-arrow prev" onclick="prevSlide()">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <div class="featured-carousel">
                 <% for (int i = 0; i < jogosDestaque.size(); i++) {
-                    com.joystream.model.Jogo jogo = jogosDestaque.get(i);
-                    java.util.List<String> screenshots = jogo.getScreenshots();
+                    Jogo jogo = jogosDestaque.get(i);
+                    List<String> screenshots = jogo.getScreenshots();
                 %>
-                <div class="carousel-slide<%= (i == 0) ? " active" : "" %>">
+                <div class="carousel-slide<%= (i == 0) ? " active" : "" %>" data-index="<%= i %>">
                     <div class="carousel-main">
-                        <a href="jogos.jsp?id=<%= jogo.getId() %>">
                             <img src="<%= jogo.getImagemUrl() %>" alt="<%= jogo.getNome() %>" class="carousel-banner">
-                        </a>
                     </div>
                     <div class="carousel-info">
+                        <div class="carousel-info-top">
                         <h2><%= jogo.getNome() %></h2>
+                            <% if (jogo.getGeneros() != null) { %>
+                                <p class="game-meta"><i class="fas fa-gamepad"></i> <%= jogo.getGeneros() %></p>
+                            <% } %>
+                            <% if (jogo.getPlataformas() != null) { %>
+                                <p class="game-meta"><i class="fas fa-desktop"></i> <%= jogo.getPlataformas() %></p>
+                            <% } %>
+                            <% if (jogo.getDataLancamento() != null) { %>
+                                <p class="game-meta"><i class="far fa-calendar-alt"></i> <%= jogo.getDataLancamento() %></p>
+                            <% } %>
                         <div class="carousel-thumbnails">
-                            <% if (screenshots != null && !screenshots.isEmpty()) {
-                                for (String shot : screenshots) { %>
-                                    <img src="<%= shot %>" alt="Screenshot">
-                            <%  } } %>
+                                <% if (screenshots != null) {
+                                    for (int j = 0; j < Math.min(screenshots.size(), 3); j++) { %>
+                                        <img src="<%= screenshots.get(j) %>" alt="Screenshot" onclick="showScreenshot(this.src)">
+                                <% }
+                                } %>
                         </div>
-                        <div class="carousel-tags">
-                            <span class="tag">Popular</span>
+                        </div>
+                        <div class="carousel-info-bottom">
+                            <button class="carousel-button" onclick="window.location.href='detalhe.jsp?id=<%= jogo.getId() %>'">
+                                Mais Informações <i class="fas fa-arrow-right"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
                 <% } %>
             </div>
-            <button class="carousel-arrow right" onclick="carouselNext()">&gt;</button>
+            <button class="carousel-arrow next" onclick="nextSlide()">
+                <i class="fas fa-chevron-right"></i>
+            </button>
         </div>
     </section>
+    </div>
+    </div>
 
-    <section class="games">
+    <div class="games-section">
+        <div class="games-container">
+            <h2 class="section-title">Jogos em Destaque</h2>
+            <button class="scroll-button prev" data-direction="prev">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <div class="games-grid" id="featured-games">
+                <% for (Jogo jogo : jogosDestaque) { %>
         <div class="game-card">
-            <img src="<%= request.getContextPath() %>/assets/img/game1.jpg" alt="Assassin's Creed">
-            <h3>Assassin's Creed</h3>
-            <p>Uma aventura histórica com parkour e combate furtivo.</p>
+                        <div class="game-image-container">
+                            <img src="<%= jogo.getImagemUrl() %>" alt="<%= jogo.getNome() %>" class="game-image">
         </div>
-        <div class="game-card">
-            <img src="<%= request.getContextPath() %>/assets/img/game2.jpg" alt="League of Legends">
-            <h3>League of Legends</h3>
-            <p>O maior MOBA competitivo do mundo.</p>
+                        <div class="game-info">
+                            <h3 class="game-title"><%= jogo.getNome() %></h3>
+                            <% if (jogo.getGeneros() != null) { %>
+                                <p class="game-meta"><i class="fas fa-gamepad"></i> <%= jogo.getGeneros() %></p>
+                            <% } %>
+                            <% if (jogo.getPlataformas() != null) { %>
+                                <p class="game-meta"><i class="fas fa-desktop"></i> <%= jogo.getPlataformas() %></p>
+                            <% } %>
+                            <% if (jogo.getDataLancamento() != null) { %>
+                                <p class="game-meta"><i class="far fa-calendar-alt"></i> <%= jogo.getDataLancamento() %></p>
+                            <% } %>
+                            <% if (jogo.getNota() != null) { %>
+                                <div class="metacritic-score <%= jogo.getNota() >= 85 ? "score-high" : jogo.getNota() >= 70 ? "score-medium" : "score-low" %>">
+                                    <i class="fas fa-star"></i> <%= jogo.getNota() %>
         </div>
-        <div class="game-card">
-            <img src="<%= request.getContextPath() %>/assets/img/game3.jpg" alt="The Sims">
-            <h3>The Sims</h3>
-            <p>O clássico simulador de vida virtual.</p>
+                            <% } %>
+                            <button class="more-info-btn" onclick="window.location.href='detalhe.jsp?id=<%= jogo.getId() %>'">
+                                Mais Informações <i class="fas fa-arrow-right"></i>
+                            </button>
         </div>
-    </section>
+                    </div>
+                <% } %>
+            </div>
+            <button class="scroll-button next" data-direction="next">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <% if (logado && jogosRecomendados != null && !jogosRecomendados.isEmpty()) { %>
+    <div class="games-section">
+        <div class="games-container">
+            <h2 class="section-title">Recomendados para Você</h2>
+            <button class="scroll-button prev" data-direction="prev">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <div class="games-grid" id="recommended-games">
+                <% for (Jogo jogo : jogosRecomendados) { %>
+                    <div class="game-card recommended-card">
+                        <div class="compatibility-score">
+                            <i class="fas fa-chart-line"></i>
+                            <%= String.format("%.0f%%", Math.random() * 30 + 70) %> compatível
+                        </div>
+                        <div class="recommendation-badge">
+                            Recomendado
+                        </div>
+                        <div class="game-image-container">
+                            <img src="<%= jogo.getImagemUrl() %>" alt="<%= jogo.getNome() %>" class="game-image">
+                        </div>
+                        <div class="game-info">
+                            <h3 class="game-title"><%= jogo.getNome() %></h3>
+                            <% if (jogo.getGeneros() != null) { %>
+                                <p class="game-meta"><i class="fas fa-gamepad"></i> <%= jogo.getGeneros() %></p>
+                            <% } %>
+                            <% if (jogo.getPlataformas() != null) { %>
+                                <p class="game-meta"><i class="fas fa-desktop"></i> <%= jogo.getPlataformas() %></p>
+                            <% } %>
+                            <% if (jogo.getDataLancamento() != null) { %>
+                                <p class="game-meta"><i class="far fa-calendar-alt"></i> <%= jogo.getDataLancamento() %></p>
+                            <% } %>
+                            <div class="recommendation-info">
+                                <p class="recommendation-reason">
+                                    <i class="fas fa-lightbulb"></i>
+                                    Recomendado com base nos seus jogos favoritos
+                                </p>
+                                <div class="recommendation-tags">
+                                    <% 
+                                    String[] generos = jogo.getGeneros() != null ? jogo.getGeneros().split(",") : new String[0];
+                                    for (String genero : generos) { 
+                                        if (!genero.trim().isEmpty()) {
+                                    %>
+                                        <span class="recommendation-tag"><%= genero.trim() %></span>
+                                    <% 
+                                        }
+                                    } 
+                                    %>
+                                </div>
+                            </div>
+                            <% if (jogo.getNota() != null) { %>
+                                <div class="metacritic-score <%= jogo.getNota() >= 85 ? "score-high" : jogo.getNota() >= 70 ? "score-medium" : "score-low" %>">
+                                    <i class="fas fa-star"></i> <%= jogo.getNota() %>
+                                </div>
+                            <% } %>
+                            <button class="more-info-btn" onclick="window.location.href='detalhe.jsp?id=<%= jogo.getId() %>'">
+                                Mais Informações <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+            <button class="scroll-button next" data-direction="next">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+    <% } %>
 
     </main>
 
@@ -579,42 +1175,222 @@
     </footer>
 
     <script>
+        // Código do carrossel principal
     let currentSlide = 0;
     const slides = document.querySelectorAll('.carousel-slide');
-    let autoInterval = null;
+        const totalSlides = slides.length;
 
     function showSlide(index) {
-        slides.forEach((slide, i) => {
-            slide.classList.toggle('active', i === index);
-        });
+            currentSlide = (index + totalSlides) % totalSlides;
+            
+            slides.forEach(slide => {
+                slide.classList.remove('active');
+                slide.style.opacity = '0';
+            });
+
+            const currentSlideElement = slides[currentSlide];
+            currentSlideElement.classList.add('active');
+            void currentSlideElement.offsetWidth;
+            currentSlideElement.style.opacity = '1';
     }
 
-    function carouselPrev() {
-        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
-        showSlide(currentSlide);
-        resetAuto();
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+            resetInterval();
+        }
+
+        function prevSlide() {
+            showSlide(currentSlide - 1);
+            resetInterval();
+        }
+
+        let slideInterval = setInterval(nextSlide, 5000);
+
+        function resetInterval() {
+            clearInterval(slideInterval);
+            slideInterval = setInterval(nextSlide, 5000);
+        }
+
+        // Navegação das seções de jogos
+        class GameNavigation {
+            constructor(sectionId) {
+                this.container = document.getElementById(sectionId);
+                this.prevButton = this.container.parentElement.querySelector('.scroll-button.prev');
+                this.nextButton = this.container.parentElement.querySelector('.scroll-button.next');
+                this.cardWidth = this.calculateCardWidth();
+                this.scrolling = false;
+                
+                this.setupNavigation();
+                this.updateButtonVisibility();
+                this.setupIntersectionObserver();
+
+                // Atualizar quando a janela for redimensionada
+                window.addEventListener('resize', () => {
+                    this.cardWidth = this.calculateCardWidth();
+                    this.updateButtonVisibility();
+                });
+            }
+
+            calculateCardWidth() {
+                // Calcula a largura do card baseado no tamanho da tela
+                const screenWidth = window.innerWidth;
+                if (screenWidth <= 480) return 220;
+                if (screenWidth <= 768) return 260;
+                return 300;
+            }
+
+            setupNavigation() {
+                // Remover onclick antigo e adicionar event listeners
+                this.prevButton.removeAttribute('onclick');
+                this.nextButton.removeAttribute('onclick');
+
+                this.container.addEventListener('scroll', () => {
+                    this.updateButtonVisibility();
+                });
+
+                this.prevButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.scrollToDirection('left');
+                });
+
+                this.nextButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.scrollToDirection('right');
+                });
+
+                // Adicionar suporte a touch
+                let startX;
+                let scrollLeft;
+                let isDown = false;
+
+                this.container.addEventListener('touchstart', (e) => {
+                    isDown = true;
+                    startX = e.touches[0].pageX - this.container.offsetLeft;
+                    scrollLeft = this.container.scrollLeft;
+                });
+
+                this.container.addEventListener('touchend', () => {
+                    isDown = false;
+                    this.snapToNearestCard();
+                });
+
+                this.container.addEventListener('touchcancel', () => {
+                    isDown = false;
+                });
+
+                this.container.addEventListener('touchmove', (e) => {
+                    if (!isDown) return;
+                    e.preventDefault();
+                    const x = e.touches[0].pageX - this.container.offsetLeft;
+                    const walk = (x - startX) * 2;
+                    this.container.scrollLeft = scrollLeft - walk;
+                });
+            }
+
+            setupIntersectionObserver() {
+                const options = {
+                    root: this.container,
+                    threshold: 0.7 // Card precisa estar 70% visível
+                };
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('active');
+                        } else {
+                            entry.target.classList.remove('active');
+                        }
+                    });
+                }, options);
+
+                // Observar todos os cards
+                this.container.querySelectorAll('.game-card').forEach(card => {
+                    observer.observe(card);
+                });
+            }
+
+            scrollToDirection(direction) {
+                if (this.scrolling) return;
+                
+                this.scrolling = true;
+                const containerWidth = this.container.clientWidth;
+                const visibleCards = Math.floor(containerWidth / this.cardWidth);
+                const scrollAmount = visibleCards * this.cardWidth;
+                
+                const currentScroll = this.container.scrollLeft;
+                const maxScroll = this.container.scrollWidth - containerWidth;
+                
+                let newScroll;
+                if (direction === 'left') {
+                    newScroll = Math.max(0, currentScroll - this.cardWidth);
+                } else {
+                    newScroll = Math.min(maxScroll, currentScroll + this.cardWidth);
+                }
+
+                this.container.scrollTo({
+                    left: newScroll,
+                    behavior: 'smooth'
+                });
+
+                setTimeout(() => {
+                    this.scrolling = false;
+                    this.updateButtonVisibility();
+                }, 300);
     }
 
-    function carouselNext() {
-        currentSlide = (currentSlide + 1) % slides.length;
-        showSlide(currentSlide);
-        resetAuto();
-    }
+            snapToNearestCard() {
+                const containerWidth = this.container.clientWidth;
+                const scrollPosition = this.container.scrollLeft;
+                const cardWidth = this.cardWidth;
+                const offset = containerWidth / 2 - cardWidth / 2; // Centraliza o card
+                
+                const nearestCard = Math.round((scrollPosition - offset) / cardWidth) * cardWidth + offset;
+                
+                this.container.scrollTo({
+                    left: nearestCard,
+                    behavior: 'smooth'
+                });
+            }
 
-    function autoCarousel() {
-        autoInterval = setInterval(() => {
-            carouselNext();
-        }, 5000);
-    }
+            updateButtonVisibility() {
+                const currentScroll = this.container.scrollLeft;
+                const maxScroll = this.container.scrollWidth - this.container.clientWidth;
+                const threshold = 10;
 
-    function resetAuto() {
-        clearInterval(autoInterval);
-        autoCarousel();
+                // Atualizar visibilidade dos botões
+                this.prevButton.style.opacity = currentScroll > threshold ? '1' : '0';
+                this.prevButton.style.visibility = currentScroll > threshold ? 'visible' : 'hidden';
+                
+                this.nextButton.style.opacity = currentScroll < maxScroll - threshold ? '1' : '0';
+                this.nextButton.style.visibility = currentScroll < maxScroll - threshold ? 'visible' : 'hidden';
     }
+        }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        showSlide(currentSlide);
-        autoCarousel();
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inicializar carrossel principal
+            if (slides.length > 0) {
+                showSlide(0);
+            }
+
+            // Inicializar navegação para cada seção de jogos
+            const featuredGames = new GameNavigation('featured-games');
+            const recommendedGames = document.getElementById('recommended-games');
+            if (recommendedGames) {
+                new GameNavigation('recommended-games');
+            }
+
+            // Pausar autoplay do carrossel quando o mouse estiver sobre ele
+            const carousel = document.querySelector('.featured-carousel');
+            if (carousel) {
+                carousel.addEventListener('mouseenter', () => {
+                    clearInterval(slideInterval);
+                });
+
+                carousel.addEventListener('mouseleave', () => {
+                    resetInterval();
+                });
+            }
     });
     </script>
 </body>
