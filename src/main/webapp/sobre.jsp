@@ -206,6 +206,7 @@
                     </div>
                     <div class="dropdown-content">
                         <a href="perfil.jsp">Meu Perfil</a>
+                        <a href="favoritos.jsp">Favoritos</a>
                         <a href="logout.jsp">Sair</a>
                     </div>
                 </div>

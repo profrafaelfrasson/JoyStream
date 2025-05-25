@@ -13,6 +13,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JoyStream - Recomende e descubra jogos</title>
     <link rel="icon" type="image/x-icon" href="<%= request.getContextPath() %>/assets/img/logo.ico">
+    <link rel="stylesheet" href="./assets/css/style.css">
     <style>
         body {
             margin: 0;
@@ -22,30 +23,30 @@
         }
 
         header {
-            background-color: #1f1f1f;
+            /* background-color: #1f1f1f;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 15px 30px;
+            padding: 15px 30px; */
             position: relative;
             z-index: 10;
         }
 
-        header img {
+        /* header img {
             height: 50px;
-        }
+        } */
 
         nav {
-            display: flex;
-            align-items: center;
+            /* display: flex;
+            align-items: center; */
             gap: 20px;
         }
 
         nav a, .user-name {
-            color: #f1c40f;
-            text-decoration: none;
-            font-weight: bold;
-            cursor: pointer;
+            /* color: #f1c40f;
+            text-decoration: none; */
+            /* font-weight: bold;
+            cursor: pointer; */
             padding: 8px 15px;
             border-radius: 4px;
             transition: background-color 0.3s;
@@ -55,12 +56,12 @@
             background-color: #2a2a2a;
         }
 
-        .dropdown {
+        /* .dropdown {
             position: relative;
             display: inline-block;
-        }
+        } */
 
-        .dropdown-content {
+        /* .dropdown-content {
             display: none;
             position: absolute;
             right: 0;
@@ -69,22 +70,23 @@
             box-shadow: 0px 8px 16px rgba(0,0,0,0.3);
             z-index: 1000;
             border-radius: 5px;
-        }
+        } */
 
-        .dropdown-content a {
+        /* .dropdown-content a {
             color: white;
             padding: 10px;
             text-decoration: none;
             display: block;
-        }
+        } */
 
-        .dropdown:hover .dropdown-content {
+        /* .dropdown:hover .dropdown-content {
             display: block;
-        }
+        } */
 
+        /* ESTE NÃO TEM NO ARQUIVO CSS -------------------------------------------------- */
         .nav-links {
             display: flex;
-            gap: 20px;
+            gap: .3rem;
         }
 
         .nav-links a {
@@ -98,14 +100,17 @@
 
         .nav-links a:hover {
             background-color: #2a2a2a;
+            color: #f1c40f;
         }
+
+
 
         .hero {
             text-align: center;
             padding: 80px 20px;
-            background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+            /* background: linear-gradient(to right, #0f2027, #203a43, #2c5364); */
             position: relative;
-            overflow: hidden;
+            height: auto;
         }
 
         .hero::before {
@@ -115,6 +120,7 @@
             left: 0;
             right: 0;
             bottom: 0;
+            width: 100%;
             background-image: url('https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=2071&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
@@ -122,7 +128,7 @@
             z-index: 1;
         }
 
-        .hero-content {
+        /* .hero-content {
             position: relative;
             z-index: 2;
         }
@@ -138,7 +144,7 @@
             font-size: 1.2em;
             color: #fff;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-        }
+        } */
 
         .games {
             display: grid;
@@ -171,12 +177,12 @@
             margin: 10px 0 5px;
         }
 
-        .footer {
+        /* .footer {
             background-color: #1f1f1f;
             text-align: center;
             padding: 20px;
             color: #777;
-        }
+        } */
 
         .user-avatar {
             width: 32px;
@@ -225,6 +231,7 @@
                     </div>
                     <div class="dropdown-content">
                         <a href="perfil.jsp">Meu Perfil</a>
+                        <a href="favoritos.jsp">Favoritos</a>
                         <a href="logout.jsp">Sair</a>
                     </div>
                 </div>
@@ -234,6 +241,8 @@
             <% } %>
         </nav>
     </header>
+
+    <main>
 
     <div class="hero">
         <div class="hero-content">
@@ -259,6 +268,8 @@
             <p>O clássico simulador de vida virtual.</p>
         </div>
     </section>
+
+    </main>
 
     <footer class="footer">
         &copy; 2025 JoyStream. Todos os direitos reservados.
