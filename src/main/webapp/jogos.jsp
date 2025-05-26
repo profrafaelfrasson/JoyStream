@@ -163,7 +163,22 @@
             top: 20px;
             height: fit-content;
             max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filters-content {
             overflow-y: auto;
+            max-height: 65vh;
+            flex: 1 1 auto;
+        }
+
+        .filter-actions {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex-shrink: 0;
         }
 
         .games-list {
@@ -533,58 +548,61 @@
     <div class="main-content">
         <div class="filters">
             <form action="jogos" method="GET" id="filterForm">
-                <div class="filter-group">
-                    <h4>Busca</h4>
-                    <div class="mb-3">
-                        <input type="text" class="form-control" name="busca" placeholder="Buscar jogos..." value="<%= request.getParameter("busca") != null ? request.getParameter("busca") : "" %>">
+                <div class="filters-content">
+                    <div class="filter-group">
+                        <h4>Busca</h4>
+                        <div class="mb-3">
+                            <input type="text" class="form-control" name="busca" placeholder="Buscar jogos..." value="<%= request.getParameter("busca") != null ? request.getParameter("busca") : "" %>">
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="busca_precisa" value="true" id="buscaPrecisa" <%= "true".equals(request.getParameter("busca_precisa")) ? "checked" : "" %>>
+                            <label class="form-check-label" for="buscaPrecisa">
+                                Busca precisa
+                            </label>
+                        </div>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="busca_precisa" value="true" id="buscaPrecisa" <%= "true".equals(request.getParameter("busca_precisa")) ? "checked" : "" %>>
-                        <label class="form-check-label" for="buscaPrecisa">
-                            Busca precisa
-                        </label>
+
+                    <div class="filter-group">
+                        <h4>Plataformas</h4>
+                        <select class="form-select" name="plataforma" multiple>
+                            <option value="4" <%= plataformas != null && java.util.Arrays.asList(plataformas).contains("4") ? "selected" : "" %>>PC</option>
+                            <option value="187" <%= plataformas != null && java.util.Arrays.asList(plataformas).contains("187") ? "selected" : "" %>>PlayStation 5</option>
+                            <option value="1" <%= plataformas != null && java.util.Arrays.asList(plataformas).contains("1") ? "selected" : "" %>>Xbox One</option>
+                            <option value="7" <%= plataformas != null && java.util.Arrays.asList(plataformas).contains("7") ? "selected" : "" %>>Nintendo Switch</option>
+                            <option value="18" <%= plataformas != null && java.util.Arrays.asList(plataformas).contains("18") ? "selected" : "" %>>PlayStation 4</option>
+                            <option value="186" <%= plataformas != null && java.util.Arrays.asList(plataformas).contains("186") ? "selected" : "" %>>Xbox Series S/X</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <h4>Gêneros</h4>
+                        <select class="form-select" name="genero" multiple>
+                            <option value="4" <%= generos != null && java.util.Arrays.asList(generos).contains("4") ? "selected" : "" %>>Ação</option>
+                            <option value="3" <%= generos != null && java.util.Arrays.asList(generos).contains("3") ? "selected" : "" %>>Aventura</option>
+                            <option value="5" <%= generos != null && java.util.Arrays.asList(generos).contains("5") ? "selected" : "" %>>RPG</option>
+                            <option value="2" <%= generos != null && java.util.Arrays.asList(generos).contains("2") ? "selected" : "" %>>Tiro</option>
+                            <option value="10" <%= generos != null && java.util.Arrays.asList(generos).contains("10") ? "selected" : "" %>>Estratégia</option>
+                            <option value="14" <%= generos != null && java.util.Arrays.asList(generos).contains("14") ? "selected" : "" %>>Simulação</option>
+                            <option value="15" <%= generos != null && java.util.Arrays.asList(generos).contains("15") ? "selected" : "" %>>Esporte</option>
+                            <option value="7" <%= generos != null && java.util.Arrays.asList(generos).contains("7") ? "selected" : "" %>>Puzzle</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <h4>Nota Mínima</h4>
+                        <select class="form-select" name="nota_min">
+                            <option value="01" <%= "01".equals(request.getParameter("nota_min")) ? "selected" : "" %>>Qualquer</option>
+                            <option value="90" <%= "90".equals(request.getParameter("nota_min")) ? "selected" : "" %>>90+</option>
+                            <option value="80" <%= "80".equals(request.getParameter("nota_min")) ? "selected" : "" %>>80+</option>
+                            <option value="70" <%= "70".equals(request.getParameter("nota_min")) ? "selected" : "" %>>70+</option>
+                            <option value="60" <%= "60".equals(request.getParameter("nota_min")) ? "selected" : "" %>>60+</option>
+                        </select>
                     </div>
                 </div>
-
-                <div class="filter-group">
-                    <h4>Plataformas</h4>
-                    <select class="form-select" name="plataforma" multiple>
-                        <option value="4" <%= plataformas != null && java.util.Arrays.asList(plataformas).contains("4") ? "selected" : "" %>>PC</option>
-                        <option value="187" <%= plataformas != null && java.util.Arrays.asList(plataformas).contains("187") ? "selected" : "" %>>PlayStation 5</option>
-                        <option value="1" <%= plataformas != null && java.util.Arrays.asList(plataformas).contains("1") ? "selected" : "" %>>Xbox One</option>
-                        <option value="7" <%= plataformas != null && java.util.Arrays.asList(plataformas).contains("7") ? "selected" : "" %>>Nintendo Switch</option>
-                        <option value="18" <%= plataformas != null && java.util.Arrays.asList(plataformas).contains("18") ? "selected" : "" %>>PlayStation 4</option>
-                        <option value="186" <%= plataformas != null && java.util.Arrays.asList(plataformas).contains("186") ? "selected" : "" %>>Xbox Series S/X</option>
-                    </select>
+                <div class="filter-actions">
+                    <button type="submit" class="btn btn-primary w-100">Aplicar Filtros</button>
+                    <button type="button" class="btn btn-outline-warning w-100" onclick="limparFiltros()">Limpar Filtros</button>
                 </div>
-
-                <div class="filter-group">
-                    <h4>Gêneros</h4>
-                    <select class="form-select" name="genero" multiple>
-                        <option value="4" <%= generos != null && java.util.Arrays.asList(generos).contains("4") ? "selected" : "" %>>Ação</option>
-                        <option value="3" <%= generos != null && java.util.Arrays.asList(generos).contains("3") ? "selected" : "" %>>Aventura</option>
-                        <option value="5" <%= generos != null && java.util.Arrays.asList(generos).contains("5") ? "selected" : "" %>>RPG</option>
-                        <option value="2" <%= generos != null && java.util.Arrays.asList(generos).contains("2") ? "selected" : "" %>>Tiro</option>
-                        <option value="10" <%= generos != null && java.util.Arrays.asList(generos).contains("10") ? "selected" : "" %>>Estratégia</option>
-                        <option value="14" <%= generos != null && java.util.Arrays.asList(generos).contains("14") ? "selected" : "" %>>Simulação</option>
-                        <option value="15" <%= generos != null && java.util.Arrays.asList(generos).contains("15") ? "selected" : "" %>>Esporte</option>
-                        <option value="7" <%= generos != null && java.util.Arrays.asList(generos).contains("7") ? "selected" : "" %>>Puzzle</option>
-                    </select>
-                </div>
-
-                <div class="filter-group">
-                    <h4>Nota Mínima</h4>
-                    <select class="form-select" name="nota_min">
-                        <option value="01" <%= "01".equals(request.getParameter("nota_min")) ? "selected" : "" %>>Qualquer</option>
-                        <option value="90" <%= "90".equals(request.getParameter("nota_min")) ? "selected" : "" %>>90+</option>
-                        <option value="80" <%= "80".equals(request.getParameter("nota_min")) ? "selected" : "" %>>80+</option>
-                        <option value="70" <%= "70".equals(request.getParameter("nota_min")) ? "selected" : "" %>>70+</option>
-                        <option value="60" <%= "60".equals(request.getParameter("nota_min")) ? "selected" : "" %>>60+</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="btn btn-primary w-100">Aplicar Filtros</button>
-                <button type="button" class="btn btn-outline-warning w-100 mt-2" onclick="limparFiltros()">Limpar Filtros</button>
             </form>
         </div>
 
