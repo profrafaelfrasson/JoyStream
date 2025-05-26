@@ -162,6 +162,8 @@
             position: sticky;
             top: 20px;
             height: fit-content;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .games-list {
