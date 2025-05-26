@@ -296,36 +296,40 @@
         }
 
         .featured-carousel {
-            background: #222;
-            border-radius: 6px;
-            overflow: hidden;
             position: relative;
             min-height: 400px;
+            height: 400px;
+            background: none;
+            border-radius: 6px;
+            overflow: hidden;
             box-shadow: 10px 10px 20px #000000ab;
         }
 
         .carousel-slide {
             display: none;
             width: 100%;
-            opacity: 0;
-            transition: opacity 0.5s ease;
+            height: 100%;
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
+            top: 0; left: 0;
         }
 
         .carousel-slide.active {
             display: flex;
-            opacity: 1;
             position: relative;
+            opacity: 1;
             z-index: 2;
+            width: 100%;
+            height: 100%;
         }
 
         .carousel-main {
             flex: 2;
-            height: 400px;
+            height: 100%;
             position: relative;
+            display: flex;
+            align-items: stretch;
+            background: #111;
+            overflow: hidden;
         }
         .carousel-main::before {
             content: '';
@@ -341,6 +345,9 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            object-position: center;
+            display: block;
+            background: #111;
         }
 
         .carousel-info {
