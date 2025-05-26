@@ -327,6 +327,15 @@
             height: 400px;
             position: relative;
         }
+        .carousel-main::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 20%;
+            background: linear-gradient(to right, rgba(0, 0, 0, 0), black);
+        }
 
         .carousel-banner {
             width: 100%;
@@ -958,6 +967,14 @@
             .games-container::before,
             .games-container::after {
                 width: 40px;
+            }
+
+            .compatibility-score {
+                font-size: 9px;
+            }
+
+            .recommendation-badge {
+                font-size: 9px;
             }
         }
     </style>
