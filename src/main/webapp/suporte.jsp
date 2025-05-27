@@ -5,15 +5,18 @@
     Usuario usuario = (Usuario) session.getAttribute("usuario");
     boolean logado = (usuario != null);
     String avatarUrl = (usuario != null && usuario.getAvatar() != null && !usuario.getAvatar().isEmpty()) ? ("data:image/png;base64," + usuario.getAvatar()) : (request.getContextPath() + "/assets/img/default-avatar.png");
+
+    // Configurar variáveis para o SEO da página
+    request.setAttribute("pageTitle", "JoyStream - Suporte | Central de Ajuda");
+    request.setAttribute("pageDescription", "Precisa de ajuda? Acesse nossa central de suporte para encontrar respostas para suas dúvidas, tutoriais e entre em contato com nossa equipe.");
+    request.setAttribute("pageKeywords", "suporte joystream, ajuda, faq, contato, tutoriais, dúvidas frequentes, atendimento");
 %>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suporte - JoyStream</title>
-    <link rel="icon" type="image/x-icon" href="<%= request.getContextPath() %>/assets/img/logo.ico">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.css" rel="stylesheet">
+
+    <jsp:include page="components/head.jsp" />
+
     <style>
         body {
             margin: 0;
@@ -22,82 +25,7 @@
             color: white;
         }
 
-        header {
-            background-color: #1f1f1f;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px 30px;
-        }
-
-        header img {
-            height: 50px;
-        }
-
-        nav {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        nav a, .user-name {
-            color: #f1c40f;
-            text-decoration: none;
-            font-weight: bold;
-            cursor: pointer;
-            padding: 8px 15px;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-
-        nav a:hover, .user-name:hover {
-            background-color: #2a2a2a;
-        }
-
-        .dropdown {
-            position: relative;
-            display: inline-block;
-        }
-
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            right: 0;
-            background-color: #2a2a2a;
-            min-width: 100px;
-            box-shadow: 0px 8px 16px rgba(0,0,0,0.3);
-            z-index: 1;
-            border-radius: 5px;
-        }
-
-        .dropdown-content a {
-            color: white;
-            padding: 10px;
-            text-decoration: none;
-            display: block;
-        }
-
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 20px;
-        }
-
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            padding: 8px 15px;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-
-        .nav-links a:hover {
-            background-color: #2a2a2a;
-        }
+        
 
         .support-content {
             max-width: 1200px;
@@ -109,93 +37,173 @@
         }
 
         .contact-form {
-            background-color: #1f1f1f;
+            background: linear-gradient(145deg, #1f1f1f, #242424);
             padding: 30px;
-            border-radius: 10px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .contact-form:hover {
+            /* transform: translateY(-5px); */
         }
 
         .contact-form h2 {
             color: #f1c40f;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .contact-form h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: #f1c40f;
+            border-radius: 2px;
         }
 
         .form-control {
             background-color: #2a2a2a;
-            border: 1px solid #3a3a3a;
+            border: 2px solid #3a3a3a;
             color: white;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
         }
 
         .form-control:focus {
             background-color: #2a2a2a;
             border-color: #f1c40f;
             color: white;
-            box-shadow: 0 0 0 0.25rem rgba(241, 196, 15, 0.25);
+            box-shadow: 0 0 0 0.25rem rgba(241, 196, 15, 0.15);
+            transform: translateY(-2px);
         }
 
         .form-label {
             color: #ddd;
+            font-weight: 500;
+            margin-bottom: 8px;
+            display: block;
         }
 
         .btn-primary {
             background-color: #f1c40f;
-            border-color: #f1c40f;
+            border: none;
             color: #000;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
         .btn-primary:hover {
             background-color: #f39c12;
-            border-color: #f39c12;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(243, 156, 18, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
         }
 
         .help-section {
-            background-color: #1f1f1f;
+            background: linear-gradient(145deg, #1f1f1f, #242424);
             padding: 30px;
-            border-radius: 10px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
         }
 
         .help-section h2 {
             color: #f1c40f;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .help-section h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: #f1c40f;
+            border-radius: 2px;
         }
 
         .faq-item {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(42, 42, 42, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .faq-item:hover {
+            background: rgba(42, 42, 42, 0.6);
+            transform: translateX(5px);
         }
 
         .faq-question {
             color: #f1c40f;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            font-size: 1.1em;
         }
 
         .faq-answer {
             color: #ddd;
-            line-height: 1.6;
+            line-height: 1.7;
+            font-size: 0.95em;
         }
 
         .contact-info {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #3a3a3a;
+            margin-top: 35px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(241, 196, 15, 0.1);
+        }
+
+        .contact-info h3 {
+            color: #f1c40f;
+            margin-bottom: 15px;
+            font-size: 1.2em;
         }
 
         .contact-info p {
-            margin: 10px 0;
+            margin: 12px 0;
             color: #ddd;
-        }
-
-        .footer {
-            background-color: #1f1f1f;
-            text-align: center;
-            padding: 20px;
-            color: #777;
-            margin-top: 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         @media (max-width: 768px) {
             .support-content {
                 grid-template-columns: 1fr;
+                gap: 30px;
+                margin: 20px auto;
+                padding: 15px;
+            }
+
+            .contact-form, .help-section {
+                padding: 20px;
+            }
+
+            .form-control {
+                padding: 10px;
+                margin-bottom: 15px;
+            }
+
+            .btn-primary {
+                width: 100%;
             }
         }
 
@@ -226,35 +234,10 @@
     </style>
 </head>
 <body>
-    <header>
-        <img src="<%= request.getContextPath() %>/assets/img/logo.png" alt="Logo JoyStream">
-        <nav>
-            <div class="nav-links">
-                <a href="home.jsp">HOME</a>
-                <a href="perfil.jsp">PERFIL</a>
-                <a href="jogos.jsp">JOGOS</a>
-                <a href="suporte.jsp">SUPORTE</a>
-                <a href="sobre.jsp">SOBRE</a>
-            </div>
-            <% if (logado) { %>
-                <div class="dropdown">
-                    <div class="user-info">
-                        <img src="<%= avatarUrl %>" alt="Avatar" class="user-avatar">
-                        <span class="user-name"><%= usuario.getNome() %></span>
-                    </div>
-                    <div class="dropdown-content">
-                        <a href="perfil.jsp">Meu Perfil</a>
-                        <a href="favoritos.jsp">Favoritos</a>
-                        <a href="logout.jsp">Sair</a>
-                    </div>
-                </div>
-            <% } else { %>
-                <a href="login.jsp">Login</a>
-                <a href="cadastro.jsp">Registrar</a>
-            <% } %>
-        </nav>
-    </header>
 
+    <jsp:include page="components/header.jsp" />
+
+    <main>
     <div class="support-content">
         <div class="contact-form">
             <h2>Entre em Contato</h2>
@@ -316,10 +299,9 @@
             </div>
         </div>
     </div>
+</main>
 
-    <footer class="footer">
-        &copy; 2025 JoyStream. Todos os direitos reservados.
-    </footer>
+    <jsp:include page="components/footer.jsp" />
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.js"></script>
     <script>

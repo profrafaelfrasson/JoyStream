@@ -5,14 +5,18 @@
     Usuario usuario = (Usuario) session.getAttribute("usuario");
     boolean logado = (usuario != null);
     String avatarUrl = (usuario != null && usuario.getAvatar() != null && !usuario.getAvatar().isEmpty()) ? ("data:image/png;base64," + usuario.getAvatar()) : (request.getContextPath() + "/assets/img/default-avatar.png");
+
+    // Configurar variáveis para o SEO da página
+    request.setAttribute("pageTitle", "JoyStream - Sobre Nós | Nossa História e Missão");
+    request.setAttribute("pageDescription", "Conheça a JoyStream, nossa missão de conectar gamers e criar a melhor plataforma de recomendação de jogos. Descubra nossa história e valores.");
+    request.setAttribute("pageKeywords", "sobre joystream, história, missão, valores, plataforma de jogos, comunidade gamer, quem somos");
 %>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sobre - JoyStream</title>
-    <link rel="icon" type="image/x-icon" href="<%= request.getContextPath() %>/assets/img/logo.ico">
+
+    <jsp:include page="components/head.jsp" />
+
     <style>
         body {
             margin: 0;
@@ -21,202 +25,190 @@
             color: white;
         }
 
-        header {
-            background-color: #1f1f1f;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px 30px;
-        }
-
-        header img {
-            height: 50px;
-        }
-
-        nav {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        nav a, .user-name {
-            color: #f1c40f;
-            text-decoration: none;
-            font-weight: bold;
-            cursor: pointer;
-            padding: 8px 15px;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-
-        nav a:hover, .user-name:hover {
-            background-color: #2a2a2a;
-        }
-
-        .dropdown {
-            position: relative;
-            display: inline-block;
-        }
-
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            right: 0;
-            background-color: #2a2a2a;
-            min-width: 100px;
-            box-shadow: 0px 8px 16px rgba(0,0,0,0.3);
-            z-index: 1;
-            border-radius: 5px;
-        }
-
-        .dropdown-content a {
-            color: white;
-            padding: 10px;
-            text-decoration: none;
-            display: block;
-        }
-
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 20px;
-        }
-
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            padding: 8px 15px;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-
-        .nav-links a:hover {
-            background-color: #2a2a2a;
-        }
-
         .about-content {
-            max-width: 800px;
+            max-width: 1200px;
             margin: 40px auto;
-            padding: 20px;
+            padding: 40px;
             background-color: #1f1f1f;
-            border-radius: 10px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
         .about-content h1 {
             color: #f1c40f;
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 50px;
+            font-size: 2.5em;
+            position: relative;
+            padding-bottom: 20px;
+        }
+
+        .about-content h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #f1c40f, transparent);
+            border-radius: 2px;
         }
 
         .about-content p {
-            line-height: 1.6;
-            margin-bottom: 20px;
+            line-height: 1.8;
+            margin-bottom: 25px;
             text-align: justify;
+            font-size: 1.1em;
+            color: #e0e0e0;
+            padding: 0 20px;
         }
 
         .team-section {
-            margin-top: 40px;
+            margin-top: 60px;
+            background-color: #2a2a2a;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
         }
 
         .team-section h2 {
             color: #f1c40f;
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 40px;
+            font-size: 2em;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .team-section h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: #f1c40f;
+            border-radius: 2px;
         }
 
         .team-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+            padding: 20px;
         }
 
         .team-member {
-            background-color: #2a2a2a;
-            padding: 20px;
-            border-radius: 8px;
+            background: linear-gradient(145deg, #262626, #1a1a1a);
+            padding: 30px 20px;
+            border-radius: 15px;
             text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(241, 196, 15, 0.1);
+        }
+
+        .team-member::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 200%;
+            height: 400%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(241, 196, 15, 0.1),
+                transparent
+            );
+            transform: rotate(225deg);
+            transition: 0.8s;
+        }
+
+        .team-member:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(241, 196, 15, 0.1);
+        }
+
+        .team-member:hover::before {
+            left: 100%;
         }
 
         .team-member h3 {
             color: #f1c40f;
-            margin: 10px 0;
+            margin: 15px 0;
+            font-size: 1.3em;
+            font-weight: 600;
         }
 
         .team-member p {
+            color: #bbb;
+            font-size: 1em;
+            margin: 10px 0;
             text-align: center;
         }
 
-        .footer {
-            background-color: #1f1f1f;
-            text-align: center;
-            padding: 20px;
-            color: #777;
-            margin-top: 40px;
-        }
-
-        .user-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .user-name {
+        .team-member .role-badge {
+            background: rgba(241, 196, 15, 0.1);
             color: #f1c40f;
-            text-decoration: none;
-            font-weight: bold;
-            cursor: pointer;
-            padding: 8px 15px;
-            border-radius: 4px;
-            transition: background-color 0.3s;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            display: inline-block;
+            margin-top: 10px;
         }
 
-        .user-name:hover {
-            background-color: #2a2a2a;
+        @media (max-width: 768px) {
+            .about-content {
+                margin: 20px;
+                padding: 20px;
+            }
+
+            .team-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 20px;
+                padding: 10px;
+            }
+
+            .about-content h1 {
+                font-size: 2em;
+            }
+
+            .about-content p {
+                font-size: 1em;
+                padding: 0;
+            }
+
+            .team-section {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .about-content {
+                margin: 10px;
+                padding: 15px;
+            }
+
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .team-member {
+                padding: 20px 15px;
+            }
         }
     </style>
 </head>
 <body>
-    <header>
-        <img src="<%= request.getContextPath() %>/assets/img/logo.png" alt="Logo JoyStream">
-        <nav>
-            <div class="nav-links">
-                <a href="home.jsp">HOME</a>
-                <a href="perfil.jsp">PERFIL</a>
-                <a href="jogos.jsp">JOGOS</a>
-                <a href="suporte.jsp">SUPORTE</a>
-                <a href="sobre.jsp">SOBRE</a>
-            </div>
-            <% if (logado) { %>
-                <div class="dropdown">
-                    <div class="user-info">
-                        <img src="<%= avatarUrl %>" alt="Avatar" class="user-avatar">
-                        <span class="user-name"><%= usuario.getNome() %></span>
-                    </div>
-                    <div class="dropdown-content">
-                        <a href="perfil.jsp">Meu Perfil</a>
-                        <a href="favoritos.jsp">Favoritos</a>
-                        <a href="logout.jsp">Sair</a>
-                    </div>
-                </div>
-            <% } else { %>
-                <a href="login.jsp">Login</a>
-                <a href="cadastro.jsp">Registrar</a>
-            <% } %>
-        </nav>
-    </header>
 
+    <jsp:include page="components/header.jsp" />
+
+    <main>
     <div class="about-content">
         <h1>Sobre o JoyStream</h1>
         <p>O JoyStream é uma plataforma desenvolvida como projeto acadêmico para a Univinte Fucap, com o objetivo de criar um espaço onde os amantes de jogos possam descobrir, recomendar e compartilhar suas experiências com diferentes títulos.</p>
@@ -228,34 +220,33 @@
             <div class="team-grid">
                 <div class="team-member">
                     <h3>Manoel</h3>
-                    <p>Desenvolvedor</p>
+                    <span class="role-badge">Desenvolvedor</span>
                 </div>
                 <div class="team-member">
                     <h3>Patrick</h3>
-                    <p>Desenvolvedor</p>
+                    <span class="role-badge">Desenvolvedor</span>
                 </div>
                 <div class="team-member">
                     <h3>Vitória</h3>
-                    <p>Analista e QA</p>
+                    <span class="role-badge">Analista e QA</span>
                 </div>
                 <div class="team-member">
                     <h3>Felipe</h3>
-                    <p>Líder do Projeto</p>
+                    <span class="role-badge">Líder do Projeto</span>
                 </div>
                 <div class="team-member">
                     <h3>Ana Carolina</h3>
-                    <p>Banco de Dados</p>
+                    <span class="role-badge">Banco de Dados</span>
                 </div>
                 <div class="team-member">
                     <h3>Ewellim</h3>
-                    <p>Banco de Dados</p>
+                    <span class="role-badge">Banco de Dados</span>
                 </div>
             </div>
         </div>
     </div>
+</main>
 
-    <footer class="footer">
-        &copy; 2025 JoyStream. Todos os direitos reservados.
-    </footer>
+    <jsp:include page="components/footer.jsp" />
 </body>
 </html> 

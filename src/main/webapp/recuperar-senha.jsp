@@ -3,17 +3,15 @@
 <%@ page session="true" %>
 <%
     Usuario usuario = (Usuario) session.getAttribute("usuario");
-    boolean logado = (usuario != null);
-    String avatarUrl = (usuario != null && usuario.getAvatar() != null && !usuario.getAvatar().isEmpty()) ? ("data:image/png;base64," + usuario.getAvatar()) : (request.getContextPath() + "/assets/img/default-avatar.png");
+    if (usuario != null) {
+        response.sendRedirect("index.jsp");
+        return;
+    }
 %>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recuperar Senha - JoyStream</title>
-    <link rel="icon" type="image/x-icon" href="<%= request.getContextPath() %>/assets/img/logo.ico">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.css" rel="stylesheet">
+    <jsp:include page="components/head.jsp" />
     <style>
         body {
             margin: 0;
@@ -22,239 +20,131 @@
             color: white;
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
-        }
-
-        header {
-            background-color: #1f1f1f;
-            display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 15px 30px;
-        }
-
-        header img {
-            height: 50px;
-        }
-
-        nav {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        nav a, .user-name {
-            color: #f1c40f;
-            text-decoration: none;
-            font-weight: bold;
-            cursor: pointer;
-            padding: 8px 15px;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-
-        nav a:hover, .user-name:hover {
-            background-color: #2a2a2a;
-        }
-
-        .dropdown {
-            position: relative;
-            display: inline-block;
-        }
-
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            right: 0;
-            background-color: #2a2a2a;
-            min-width: 100px;
-            box-shadow: 0px 8px 16px rgba(0,0,0,0.3);
-            z-index: 1;
-            border-radius: 5px;
-        }
-
-        .dropdown-content a {
-            color: white;
-            padding: 10px;
-            text-decoration: none;
-            display: block;
-        }
-
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 20px;
-        }
-
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            padding: 8px 15px;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-
-        .nav-links a:hover {
-            background-color: #2a2a2a;
-        }
-
-        .auth-container {
-            flex: 1;
-            display: flex;
             justify-content: center;
-            align-items: center;
-            padding: 20px;
         }
 
-        .auth-box {
-            background-color: #1f1f1f;
-            padding: 30px;
-            border-radius: 10px;
+        .recovery-container {
+            background: linear-gradient(145deg, #1f1f1f, #242424);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
             width: 100%;
             max-width: 400px;
+            margin: 20px;
         }
 
-        .auth-box h2 {
+        .recovery-container h1 {
             color: #f1c40f;
             text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .recovery-subtitle {
+            color: #888;
+            text-align: center;
             margin-bottom: 30px;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #f1c40f;
+            margin-bottom: 8px;
+            font-weight: 500;
         }
 
         .form-control {
+            width: 100%;
+            padding: 12px;
             background-color: #2a2a2a;
-            border: 1px solid #3a3a3a;
+            border: 2px solid #3a3a3a;
+            border-radius: 8px;
             color: white;
-            margin-bottom: 15px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
         }
 
         .form-control:focus {
-            background-color: #2a2a2a;
             border-color: #f1c40f;
-            color: white;
-            box-shadow: 0 0 0 0.25rem rgba(241, 196, 15, 0.25);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(241, 196, 15, 0.2);
         }
 
-        .form-label {
-            color: #ddd;
-        }
-
-        .btn-primary {
+        .btn-send {
+            width: 100%;
+            padding: 12px;
             background-color: #f1c40f;
-            border-color: #f1c40f;
+            border: none;
+            border-radius: 8px;
             color: #000;
-        }
-
-        .btn-primary:hover {
-            background-color: #f39c12;
-            border-color: #f39c12;
-        }
-
-        .auth-link {
-            display: block;
-            text-align: center;
-            color: #f1c40f;
-            text-decoration: none;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
             margin-top: 20px;
         }
 
-        .auth-link:hover {
-            text-decoration: underline;
+        .btn-send:hover {
+            background-color: #f39c12;
+            transform: translateY(-2px);
         }
 
-        .footer {
-            background-color: #1f1f1f;
+        .info-text {
+            color: #888;
             text-align: center;
-            padding: 20px;
-            color: #777;
+            margin-top: 20px;
+            font-size: 0.9em;
+            line-height: 1.5;
         }
 
-        .user-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            object-fit: cover;
+        .links-container {
+            text-align: center;
+            margin-top: 20px;
         }
 
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .links-container p {
+            margin: 10px 0;
+            color: #888;
         }
 
-        .user-name {
+        .links-container a {
             color: #f1c40f;
             text-decoration: none;
-            font-weight: bold;
-            cursor: pointer;
-            padding: 8px 15px;
-            border-radius: 4px;
-            transition: background-color 0.3s;
+            transition: color 0.3s ease;
         }
 
-        .user-name:hover {
-            background-color: #2a2a2a;
+        .links-container a:hover {
+            color: #f39c12;
         }
     </style>
 </head>
 <body>
-    <header>
-        <img src="<%= request.getContextPath() %>/assets/img/logo.png" alt="Logo JoyStream">
-        <nav>
-            <div class="nav-links">
-                <a href="home.jsp">HOME</a>
-                <a href="perfil.jsp">PERFIL</a>
-                <a href="jogos.jsp">JOGOS</a>
-                <a href="suporte.jsp">SUPORTE</a>
-                <a href="sobre.jsp">SOBRE</a>
+    <div class="recovery-container">
+        <h1>Recuperar Senha</h1>
+        <p class="recovery-subtitle">Digite seu e-mail cadastrado para receber as instruções de recuperação de senha</p>
+        
+        <form action="recuperar-senha" method="post" id="recoveryForm">
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input type="email" class="form-control" id="email" name="email" required>
             </div>
-            <% if (logado) { %>
-                <div class="dropdown">
-                    <div class="user-info">
-                        <img src="<%= avatarUrl %>" alt="Avatar" class="user-avatar">
-                        <span class="user-name"><%= usuario.getNome() %></span>
-                    </div>
-                    <div class="dropdown-content">
-                        <a href="perfil.jsp">Meu Perfil</a>
-                        <a href="logout.jsp">Sair</a>
-                    </div>
-                </div>
-            <% } else { %>
-                <a href="login.jsp">Login</a>
-                <a href="cadastro.jsp">Registrar</a>
-            <% } %>
-        </nav>
-    </header>
-
-    <div class="auth-container">
-        <div class="auth-box">
-            <h2>Recuperar Senha</h2>
-            <form id="recoveryForm">
-                <div class="mb-3">
-                    <label for="email" class="form-label">E-mail</label>
-                    <input type="email" class="form-control" id="email" name="email" required>
-                </div>
-                <button type="submit" class="btn btn-primary w-100">Enviar Link de Recuperação</button>
-            </form>
-            <a href="login.jsp" class="auth-link">Voltar para o Login</a>
+            
+            <button type="submit" class="btn-send">Enviar Instruções</button>
+        </form>
+        
+        <p class="info-text">Você receberá um e-mail com instruções para criar uma nova senha.</p>
+        
+        <div class="links-container">
+            <p>Lembrou sua senha? <a href="login.jsp">Voltar para o Login</a></p>
         </div>
     </div>
-
-    <footer class="footer">
-        &copy; 2025 JoyStream. Todos os direitos reservados.
-    </footer>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.js"></script>
-    <script>
-        document.getElementById('recoveryForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            // Aqui você implementará a lógica de recuperação de senha quando tiver o backend pronto
-            alert('Se o e-mail estiver cadastrado, você receberá um link para redefinir sua senha.');
-            this.reset();
-        });
-    </script>
 </body>
 </html> 

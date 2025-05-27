@@ -169,7 +169,7 @@ nav {
 /* ===== FOOTER ===== */
 .footer {
   background-color: var(--color-bg-dark);
-  color: var(--color-text);
+  color: #777;
   text-align: center;
   padding: 1rem;
   width: 100%;
@@ -180,8 +180,7 @@ nav {
 
 /* ===== SCROLLBAR ===== */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {

@@ -52,16 +52,19 @@
         baseUrl.append("ordenacao=").append(request.getParameter("ordenacao")).append("&");
 
     Boolean erroApi = (Boolean) request.getAttribute("erroApi");
+
+
+    
+    // Configurar variáveis para o SEO da página
+    request.setAttribute("pageTitle", "JoyStream - Explore e Descubra Novos Jogos | Catálogo Completo");
+    request.setAttribute("pageDescription", "Explore nossa biblioteca completa de jogos, filtre por gênero, plataforma e avaliações. Encontre os melhores jogos com recomendações personalizadas e avaliações da comunidade.");
+    request.setAttribute("pageKeywords", "catálogo de jogos, jogos online, filtro de jogos, metacritic, avaliações de jogos, biblioteca de jogos, plataformas de jogos, gêneros de jogos");
+    
 %>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jogos - JoyStream</title>
-    <link rel="icon" type="image/x-icon" href="<%= request.getContextPath() %>/assets/img/logo.ico">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <jsp:include page="components/head.jsp" />
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
         body {
@@ -71,82 +74,7 @@
             color: white;
         }
 
-        header {
-            background-color: #1f1f1f;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px 30px;
-        }
-
-        header img {
-            height: 50px;
-        }
-
-        nav {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        nav a, .user-name {
-            color: #f1c40f;
-            text-decoration: none;
-            font-weight: bold;
-            cursor: pointer;
-            padding: 8px 15px;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-
-        nav a:hover, .user-name:hover {
-            background-color: #2a2a2a;
-        }
-
-        .dropdown {
-            position: relative;
-            display: inline-block;
-        }
-
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            right: 0;
-            background-color: #2a2a2a;
-            min-width: 100px;
-            box-shadow: 0px 8px 16px rgba(0,0,0,0.3);
-            z-index: 1;
-            border-radius: 5px;
-        }
-
-        .dropdown-content a {
-            color: white;
-            padding: 10px;
-            text-decoration: none;
-            display: block;
-        }
-
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 20px;
-        }
-
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            padding: 8px 15px;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-
-        .nav-links a:hover {
-            background-color: #2a2a2a;
-        }
+       
 
         .main-content {
             padding: 20px;
@@ -322,14 +250,6 @@
             color: #f1c40f;
             font-size: 1.1em;
             margin-bottom: 10px;
-        }
-
-        .footer {
-            background-color: #1f1f1f;
-            text-align: center;
-            padding: 20px;
-            color: #777;
-            margin-top: 40px;
         }
 
         .user-avatar {
@@ -516,35 +436,10 @@
             <div class="mt-3 text-warning">Carregando jogos...</div>
         </div>
     </div>
-    <header>
-        <img src="<%= request.getContextPath() %>/assets/img/logo.png" alt="Logo JoyStream">
-        <nav>
-            <div class="nav-links">
-                <a href="home.jsp">HOME</a>
-                <a href="perfil.jsp">PERFIL</a>
-                <a href="jogos.jsp">JOGOS</a>
-                <a href="suporte.jsp">SUPORTE</a>
-                <a href="sobre.jsp">SOBRE</a>
-            </div>
-            <% if (logado) { %>
-                <div class="dropdown">
-                    <div class="user-info">
-                        <img src="<%= avatarUrl %>" alt="Avatar" class="user-avatar">
-                        <span class="user-name"><%= usuario.getNome() %></span>
-                    </div>
-                    <div class="dropdown-content">
-                        <a href="perfil.jsp">Meu Perfil</a>
-                        <a href="favoritos.jsp">Favoritos</a>
-                        <a href="logout.jsp">Sair</a>
-                    </div>
-                </div>
-            <% } else { %>
-                <a href="login.jsp">Login</a>
-                <a href="cadastro.jsp">Registrar</a>
-            <% } %>
-        </nav>
-    </header>
 
+    <jsp:include page="components/header.jsp" />
+
+<main>
     <div class="main-content">
         <div class="filters">
             <form action="jogos" method="GET" id="filterForm">
@@ -716,12 +611,11 @@
     <% } %>
         </div>
     </div>
+</main>
 
     
 
-    <footer class="footer">
-        &copy; 2025 JoyStream. Todos os direitos reservados.
-    </footer>
+    <jsp:include page="components/footer.jsp" />
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.js"></script>
     <script>

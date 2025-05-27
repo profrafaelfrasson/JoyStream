@@ -6,15 +6,13 @@
 <%@ page session="true" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%
-    Usuario usuario = (Usuario) session.getAttribute("usuario");
-    boolean logado = (usuario != null);
-    String avatarUrl = (usuario != null && usuario.getAvatar() != null && !usuario.getAvatar().isEmpty()) ? ("data:image/png;base64," + usuario.getAvatar()) : (request.getContextPath() + "/assets/img/default-avatar.png");
-    
     // Buscar jogos em destaque
     JogoService jogoService = new JogoService();
     List<Jogo> jogosDestaque = jogoService.buscarJogosDestaque();
     
     // Buscar jogos recomendados se o usuário estiver logado
+    Usuario usuario = (Usuario) session.getAttribute("usuario");
+    boolean logado = (usuario != null);
     List<Jogo> jogosRecomendados = null;
     if (logado && usuario.getId() > 0) {
         System.out.println("Usuário logado com ID: " + usuario.getId());
@@ -26,17 +24,21 @@
     
     request.setAttribute("jogosDestaque", jogosDestaque);
     request.setAttribute("jogosRecomendados", jogosRecomendados);
+
+    // Configurar variáveis para o SEO da página
+    request.setAttribute("pageTitle", "JoyStream - Sua plataforma de recomendação de jogos");
+    request.setAttribute("pageDescription", "Descubra novos jogos, compartilhe suas experiências e encontre recomendações personalizadas baseadas nos seus gostos. A JoyStream é sua comunidade gamer definitiva.");
+    request.setAttribute("pageKeywords", "jogos, games, recomendações de jogos, gaming, comunidade gamer, jogos em destaque, jogos recomendados");
+    
+    // Se houver jogos em destaque, usar a imagem do primeiro jogo como imagem de compartilhamento
+    if (jogosDestaque != null && !jogosDestaque.isEmpty() && jogosDestaque.get(0).getImagemUrl() != null) {
+        request.setAttribute("pageImage", jogosDestaque.get(0).getImagemUrl());
+    }
 %>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JoyStream - Recomende e descubra jogos</title>
-    <link rel="icon" type="image/x-icon" href="<%= request.getContextPath() %>/assets/img/logo.ico">
-    <link rel="stylesheet" href="./assets/css/style.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <jsp:include page="components/head.jsp" />
     <style>
         /* ===== HERO SECTION ===== */
         .hero {
@@ -987,39 +989,7 @@
     </style>
 </head>
 <body>
-    <header>
-        <img src="<%= request.getContextPath() %>/assets/img/logo.png" alt="Logo JoyStream">
-        <nav>
-            <div class="nav-links">
-                <a href="<%= request.getContextPath() %>/home.jsp">HOME</a>
-                <a href="<%= request.getContextPath() %>/jogos.jsp">JOGOS</a>
-                <% if (logado) { %>
-                    <a href="<%= request.getContextPath() %>/perfil.jsp">PERFIL</a>
-                <% } %>
-                <a href="<%= request.getContextPath() %>/suporte.jsp">SUPORTE</a>
-                <a href="<%= request.getContextPath() %>/sobre.jsp">SOBRE</a>
-            </div>
-            <% if (logado) { %>
-                <div class="dropdown">
-                    <div class="user-info">
-                        <img src="<%= avatarUrl %>" alt="Avatar" class="user-avatar">
-                        <span class="user-name"><%= usuario.getNome() %></span>
-                    </div>
-                    <div class="dropdown-content">
-                        <a href="<%= request.getContextPath() %>/perfil.jsp">Meu Perfil</a>
-                        <a href="<%= request.getContextPath() %>/favoritos.jsp">Favoritos</a>
-                        <a href="<%= request.getContextPath() %>/logout.jsp">Sair</a>
-                    </div>
-                </div>
-            <% } else { %>
-                <div class="auth-buttons">
-                    <a href="<%= request.getContextPath() %>/login.jsp" class="btn btn-outline-warning">Login</a>
-                    <a href="<%= request.getContextPath() %>/cadastro.jsp" class="btn btn-warning">Registrar</a>
-                </div>
-            <% } %>
-        </nav>
-    </header>
-    
+    <jsp:include page="components/header.jsp" />
 
     <main>
 
@@ -1194,9 +1164,7 @@
 
     </main>
 
-    <footer class="footer">
-        &copy; 2025 JoyStream. Todos os direitos reservados.
-    </footer>
+    <jsp:include page="components/footer.jsp" />
 
     <script>
         // Código do carrossel principal
