@@ -7,6 +7,11 @@
         response.sendRedirect("index.jsp");
         return;
     }
+
+    // Configurar variáveis para o SEO da página
+    request.setAttribute("pageTitle", "JoyStream - Login | Acesse Sua Conta");
+    request.setAttribute("pageDescription", "Faça login na JoyStream e acesse sua conta para descobrir jogos personalizados, salvar favoritos e participar da comunidade gamer.");
+    request.setAttribute("pageKeywords", "login joystream, acesso conta, entrar, conta gamer, autenticação, área do usuário");
 %>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -137,12 +142,16 @@
         <form action="login" method="post" id="loginForm">
             <div class="form-group">
                 <label for="email">E-mail</label>
-                <input type="email" class="form-control" id="email" name="email" required>
+                <input type="email" class="form-control" id="email" name="email" autofocus required>
             </div>
             
             <div class="form-group">
                 <label for="senha">Senha</label>
                 <input type="password" class="form-control" id="senha" name="senha" required>
+                <div class="form-check mt-2">
+                    <input class="form-check-input" type="checkbox" id="mostrarSenha">
+                    <label class="form-check-label" for="mostrarSenha">Mostrar senha</label>
+                </div>
             </div>
             
             <button type="submit" class="btn-login">Entrar</button>
@@ -153,5 +162,32 @@
             <p><a href="recuperar-senha.jsp">Esqueceu sua senha?</a></p>
         </div>
     </div>
+
+    <script src="assets/js/alert.js"></script>
+    <script src="assets/js/auto-focus.js"></script>
+    <script>
+        document.getElementById("mostrarSenha").addEventListener("change", function () {
+            const tipo = this.checked ? "text" : "password";
+            document.getElementById("senha").type = tipo;
+        });
+    </script>
+
+    <%
+        String erroLogin = (String) request.getAttribute("erroLogin");
+        if (erroLogin == null) {
+            erroLogin = (String) session.getAttribute("erroLogin");
+        }
+        if (erroLogin != null) {
+            erroLogin = erroLogin.replace("'", "\\'").replace("\"", "\\\"");
+            erroLogin = erroLogin.replace("\n", "\\n").replace("\r", "\\r"); // Evita quebras de linha problemáticas
+    %>
+            <script>alertResult('error', '<%= erroLogin %>');</script>
+    <%
+            // Limpar a mensagem de erro da sessão após exibi-la
+            session.removeAttribute("erroLogin");
+        }
+    %>
+
+
 </body>
 </html>

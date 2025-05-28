@@ -186,6 +186,11 @@
                 <label for="confirmarSenha">Confirmar Senha</label>
                 <input type="password" class="form-control" id="confirmarSenha" name="confirmarSenha" required>
             </div>
+
+            <div class="form-check mb-4">
+                <input class="form-check-input" type="checkbox" id="mostrarSenha" />
+                <label class="form-check-label" for="mostrarSenha">Mostrar senha</label>
+            </div>
             
             <div class="terms-container">
                 <input type="checkbox" id="termos" name="termos" required>
@@ -211,7 +216,6 @@
 
             if (senha !== confirmarSenha) {
                 event.preventDefault();
-                // alert("As senhas não coincidem!");
                 alertResult('error', 'As senhas não coincidem!');
             }
         });
@@ -239,7 +243,7 @@
                 erro += 'A senha deve ter pelo menos 6 caracteres, incluindo letras e números.\n';
             }
             if (erro) {
-                alert(erro);
+                alertResult('error', erro);
                 return false;
             }
             return true;

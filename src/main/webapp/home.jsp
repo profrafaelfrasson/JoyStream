@@ -24,16 +24,16 @@
     
     request.setAttribute("jogosDestaque", jogosDestaque);
     request.setAttribute("jogosRecomendados", jogosRecomendados);
-
-    // Configurar variáveis para o SEO da página
-    request.setAttribute("pageTitle", "JoyStream - Sua plataforma de recomendação de jogos");
-    request.setAttribute("pageDescription", "Descubra novos jogos, compartilhe suas experiências e encontre recomendações personalizadas baseadas nos seus gostos. A JoyStream é sua comunidade gamer definitiva.");
-    request.setAttribute("pageKeywords", "jogos, games, recomendações de jogos, gaming, comunidade gamer, jogos em destaque, jogos recomendados");
     
     // Se houver jogos em destaque, usar a imagem do primeiro jogo como imagem de compartilhamento
     if (jogosDestaque != null && !jogosDestaque.isEmpty() && jogosDestaque.get(0).getImagemUrl() != null) {
         request.setAttribute("pageImage", jogosDestaque.get(0).getImagemUrl());
     }
+    
+    // Configurar variáveis para o SEO da página
+    request.setAttribute("pageTitle", "JoyStream - Sua plataforma de recomendação de jogos");
+    request.setAttribute("pageDescription", "Descubra novos jogos, compartilhe suas experiências e encontre recomendações personalizadas baseadas nos seus gostos. A JoyStream é sua comunidade gamer definitiva.");
+    request.setAttribute("pageKeywords", "jogos, games, recomendações de jogos, gaming, comunidade gamer, jogos em destaque, jogos recomendados");
 %>
 <!DOCTYPE html>
 <html lang="pt-BR">

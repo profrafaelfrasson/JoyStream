@@ -436,3 +436,17 @@ nav {
 .game-card {
   animation: fadeIn 0.5s ease-out;
 }
+
+
+/* ---------- ALERT ---------- */
+.swal2-popup {
+  background: #3a3a3a !important;
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(7.5px);
+  -webkit-backdrop-filter: blur(5.5px);
+  border: 1px solid #f1c40f4b !important;
+  color: #f1c40f;
+}
+
+/* ---------- ALERT ---------- */

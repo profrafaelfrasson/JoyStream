@@ -158,6 +158,10 @@
             background-color: #f39c12;
         }
 
+        .text-muted {
+            color: #a3a3a3 !important;
+        }
+
         @media (max-width: 700px) {
             .profile-container {
                 padding: 5px;
@@ -248,6 +252,8 @@
 
     <jsp:include page="components/footer.jsp" />
 
+    <script src="assets/js/alert.js"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.js"></script>
     <script src="https://kit.fontawesome.com/your-font-awesome-kit.js"></script>
     <script>
@@ -257,12 +263,12 @@
             if (file) {
                 // Validação de tamanho (máx 2MB) e formato
                 if (file.size > 2 * 1024 * 1024) {
-                    alert('O avatar deve ter no máximo 2MB.');
+                    alertResult('error', 'O avatar deve ter no máximo 2MB.');
                     e.target.value = '';
                     return;
                 }
                 if (!file.type.startsWith('image/')) {
-                    alert('Selecione um arquivo de imagem válido.');
+                    alertResult('error', 'Selecione um arquivo de imagem válido.');
                     e.target.value = '';
                     return;
                 }
@@ -283,11 +289,11 @@
             const senhaAtual = document.getElementById('senhaAtual').value;
 
             if (senha && senha !== confirmarSenha) {
-                alert('As senhas não coincidem!');
+                alertResult('error', 'As senhas não coincidem!');
                 return;
             }
             if (senha && (!senhaAtual || senhaAtual.trim() === '')) {
-                alert('Para alterar a senha, preencha sua senha atual.');
+                alertResult('error', 'Para alterar a senha, preencha sua senha atual.');
                 return;
             }
             this.submit();
@@ -299,9 +305,9 @@
         const erro = '<%= request.getAttribute("erro") %>';
 
         if (sucesso === 'true') {
-            alert('Perfil atualizado com sucesso!');
+            alertResult('success', 'Perfil atualizado com sucesso!');
         } else if (erro && erro !== 'null' && erro.trim() !== '') {
-            alert(erro);
+            alertResult('error', erro);
         }
 
         function validarPerfil() {
@@ -315,7 +321,7 @@
                 erro += 'A nova senha deve ter pelo menos 6 caracteres, incluindo letras e números.\n';
             }
             if (erro) {
-                alert(erro);
+                alertResult('error', erro);
                 return false;
             }
             return true;
