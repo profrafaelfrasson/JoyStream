@@ -933,8 +933,29 @@
     }
 
     function limparFiltros() {
-        showLoader();
-        document.getElementById('filterForm').reset();
+        // Limpar campo de busca
+        document.querySelector('input[name="busca"]').value = '';
+        
+        // Desmarcar checkbox de busca precisa
+        document.querySelector('#buscaPrecisa').checked = false;
+        
+        // Limpar todos os checkboxes dos multiselects
+        document.querySelectorAll('.custom-multiselect-dropdown input[type="checkbox"]').forEach(checkbox => {
+            checkbox.checked = false;
+        });
+
+        // Atualizar o texto dos botões
+        document.querySelectorAll('.custom-multiselect-wrapper').forEach(wrapper => {
+            const button = wrapper.querySelector('.custom-multiselect-button');
+            button.textContent = button.getAttribute('data-target').includes('platform') ? 
+                'Selecione as Plataformas' : 'Selecione os Gêneros';
+        });
+
+        // Limpar outros filtros se houver
+        const notaMin = document.querySelector('select[name="nota_min"]');
+        if (notaMin) notaMin.value = '01';
+
+        // Submeter o formulário
         document.getElementById('filterForm').submit();
     }
 
