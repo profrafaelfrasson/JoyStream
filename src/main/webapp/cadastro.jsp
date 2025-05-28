@@ -7,6 +7,10 @@
         response.sendRedirect("index.jsp");
         return;
     }
+
+    request.setAttribute("pageTitle", "Cadastre-se | Crie Sua Conta Gratuita - JoyStream");
+request.setAttribute("pageDescription", "Crie sua conta gratuita na JoyStream e comece a descobrir jogos personalizados, salvar favoritos e fazer parte da nossa comunidade gamer.");
+request.setAttribute("pageKeywords", "cadastro joystream, criar conta, registro, nova conta, comunidade gamer, conta gratuita");
 %>
 <!DOCTYPE html>
 <html lang="pt-BR">

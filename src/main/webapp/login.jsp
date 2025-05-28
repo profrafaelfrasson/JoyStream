@@ -9,7 +9,7 @@
     }
 
     // Configurar variáveis para o SEO da página
-    request.setAttribute("pageTitle", "JoyStream - Login | Acesse Sua Conta");
+    request.setAttribute("pageTitle", "Login | Acesse Sua Conta - JoyStream");
     request.setAttribute("pageDescription", "Faça login na JoyStream e acesse sua conta para descobrir jogos personalizados, salvar favoritos e participar da comunidade gamer.");
     request.setAttribute("pageKeywords", "login joystream, acesso conta, entrar, conta gamer, autenticação, área do usuário");
 %>
