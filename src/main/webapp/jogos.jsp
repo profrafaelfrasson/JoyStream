@@ -65,7 +65,6 @@
 <html lang="pt-BR">
 <head>
     <jsp:include page="components/head.jsp" />
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
         body {
             margin: 0;
@@ -90,14 +89,14 @@
             position: sticky;
             top: 20px;
             height: fit-content;
-            max-height: 90vh;
+            /* max-height: 90vh; */
             display: flex;
             flex-direction: column;
         }
 
         .filters-content {
-            overflow-y: auto;
-            max-height: 65vh;
+            /* overflow-y: auto;
+            max-height: 65vh; */
             flex: 1 1 auto;
         }
 
@@ -425,6 +424,112 @@
     left: 50%;
     transform: translateX(-50%);
         }
+
+        /* Custom Multiselect Styles */
+        .custom-multiselect-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .custom-multiselect-button {
+            width: 100%;
+            padding: 8px 12px;
+            background-color: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            color: white;
+            text-align: left;
+            cursor: pointer;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .custom-multiselect-button:after {
+            content: '▼';
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .custom-multiselect-button:hover {
+            background-color: #3a3a3a;
+        }
+
+        .custom-multiselect-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            border-radius: 4px;
+            margin-top: 4px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        .custom-multiselect-dropdown.show {
+            display: block;
+        }
+
+        .custom-multiselect-option {
+            padding: 8px 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            color: white;
+        }
+
+        .custom-multiselect-option:hover {
+            background-color: #3a3a3a;
+        }
+
+        .custom-multiselect-option.selected {
+            background-color: rgba(241, 196, 15, 0.1);
+        }
+
+        .custom-multiselect-option input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        .custom-multiselect-option input[type="checkbox"]:checked {
+            animation: pulse .7s linear;
+        }
+
+        @keyframes pulse {
+            0% {
+                margin-right: 12px;
+            }
+            100% {
+                margin-right: 8px;
+            }
+        }
+
+        .select-all-option {
+            border-bottom: 1px solid #3a3a3a;
+            font-weight: bold;
+            color: #f1c40f;
+        }
+
+        /* Scrollbar Styling */
+        .custom-multiselect-dropdown::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .custom-multiselect-dropdown::-webkit-scrollbar-track {
+            background: #1f1f1f;
+        }
+
+        .custom-multiselect-dropdown::-webkit-scrollbar-thumb {
+            background: #3a3a3a;
+            border-radius: 4px;
+        }
+
+        .custom-multiselect-dropdown::-webkit-scrollbar-thumb:hover {
+            background: #4a4a4a;
+        }
     </style>
 </head>
 <body>
@@ -459,28 +564,72 @@
 
                     <div class="filter-group">
                         <h4>Plataformas</h4>
-                        <select class="form-select" name="plataforma" multiple>
-                            <option value="4" <%= plataformas != null && java.util.Arrays.asList(plataformas).contains("4") ? "selected" : "" %>>PC</option>
-                            <option value="187" <%= plataformas != null && java.util.Arrays.asList(plataformas).contains("187") ? "selected" : "" %>>PlayStation 5</option>
-                            <option value="1" <%= plataformas != null && java.util.Arrays.asList(plataformas).contains("1") ? "selected" : "" %>>Xbox One</option>
-                            <option value="7" <%= plataformas != null && java.util.Arrays.asList(plataformas).contains("7") ? "selected" : "" %>>Nintendo Switch</option>
-                            <option value="18" <%= plataformas != null && java.util.Arrays.asList(plataformas).contains("18") ? "selected" : "" %>>PlayStation 4</option>
-                            <option value="186" <%= plataformas != null && java.util.Arrays.asList(plataformas).contains("186") ? "selected" : "" %>>Xbox Series S/X</option>
-                        </select>
+                        <div class="custom-multiselect-wrapper">
+                            <button type="button" class="custom-multiselect-button" data-target="platform-select">
+                                Selecione as Plataformas
+                            </button>
+                            <div class="custom-multiselect-dropdown" id="platform-dropdown">
+                                <label class="custom-multiselect-option select-all-option">
+                                    <input type="checkbox" class="select-all"> Todas as Plataformas
+                                </label>
+                                <label class="custom-multiselect-option">
+                                    <input type="checkbox" name="plataforma" value="4" <%= plataformas != null && java.util.Arrays.asList(plataformas).contains("4") ? "checked" : "" %>> PC
+                                </label>
+                                <label class="custom-multiselect-option">
+                                    <input type="checkbox" name="plataforma" value="187" <%= plataformas != null && java.util.Arrays.asList(plataformas).contains("187") ? "checked" : "" %>> PlayStation 5
+                                </label>
+                                <label class="custom-multiselect-option">
+                                    <input type="checkbox" name="plataforma" value="1" <%= plataformas != null && java.util.Arrays.asList(plataformas).contains("1") ? "checked" : "" %>> Xbox One
+                                </label>
+                                <label class="custom-multiselect-option">
+                                    <input type="checkbox" name="plataforma" value="7" <%= plataformas != null && java.util.Arrays.asList(plataformas).contains("7") ? "checked" : "" %>> Nintendo Switch
+                                </label>
+                                <label class="custom-multiselect-option">
+                                    <input type="checkbox" name="plataforma" value="18" <%= plataformas != null && java.util.Arrays.asList(plataformas).contains("18") ? "checked" : "" %>> PlayStation 4
+                                </label>
+                                <label class="custom-multiselect-option">
+                                    <input type="checkbox" name="plataforma" value="186" <%= plataformas != null && java.util.Arrays.asList(plataformas).contains("186") ? "checked" : "" %>> Xbox Series S/X
+                                </label>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="filter-group">
                         <h4>Gêneros</h4>
-                        <select class="form-select" name="genero" multiple>
-                            <option value="4" <%= generos != null && java.util.Arrays.asList(generos).contains("4") ? "selected" : "" %>>Ação</option>
-                            <option value="3" <%= generos != null && java.util.Arrays.asList(generos).contains("3") ? "selected" : "" %>>Aventura</option>
-                            <option value="5" <%= generos != null && java.util.Arrays.asList(generos).contains("5") ? "selected" : "" %>>RPG</option>
-                            <option value="2" <%= generos != null && java.util.Arrays.asList(generos).contains("2") ? "selected" : "" %>>Tiro</option>
-                            <option value="10" <%= generos != null && java.util.Arrays.asList(generos).contains("10") ? "selected" : "" %>>Estratégia</option>
-                            <option value="14" <%= generos != null && java.util.Arrays.asList(generos).contains("14") ? "selected" : "" %>>Simulação</option>
-                            <option value="15" <%= generos != null && java.util.Arrays.asList(generos).contains("15") ? "selected" : "" %>>Esporte</option>
-                            <option value="7" <%= generos != null && java.util.Arrays.asList(generos).contains("7") ? "selected" : "" %>>Puzzle</option>
-                        </select>
+                        <div class="custom-multiselect-wrapper">
+                            <button type="button" class="custom-multiselect-button" data-target="genre-select">
+                                Selecione os Gêneros
+                            </button>
+                            <div class="custom-multiselect-dropdown" id="genre-dropdown">
+                                <label class="custom-multiselect-option select-all-option">
+                                    <input type="checkbox" class="select-all"> Todos os Gêneros
+                                </label>
+                                <label class="custom-multiselect-option">
+                                    <input type="checkbox" name="genero" value="4" <%= generos != null && java.util.Arrays.asList(generos).contains("4") ? "checked" : "" %>> Ação
+                                </label>
+                                <label class="custom-multiselect-option">
+                                    <input type="checkbox" name="genero" value="3" <%= generos != null && java.util.Arrays.asList(generos).contains("3") ? "checked" : "" %>> Aventura
+                                </label>
+                                <label class="custom-multiselect-option">
+                                    <input type="checkbox" name="genero" value="5" <%= generos != null && java.util.Arrays.asList(generos).contains("5") ? "checked" : "" %>> RPG
+                                </label>
+                                <label class="custom-multiselect-option">
+                                    <input type="checkbox" name="genero" value="2" <%= generos != null && java.util.Arrays.asList(generos).contains("2") ? "checked" : "" %>> Tiro
+                                </label>
+                                <label class="custom-multiselect-option">
+                                    <input type="checkbox" name="genero" value="10" <%= generos != null && java.util.Arrays.asList(generos).contains("10") ? "checked" : "" %>> Estratégia
+                                </label>
+                                <label class="custom-multiselect-option">
+                                    <input type="checkbox" name="genero" value="14" <%= generos != null && java.util.Arrays.asList(generos).contains("14") ? "checked" : "" %>> Simulação
+                                </label>
+                                <label class="custom-multiselect-option">
+                                    <input type="checkbox" name="genero" value="15" <%= generos != null && java.util.Arrays.asList(generos).contains("15") ? "checked" : "" %>> Esporte
+                                </label>
+                                <label class="custom-multiselect-option">
+                                    <input type="checkbox" name="genero" value="7" <%= generos != null && java.util.Arrays.asList(generos).contains("7") ? "checked" : "" %>> Puzzle
+                                </label>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="filter-group">
@@ -617,9 +766,12 @@
 
     <jsp:include page="components/footer.jsp" />
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Initialize custom multiselect dropdowns
+        initializeMultiselect();
+
         // Melhora a interação dos selects múltiplos no desktop
         document.querySelectorAll('select[multiple]').forEach(function(select) {
             select.addEventListener('mousedown', function(e) {
@@ -674,6 +826,97 @@
             });
         });
     });
+
+    function initializeMultiselect() {
+        const multiselects = document.querySelectorAll('.custom-multiselect-wrapper');
+        
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.custom-multiselect-wrapper')) {
+                document.querySelectorAll('.custom-multiselect-dropdown').forEach(dropdown => {
+                    dropdown.classList.remove('show');
+                });
+            }
+        });
+
+        multiselects.forEach(wrapper => {
+            const button = wrapper.querySelector('.custom-multiselect-button');
+            const dropdown = wrapper.querySelector('.custom-multiselect-dropdown');
+            const options = dropdown.querySelectorAll('input[type="checkbox"]:not(.select-all)');
+            const selectAll = dropdown.querySelector('.select-all');
+            
+            function countCheckedOptions() {
+                return Array.from(options).reduce((count, option) => count + (option.checked ? 1 : 0), 0);
+            }
+            
+            function updateButtonText() {
+                const checkedCount = countCheckedOptions();
+                const totalOptions = options.length;
+                
+                if (checkedCount === 0) {
+                    button.textContent = button.getAttribute('data-target').includes('platform') ? 
+                        'Selecione as Plataformas' : 'Selecione os Gêneros';
+                } else if (checkedCount === totalOptions) {
+                    button.textContent = button.getAttribute('data-target').includes('platform') ? 
+                        'Todas as Plataformas' : 'Todos os Gêneros';
+                } else {
+                    button.textContent = checkedCount + ' selecionado(s)';
+                }
+            }
+
+            function updateSelectAllState() {
+                if (selectAll) {
+                    const checkedCount = countCheckedOptions();
+                    const totalOptions = options.length;
+                    selectAll.checked = checkedCount === totalOptions;
+                    selectAll.indeterminate = checkedCount > 0 && checkedCount < totalOptions;
+                }
+            }
+            
+            // Toggle dropdown
+            button.addEventListener('click', function(e) {
+                e.stopPropagation();
+                
+                // Close all other dropdowns first
+                document.querySelectorAll('.custom-multiselect-dropdown').forEach(d => {
+                    if (d !== dropdown) {
+                        d.classList.remove('show');
+                    }
+                });
+                
+                // Toggle current dropdown
+                dropdown.classList.toggle('show');
+            });
+
+            // Handle select all
+            if (selectAll) {
+                selectAll.addEventListener('change', function() {
+                    const isChecked = this.checked;
+                    options.forEach(option => {
+                        option.checked = isChecked;
+                    });
+                    updateButtonText();
+                });
+            }
+
+            // Handle individual options
+            options.forEach(option => {
+                option.addEventListener('change', function() {
+                    updateSelectAllState();
+                    updateButtonText();
+                });
+            });
+
+            // Initialize states
+            updateSelectAllState();
+            updateButtonText();
+            
+            // Prevent dropdown from closing when clicking inside
+            dropdown.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        });
+    }
 
     function showLoader() {
         const loader = document.getElementById('loader');
