@@ -105,12 +105,12 @@ Para problemas e sugestões, por favor abra uma issue no repositório do projeto
 
 ## 👥 Membros da Equipe:
 
-Ana Carolina Bitencourt;
-Ewellin Barreto;
-Felipe Martins;
-Manoel Vitor;
-Patrick Luiz Farias;
-Vitória Silva;
+- Ana Carolina Bitencourt;
+- Ewellin Barreto;
+- Felipe Martins;
+- Manoel Vitor;
+- Patrick Luiz Farias;
+- Vitória Silva;
 
 
 
