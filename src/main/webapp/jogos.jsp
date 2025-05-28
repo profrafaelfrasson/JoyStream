@@ -530,6 +530,87 @@
         .custom-multiselect-dropdown::-webkit-scrollbar-thumb:hover {
             background: #4a4a4a;
         }
+
+        /* Estilos para o botão flutuante e modal de filtros */
+        .filter-fab {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background-color: #f1c40f;
+            color: #000;
+            border: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .filter-fab:hover {
+            transform: scale(1.1);
+        }
+
+        .filter-fab i {
+            font-size: 24px;
+        }
+
+        .modal-filter {
+            background-color: #1f1f1f;
+        }
+
+        .modal-filter .modal-content {
+            background-color: #1f1f1f;
+            color: white;
+        }
+
+        .modal-filter .modal-header {
+            border-bottom: 1px solid #3a3a3a;
+        }
+
+        .modal-filter .modal-footer {
+            border-top: 1px solid #3a3a3a;
+        }
+
+        .modal-filter .btn-close {
+            color: white;
+            filter: invert(1) grayscale(100%) brightness(200%);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+                padding: 10px;
+            }
+
+            .filters {
+                display: none;
+            }
+
+            .filter-fab {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .games-list {
+                width: 100%;
+            }
+
+            .modal-filter .filters {
+                position: static;
+                width: 100%;
+                max-height: none;
+                display: block;
+            }
+
+            .modal-filter .filter-actions {
+                position: static;
+                padding: 15px 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -762,11 +843,127 @@
     </div>
 </main>
 
-    
+    <button type="button" class="filter-fab" data-mdb-toggle="modal" data-mdb-target="#filterModal">
+        <i class="fas fa-filter"></i>
+    </button>
+
+    <!-- Modal de Filtros -->
+    <div class="modal fade modal-filter" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="filterModalLabel">Filtros</h5>
+                    <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="jogos" method="GET" id="filterFormMobile">
+                        <div class="filter-group">
+                            <h4>Busca</h4>
+                            <div class="mb-3">
+                                <input type="text" class="form-control" name="busca" placeholder="Buscar jogos..." value="<%= request.getParameter("busca") != null ? request.getParameter("busca") : "" %>">
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="busca_precisa" value="true" id="buscaPrecisaMobile" <%= "true".equals(request.getParameter("busca_precisa")) ? "checked" : "" %>>
+                                <label class="form-check-label" for="buscaPrecisaMobile">
+                                    Busca precisa
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="filter-group">
+                            <h4>Plataformas</h4>
+                            <div class="custom-multiselect-wrapper">
+                                <button type="button" class="custom-multiselect-button" data-target="platform-select-mobile">
+                                    Selecione as Plataformas
+                                </button>
+                                <div class="custom-multiselect-dropdown" id="platform-dropdown-mobile">
+                                    <label class="custom-multiselect-option select-all-option">
+                                        <input type="checkbox" class="select-all"> Todas as Plataformas
+                                    </label>
+                                    <label class="custom-multiselect-option">
+                                        <input type="checkbox" name="plataforma" value="4" <%= plataformas != null && java.util.Arrays.asList(plataformas).contains("4") ? "checked" : "" %>> PC
+                                    </label>
+                                    <label class="custom-multiselect-option">
+                                        <input type="checkbox" name="plataforma" value="187" <%= plataformas != null && java.util.Arrays.asList(plataformas).contains("187") ? "checked" : "" %>> PlayStation 5
+                                    </label>
+                                    <label class="custom-multiselect-option">
+                                        <input type="checkbox" name="plataforma" value="1" <%= plataformas != null && java.util.Arrays.asList(plataformas).contains("1") ? "checked" : "" %>> Xbox One
+                                    </label>
+                                    <label class="custom-multiselect-option">
+                                        <input type="checkbox" name="plataforma" value="7" <%= plataformas != null && java.util.Arrays.asList(plataformas).contains("7") ? "checked" : "" %>> Nintendo Switch
+                                    </label>
+                                    <label class="custom-multiselect-option">
+                                        <input type="checkbox" name="plataforma" value="18" <%= plataformas != null && java.util.Arrays.asList(plataformas).contains("18") ? "checked" : "" %>> PlayStation 4
+                                    </label>
+                                    <label class="custom-multiselect-option">
+                                        <input type="checkbox" name="plataforma" value="186" <%= plataformas != null && java.util.Arrays.asList(plataformas).contains("186") ? "checked" : "" %>> Xbox Series S/X
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="filter-group">
+                            <h4>Gêneros</h4>
+                            <div class="custom-multiselect-wrapper">
+                                <button type="button" class="custom-multiselect-button" data-target="genre-select-mobile">
+                                    Selecione os Gêneros
+                                </button>
+                                <div class="custom-multiselect-dropdown" id="genre-dropdown-mobile">
+                                    <label class="custom-multiselect-option select-all-option">
+                                        <input type="checkbox" class="select-all"> Todos os Gêneros
+                                    </label>
+                                    <label class="custom-multiselect-option">
+                                        <input type="checkbox" name="genero" value="4" <%= generos != null && java.util.Arrays.asList(generos).contains("4") ? "checked" : "" %>> Ação
+                                    </label>
+                                    <label class="custom-multiselect-option">
+                                        <input type="checkbox" name="genero" value="3" <%= generos != null && java.util.Arrays.asList(generos).contains("3") ? "checked" : "" %>> Aventura
+                                    </label>
+                                    <label class="custom-multiselect-option">
+                                        <input type="checkbox" name="genero" value="5" <%= generos != null && java.util.Arrays.asList(generos).contains("5") ? "checked" : "" %>> RPG
+                                    </label>
+                                    <label class="custom-multiselect-option">
+                                        <input type="checkbox" name="genero" value="2" <%= generos != null && java.util.Arrays.asList(generos).contains("2") ? "checked" : "" %>> Tiro
+                                    </label>
+                                    <label class="custom-multiselect-option">
+                                        <input type="checkbox" name="genero" value="10" <%= generos != null && java.util.Arrays.asList(generos).contains("10") ? "checked" : "" %>> Estratégia
+                                    </label>
+                                    <label class="custom-multiselect-option">
+                                        <input type="checkbox" name="genero" value="14" <%= generos != null && java.util.Arrays.asList(generos).contains("14") ? "checked" : "" %>> Simulação
+                                    </label>
+                                    <label class="custom-multiselect-option">
+                                        <input type="checkbox" name="genero" value="15" <%= generos != null && java.util.Arrays.asList(generos).contains("15") ? "checked" : "" %>> Esporte
+                                    </label>
+                                    <label class="custom-multiselect-option">
+                                        <input type="checkbox" name="genero" value="7" <%= generos != null && java.util.Arrays.asList(generos).contains("7") ? "checked" : "" %>> Puzzle
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="filter-group">
+                            <h4>Nota Mínima</h4>
+                            <select class="form-select" name="nota_min">
+                                <option value="01" <%= "01".equals(request.getParameter("nota_min")) ? "selected" : "" %>>Qualquer</option>
+                                <option value="90" <%= "90".equals(request.getParameter("nota_min")) ? "selected" : "" %>>90+</option>
+                                <option value="80" <%= "80".equals(request.getParameter("nota_min")) ? "selected" : "" %>>80+</option>
+                                <option value="70" <%= "70".equals(request.getParameter("nota_min")) ? "selected" : "" %>>70+</option>
+                                <option value="60" <%= "60".equals(request.getParameter("nota_min")) ? "selected" : "" %>>60+</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-warning" onclick="limparFiltrosMobile()">Limpar Filtros</button>
+                    <button type="button" class="btn btn-primary" onclick="aplicarFiltrosMobile()">Aplicar Filtros</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <jsp:include page="components/footer.jsp" />
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- MDB JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize custom multiselect dropdowns
@@ -1031,6 +1228,37 @@
             });
         }
     });
+
+    function aplicarFiltrosMobile() {
+        document.getElementById('filterFormMobile').submit();
+    }
+
+    function limparFiltrosMobile() {
+        // Limpar campo de busca
+        document.querySelector('#filterFormMobile input[name="busca"]').value = '';
+        
+        // Desmarcar checkbox de busca precisa
+        document.querySelector('#buscaPrecisaMobile').checked = false;
+        
+        // Limpar todos os checkboxes dos multiselects
+        document.querySelectorAll('#filterFormMobile .custom-multiselect-dropdown input[type="checkbox"]').forEach(checkbox => {
+            checkbox.checked = false;
+        });
+
+        // Atualizar o texto dos botões
+        document.querySelectorAll('#filterFormMobile .custom-multiselect-wrapper').forEach(wrapper => {
+            const button = wrapper.querySelector('.custom-multiselect-button');
+            button.textContent = button.getAttribute('data-target').includes('platform') ? 
+                'Selecione as Plataformas' : 'Selecione os Gêneros';
+        });
+
+        // Limpar nota mínima
+        const notaMin = document.querySelector('#filterFormMobile select[name="nota_min"]');
+        if (notaMin) notaMin.value = '01';
+
+        // Submeter o formulário
+        document.getElementById('filterFormMobile').submit();
+    }
     </script>
 </body>
 </html> 
