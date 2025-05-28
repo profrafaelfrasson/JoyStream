@@ -165,7 +165,7 @@
         <h1>Criar Conta</h1>
         <p class="register-subtitle">Junte-se à comunidade JoyStream</p>
         
-        <form action="cadastro" method="post" id="registerForm">
+        <form id="formCadastro" action="CadastroServlet" method="post" accept-charset="UTF-8" onsubmit="return validarCadastro();">
             <div class="form-group">
                 <label for="nome">Nome</label>
                 <input type="text" class="form-control" id="nome" name="nome" required>
@@ -199,5 +199,51 @@
             <p>Já tem uma conta? <a href="login.jsp">Fazer Login</a></p>
         </div>
     </div>
+
+    <script src="assets/js/alert.js"></script>
+    <script src="assets/js/auto-focus.js"></script>
+
+
+    <script>
+        document.getElementById("formCadastro").addEventListener("submit", function (event) {
+            const senha = document.getElementById("senha").value;
+            const confirmarSenha = document.getElementById("confirmarSenha").value;
+
+            if (senha !== confirmarSenha) {
+                event.preventDefault();
+                // alert("As senhas não coincidem!");
+                alertResult('error', 'As senhas não coincidem!');
+            }
+        });
+
+        document.getElementById("mostrarSenha").addEventListener("change", function () {
+            const tipo = this.checked ? "text" : "password";
+            document.getElementById("senha").type = tipo;
+            document.getElementById("confirmarSenha").type = tipo;
+        });
+
+        function validarCadastro() {
+            var email = document.getElementById('email').value.trim();
+            var senha = document.getElementById('senha').value;
+            var nome = document.getElementById('nome').value.trim();
+            var erro = '';
+
+            var emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+            if (!emailRegex.test(email)) {
+                erro += 'E-mail inválido.\n';
+            }
+            if (nome.length < 2) {
+                erro += 'Nome muito curto.\n';
+            }
+            if (senha.length < 6 || !/[a-zA-Z]/.test(senha) || !/\d/.test(senha)) {
+                erro += 'A senha deve ter pelo menos 6 caracteres, incluindo letras e números.\n';
+            }
+            if (erro) {
+                alert(erro);
+                return false;
+            }
+            return true;
+        }
+    </script>
 </body>
 </html>
