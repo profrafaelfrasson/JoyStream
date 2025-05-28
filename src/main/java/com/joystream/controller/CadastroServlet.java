@@ -37,13 +37,9 @@ public class CadastroServlet extends HttpServlet {
         boolean sucesso = dao.cadastrar(usuario);
 
         if (sucesso) {
-            // Criar sessão e armazenar informações do usuário
-            HttpSession session = request.getSession();
-            session.setAttribute("usuario", usuario);
-            session.setAttribute("nome", usuario.getNome());
-            session.setAttribute("email", usuario.getEmail());
+
             
-            response.sendRedirect("home.jsp");
+            response.sendRedirect("login.jsp");
         } else {
             request.setAttribute("erroCadastro", "E-mail já cadastrado!");
             RequestDispatcher dispatcher = request.getRequestDispatcher("cadastro.jsp");

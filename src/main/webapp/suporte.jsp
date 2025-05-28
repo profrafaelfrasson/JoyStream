@@ -305,7 +305,6 @@
 
     <script src="assets/js/alert.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.js"></script>
     <script>
         document.getElementById('supportForm').addEventListener('submit', function(e) {
             e.preventDefault();

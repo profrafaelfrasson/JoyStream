@@ -168,7 +168,7 @@
             <a href="<%= request.getContextPath() %>/home.jsp" class="<%= currentPage.equals("home.jsp") ? "active" : "" %>">HOME</a>
             <a href="<%= request.getContextPath() %>/jogos.jsp" class="<%= currentPage.equals("jogos.jsp") ? "active" : "" %>">JOGOS</a>
             <% if (logado) { %>
-                <a href="<%= request.getContextPath() %>/perfil.jsp" class="<%= currentPage.equals("perfil.jsp") ? "active" : "" %>">PERFIL</a>
+                <a href="<%= request.getContextPath() %>/favoritos.jsp" class="<%= currentPage.equals("favoritos.jsp") ? "active" : "" %>">FAVORITOS</a>
             <% } %>
             <a href="<%= request.getContextPath() %>/suporte.jsp" class="<%= currentPage.equals("suporte.jsp") ? "active" : "" %>">SUPORTE</a>
             <a href="<%= request.getContextPath() %>/sobre.jsp" class="<%= currentPage.equals("sobre.jsp") ? "active" : "" %>">SOBRE</a>

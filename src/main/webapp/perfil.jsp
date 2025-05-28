@@ -254,7 +254,6 @@
 
     <script src="assets/js/alert.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.js"></script>
     <script src="https://kit.fontawesome.com/your-font-awesome-kit.js"></script>
     <script>
         // Preview da imagem do avatar
