@@ -18,7 +18,7 @@ JoyStream é uma plataforma web para descoberta e recomendação de jogos, onde 
 - Java JDK 11 ou superior
 - Maven 3.6 ou superior
 - Apache Tomcat 9.x
-- MySQL 8.0 ou superior (caso queira criar um banco local e náo apontar pro remoto ou se ele estiver indisponível)
+- MySQL 8.0 ou superior (caso queira criar um banco local e não apontar pro remoto ou se ele estiver indisponível)
 - IDE de sua preferência (recomendamos IntelliJ IDEA ou Eclipse)
 
 ## 🔧 Configuração do Ambiente
