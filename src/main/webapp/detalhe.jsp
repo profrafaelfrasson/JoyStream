@@ -97,7 +97,7 @@
                                 String nomeJogo = jogo.getString("name").replace("'", "\\'");
                                 String imagemJogo = (jogo.has("background_image") ? jogo.getString("background_image") : "assets/img/default-game.png").replace("'", "\\'");
                                 String dataLancamento = jogo.optString("released", "").replace("'", "\\'");
-                                String nota = jogo.has("metacritic") ? String.valueOf(jogo.getInt("metacritic")) : "";
+                                String nota = (jogo.has("metacritic") && !jogo.isNull("metacritic")) ? String.valueOf(jogo.getInt("metacritic")) : "";
                             %>
                             <button class="favorite-btn"
                                 data-id="<%= jogo.getInt("id") %>"
@@ -112,7 +112,7 @@
                     </div>
                     <div class="game-meta">
                         <p>Lançamento: <%= jogo.optString("released", "N/A") %></p>
-                        <% if (jogo.has("metacritic")) { %>
+                        <% if (jogo.has("metacritic") && !jogo.isNull("metacritic")) { %>
                             <p>Nota: <%= jogo.getInt("metacritic") %></p>
                         <% } %>
                         <% if (jogo.has("platforms")) { %>

@@ -118,8 +118,9 @@ public class JogoService {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
         }
+        // Filtro para destaques
+        jogos = jogos.stream().filter(j -> !isConteudoSexualExplicito(j)).collect(Collectors.toList());
         destaquesCache = new CacheEntry(jogos, now);
         return randomizarJogos(jogos, 6);
     }
@@ -194,7 +195,6 @@ public class JogoService {
                                 }
                             }
                         } catch (Exception e) {
-                            continue;
                         }
                     }
                     String generosFrequentes = todosGeneros.stream()
@@ -252,8 +252,9 @@ public class JogoService {
             }
         } catch (Exception e) {
             System.out.println("Erro ao buscar recomendações: " + e.getMessage());
-            e.printStackTrace();
         }
+        // Filtro para recomendações
+        recomendacoes = recomendacoes.stream().filter(j -> !isConteudoSexualExplicito(j)).collect(Collectors.toList());
         recomendacoesCache.put(usuarioId, new CacheEntry(recomendacoes, now));
         return randomizarJogos(recomendacoes, 6);
     }
@@ -263,5 +264,18 @@ public class JogoService {
         List<Jogo> copia = new ArrayList<>(lista);
         Collections.shuffle(copia, new Random());
         return copia.subList(0, Math.min(quantidade, copia.size()));
+    }
+
+    // Adicionar metodo auxiliar para filtrar jogos com conteúdo sexual explícito
+    private boolean isConteudoSexualExplicito(Jogo jogo) {
+        String[] termosProibidos = {"porn", "sexual", "erotic", "adult", "nsfw", "hentai", "explicit"};
+        String generos = jogo.getGeneros() != null ? jogo.getGeneros().toLowerCase() : "";
+        String descricao = jogo.getDescricao() != null ? jogo.getDescricao().toLowerCase() : "";
+        for (String termo : termosProibidos) {
+            if (generos.contains(termo) || descricao.contains(termo)) {
+                return true;
+            }
+        }
+        return false;
     }
 } 
