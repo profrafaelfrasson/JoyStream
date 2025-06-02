@@ -1025,11 +1025,11 @@
                 %>
                 <div class="carousel-slide<%= (i == 0) ? " active" : "" %>" data-index="<%= i %>">
                     <div class="carousel-main">
-                        <img src="<%= jogo.getImagemUrl() %>" alt="<%= jogo.getNome() %>" class="carousel-banner">
+                            <img src="<%= jogo.getImagemUrl() %>" alt="<%= jogo.getNome() %>" class="carousel-banner">
                     </div>
                     <div class="carousel-info">
                         <div class="carousel-info-top">
-                            <h2><%= jogo.getNome() %></h2>
+                        <h2><%= jogo.getNome() %></h2>
                             <% if (jogo.getGeneros() != null) { %>
                                 <p class="game-meta"><i class="fas fa-gamepad"></i> <%= jogo.getGeneros() %></p>
                             <% } %>
@@ -1039,13 +1039,13 @@
                             <% if (jogo.getDataLancamento() != null) { %>
                                 <p class="game-meta"><i class="far fa-calendar-alt"></i> <%= jogo.getDataLancamento() %></p>
                             <% } %>
-                            <div class="carousel-thumbnails">
+                        <div class="carousel-thumbnails">
                                 <% if (screenshots != null) {
                                     for (int j = 0; j < Math.min(screenshots.size(), 3); j++) { %>
                                         <img src="<%= screenshots.get(j) %>" alt="Screenshot" onclick="showScreenshot(this.src)">
                                 <% }
                                 } %>
-                            </div>
+                        </div>
                         </div>
                         <div class="carousel-info-bottom">
                             <button class="carousel-button" onclick="window.location.href='detalhe.jsp?id=<%= jogo.getId() %>'">
