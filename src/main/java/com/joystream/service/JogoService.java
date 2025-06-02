@@ -57,7 +57,7 @@ public class JogoService {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             String dataInicio = umAnoAtras.format(formatter);
             String dataFim = hoje.format(formatter);
-            String urlApi = API_BASE_URL + "?key=" + API_KEY + "&ordering=-rating&page_size=40&dates=" + dataInicio + "," + dataFim;
+            String urlApi = API_BASE_URL + "?key=" + API_KEY + "&ordering=-rating&page_size=20&dates=" + dataInicio + "," + dataFim;
             HttpGet request = new HttpGet(urlApi);
             request.setHeader("Accept", "application/json");
 
