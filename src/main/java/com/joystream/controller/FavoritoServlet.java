@@ -1,18 +1,19 @@
 package com.joystream.controller;
 
-import com.joystream.dao.FavoritoDAO;
-import com.joystream.model.Favorito;
-import com.joystream.model.Usuario;
-import org.json.JSONObject;
+import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.sql.Date;
-import java.util.List;
+
+import org.json.JSONObject;
+
+import com.joystream.dao.FavoritoDAO;
+import com.joystream.model.Favorito;
+import com.joystream.model.Usuario;
 
 @WebServlet("/favorito/*")
 public class FavoritoServlet extends HttpServlet {
@@ -50,16 +51,13 @@ public class FavoritoServlet extends HttpServlet {
             
         } catch (NumberFormatException e) {
             System.out.println("Erro ao converter números: " + e.getMessage());
-            e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         } catch (IllegalArgumentException e) {
             System.out.println("Erro nos dados fornecidos: " + e.getMessage());
-            e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         } catch (Exception e) {
             System.out.println("Erro ao processar requisição: " + e.getMessage());
             System.out.println("Tipo de erro: " + e.getClass().getName());
-            e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
@@ -87,7 +85,6 @@ public class FavoritoServlet extends HttpServlet {
                 
             } catch (Exception e) {
                 System.out.println("Erro ao verificar favorito: " + e.getMessage());
-                e.printStackTrace();
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
         } else {
@@ -97,7 +94,6 @@ public class FavoritoServlet extends HttpServlet {
                 request.getRequestDispatcher("/favoritos.jsp").forward(request, response);
             } catch (Exception e) {
                 System.out.println("Erro ao listar favoritos: " + e.getMessage());
-                e.printStackTrace();
                 response.sendRedirect(request.getContextPath() + "/erro.jsp");
             }
         }

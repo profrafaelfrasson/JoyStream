@@ -1,8 +1,13 @@
 package com.joystream.service;
 
-import com.joystream.model.Jogo;
-import java.util.List;
+import java.net.URLEncoder;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -10,14 +15,9 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import java.net.URLEncoder;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.Arrays;
-import java.util.stream.Collectors;
+
 import com.joystream.dao.DBConfig;
+import com.joystream.model.Jogo;
 
 public class JogoService {
     private static final String API_KEY = "5c0f001717fe48498900310b7ca4aa41";
@@ -120,7 +120,7 @@ public class JogoService {
         
         try (CloseableHttpClient client = HttpClients.createDefault()) {
             // 1. Primeiro, buscar os IDs dos jogos favoritos do usuário
-            String sql = "SELECT jogo_id FROM favoritos WHERE usuario_id = ?";
+            String sql = "SELECT id_jogo FROM favorito WHERE id_usuario = ?";
             
             System.out.println("SQL para buscar favoritos: " + sql);
             
@@ -133,7 +133,7 @@ public class JogoService {
                 
                 List<Integer> jogosFavoritos = new ArrayList<>();
                 while (rs.next()) {
-                    int jogoId = rs.getInt("jogo_id");
+                    int jogoId = rs.getInt("id_jogo");
                     jogosFavoritos.add(jogoId);
                     System.out.println("Jogo favorito encontrado: ID=" + jogoId);
                 }

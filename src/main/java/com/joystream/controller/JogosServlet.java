@@ -1,19 +1,24 @@
 package com.joystream.controller;
 
-import javax.servlet.*;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Arrays;
-import java.util.stream.Collectors;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 @WebServlet("/jogos")
 public class JogosServlet extends HttpServlet {
@@ -63,7 +68,7 @@ public class JogosServlet extends HttpServlet {
 
             // Busca com opção de precisão
             if (busca != null && !busca.trim().isEmpty()) {
-                apiUrl.append("&search=").append(URLEncoder.encode(busca.trim(), "UTF-8"));
+                apiUrl.append("&search=").append(URLEncoder.encode(busca.trim(), StandardCharsets.UTF_8));
                 if ("true".equals(buscaPrecisa)) {
                     apiUrl.append("&search_precise=true");
                 }
@@ -116,7 +121,6 @@ public class JogosServlet extends HttpServlet {
         } catch (Exception e) {
             // Log do erro para debug
             System.out.println("Erro ao processar requisição: " + e.getMessage());
-            e.printStackTrace();
             
             request.setAttribute("erroApi", true);
             request.setAttribute("jogos", new ArrayList<>());

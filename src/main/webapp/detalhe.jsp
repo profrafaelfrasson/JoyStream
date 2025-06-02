@@ -43,6 +43,44 @@
         .game-description { margin-top: 20px; }
         .back-link { color: #f1c40f; text-decoration: none; margin-bottom: 20px; display: inline-block; }
         .back-link:hover { text-decoration: underline; }
+        
+        .favorite-btn {
+            background-color: rgba(0, 0, 0, 0.5);
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-left: 10px;
+        }
+
+        .favorite-btn i {
+            color: white;
+            font-size: 1.2em;
+            transition: all 0.3s;
+        }
+
+        .favorite-btn:hover {
+            background-color: rgba(241, 196, 15, 0.8);
+        }
+
+        .favorite-btn.active {
+            background-color: rgba(241, 196, 15, 0.8);
+        }
+
+        .favorite-btn.active i {
+            color: #fff;
+        }
+
+        .title-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
     </style>
 </head>
 <body>
@@ -52,7 +90,26 @@
             <div class="game-header">
                 <img src="<%= jogo.has("background_image") ? jogo.getString("background_image") : "assets/img/default-game.png" %>" alt="<%= jogo.getString("name") %>">
                 <div class="game-info">
-                    <div class="game-title"><%= jogo.getString("name") %></div>
+                    <div class="title-container">
+                        <div class="game-title"><%= jogo.getString("name") %></div>
+                        <% if (session.getAttribute("usuario") != null) { %>
+                            <% 
+                                String nomeJogo = jogo.getString("name").replace("'", "\\'");
+                                String imagemJogo = (jogo.has("background_image") ? jogo.getString("background_image") : "assets/img/default-game.png").replace("'", "\\'");
+                                String dataLancamento = jogo.optString("released", "").replace("'", "\\'");
+                                String nota = jogo.has("metacritic") ? String.valueOf(jogo.getInt("metacritic")) : "";
+                            %>
+                            <button class="favorite-btn"
+                                data-id="<%= jogo.getInt("id") %>"
+                                data-nome="<%= nomeJogo %>"
+                                data-imagem="<%= imagemJogo %>"
+                                data-lancamento="<%= dataLancamento %>"
+                                data-nota="<%= nota %>"
+                                onclick="toggleFavorito(this)">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        <% } %>
+                    </div>
                     <div class="game-meta">
                         <p>Lançamento: <%= jogo.optString("released", "N/A") %></p>
                         <% if (jogo.has("metacritic")) { %>
@@ -109,5 +166,65 @@
             <p>Jogo não encontrado.</p>
         <% } %>
     </div>
+    <script>
+        function toggleFavorito(btn) {
+            const isActive = btn.classList.contains('active');
+            const action = isActive ? 'remover' : 'adicionar';
+            
+            const jogoId = btn.dataset.id;
+            const nomeJogo = btn.dataset.nome;
+            const imagemUrl = btn.dataset.imagem;
+            const dataLancamento = btn.dataset.lancamento;
+            const nota = btn.dataset.nota || null;
+
+            const params = new URLSearchParams();
+            params.append('action', action);
+            params.append('jogoId', jogoId);
+            
+            if (!isActive) {
+                params.append('nomeJogo', nomeJogo);
+                params.append('imagemUrl', imagemUrl);
+                params.append('dataLancamento', dataLancamento);
+                if (nota !== null && nota !== "") {
+                    params.append('nota', nota);
+                }
+            }
+
+            fetch('favorito', {
+                method: 'POST',
+                body: params
+            }).then(response => {
+                if (response.ok) {
+                    btn.classList.toggle('active');
+                    const icon = btn.querySelector('i');
+                    icon.classList.toggle('far');
+                    icon.classList.toggle('fas');
+                } else {
+                    alert('Erro ao ' + (isActive ? 'remover dos' : 'adicionar aos') + ' favoritos');
+                }
+            }).catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao processar a requisição');
+            });
+        }
+
+        // Verifica o estado inicial do favorito
+        window.onload = function() {
+            const btn = document.querySelector('.favorite-btn');
+            if (btn) {
+                const jogoId = btn.dataset.id;
+                fetch('favorito/check?jogoId=' + jogoId)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.isFavorito) {
+                            btn.classList.add('active');
+                            btn.querySelector('i').classList.remove('far');
+                            btn.querySelector('i').classList.add('fas');
+                        }
+                    })
+                    .catch(error => console.error('Erro:', error));
+            }
+        };
+    </script>
 </body>
 </html> 

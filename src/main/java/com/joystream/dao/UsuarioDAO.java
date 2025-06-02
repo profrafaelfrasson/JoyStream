@@ -1,8 +1,13 @@
 package com.joystream.dao;
 
-import com.joystream.model.Usuario;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import org.mindrot.jbcrypt.BCrypt;
+
+import com.joystream.model.Usuario;
 
 public class UsuarioDAO {
     private static final String INSERT_SQL = "INSERT INTO usuario (nm_usuario, email, senha, avatar, dt_criacao, dt_atualizacao) VALUES (?, ?, ?, ?, NOW(), NOW())";
