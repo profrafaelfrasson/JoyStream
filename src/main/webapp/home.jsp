@@ -5,6 +5,7 @@
 <%@ page import="com.joystream.service.JogoService" %>
 <%@ page session="true" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page import="java.util.ArrayList" %>
 <%
     // Buscar jogos em destaque
     JogoService jogoService = new JogoService();
@@ -34,6 +35,16 @@
     request.setAttribute("pageTitle", "JoyStream - Sua plataforma de recomendação de jogos");
     request.setAttribute("pageDescription", "Descubra novos jogos, compartilhe suas experiências e encontre recomendações personalizadas baseadas nos seus gostos. A JoyStream é sua comunidade gamer definitiva.");
     request.setAttribute("pageKeywords", "jogos, games, recomendações de jogos, gaming, comunidade gamer, jogos em destaque, jogos recomendados");
+
+    // Unir e randomizar os jogos de destaque e recomendados para o carrossel
+    List<Jogo> jogosCarrossel = new ArrayList<>();
+    if (jogosDestaque != null) {
+        jogosCarrossel.addAll(jogosDestaque.size() > 6 ? jogosDestaque.subList(0, 6) : jogosDestaque);
+    }
+    if (jogosRecomendados != null) {
+        jogosCarrossel.addAll(jogosRecomendados.size() > 6 ? jogosRecomendados.subList(0, 6) : jogosRecomendados);
+    }
+    java.util.Collections.shuffle(jogosCarrossel);
 %>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -1008,17 +1019,17 @@
                 <i class="fas fa-chevron-left"></i>
             </button>
             <div class="featured-carousel">
-                <% for (int i = 0; i < jogosDestaque.size(); i++) {
-                    Jogo jogo = jogosDestaque.get(i);
+                <% for (int i = 0; i < jogosCarrossel.size(); i++) {
+                    Jogo jogo = jogosCarrossel.get(i);
                     List<String> screenshots = jogo.getScreenshots();
                 %>
                 <div class="carousel-slide<%= (i == 0) ? " active" : "" %>" data-index="<%= i %>">
                     <div class="carousel-main">
-                            <img src="<%= jogo.getImagemUrl() %>" alt="<%= jogo.getNome() %>" class="carousel-banner">
+                        <img src="<%= jogo.getImagemUrl() %>" alt="<%= jogo.getNome() %>" class="carousel-banner">
                     </div>
                     <div class="carousel-info">
                         <div class="carousel-info-top">
-                        <h2><%= jogo.getNome() %></h2>
+                            <h2><%= jogo.getNome() %></h2>
                             <% if (jogo.getGeneros() != null) { %>
                                 <p class="game-meta"><i class="fas fa-gamepad"></i> <%= jogo.getGeneros() %></p>
                             <% } %>
@@ -1028,13 +1039,13 @@
                             <% if (jogo.getDataLancamento() != null) { %>
                                 <p class="game-meta"><i class="far fa-calendar-alt"></i> <%= jogo.getDataLancamento() %></p>
                             <% } %>
-                        <div class="carousel-thumbnails">
+                            <div class="carousel-thumbnails">
                                 <% if (screenshots != null) {
                                     for (int j = 0; j < Math.min(screenshots.size(), 3); j++) { %>
                                         <img src="<%= screenshots.get(j) %>" alt="Screenshot" onclick="showScreenshot(this.src)">
                                 <% }
                                 } %>
-                        </div>
+                            </div>
                         </div>
                         <div class="carousel-info-bottom">
                             <button class="carousel-button" onclick="window.location.href='detalhe.jsp?id=<%= jogo.getId() %>'">
