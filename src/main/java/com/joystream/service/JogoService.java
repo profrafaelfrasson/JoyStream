@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -24,11 +27,13 @@ import org.json.JSONObject;
 
 import com.joystream.dao.DBConfig;
 import com.joystream.model.Jogo;
+import com.joystream.model.Favorito;
 
 public class JogoService {
     private static final String API_KEY = "5c0f001717fe48498900310b7ca4aa41";
     private static final String API_BASE_URL = "https://api.rawg.io/api/games";
     private static final long CACHE_EXPIRATION_MS = 60 * 60 * 1000; // 1 hora
+    private static final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
     // Cache para recomendações por usuário
     private static final Map<Integer, CacheEntry> recomendacoesCache = new HashMap<>();
@@ -263,5 +268,84 @@ public class JogoService {
         List<Jogo> copia = new ArrayList<>(lista);
         Collections.shuffle(copia, new Random());
         return copia.subList(0, Math.min(quantidade, copia.size()));
+    }
+
+    public List<Jogo> buscarDetalhesJogosFavoritos(List<Favorito> favoritos) {
+        List<Jogo> jogos = new ArrayList<>();
+        List<CompletableFuture<Jogo>> futures = new ArrayList<>();
+
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
+            for (Favorito favorito : favoritos) {
+                CompletableFuture<Jogo> future = CompletableFuture.supplyAsync(() -> {
+                    try {
+                        String detalhesUrl = API_BASE_URL + "/" + favorito.getIdJogo() + "?key=" + API_KEY;
+                        HttpGet request = new HttpGet(detalhesUrl);
+                        request.setHeader("Accept", "application/json");
+
+                        try (CloseableHttpResponse response = client.execute(request)) {
+                            if (response.getStatusLine().getStatusCode() == 200) {
+                                String jsonResponse = EntityUtils.toString(response.getEntity());
+                                JSONObject jogoJson = new JSONObject(jsonResponse);
+
+                                Jogo jogo = new Jogo();
+                                jogo.setId(Long.valueOf(jogoJson.getInt("id")));
+                                jogo.setNome(jogoJson.getString("name"));
+                                
+                                if (jogoJson.has("background_image")) {
+                                    jogo.setImagemUrl(jogoJson.getString("background_image"));
+                                }
+
+                                if (jogoJson.has("genres")) {
+                                    JSONArray generos = jogoJson.getJSONArray("genres");
+                                    List<String> generosList = new ArrayList<>();
+                                    for (int i = 0; i < generos.length(); i++) {
+                                        generosList.add(generos.getJSONObject(i).getString("name"));
+                                    }
+                                    jogo.setGeneros(String.join(", ", generosList));
+                                }
+
+                                if (jogoJson.has("platforms")) {
+                                    JSONArray plataformas = jogoJson.getJSONArray("platforms");
+                                    List<String> plataformasList = new ArrayList<>();
+                                    for (int i = 0; i < plataformas.length(); i++) {
+                                        plataformasList.add(plataformas.getJSONObject(i).getJSONObject("platform").getString("name"));
+                                    }
+                                    jogo.setPlataformas(String.join(", ", plataformasList));
+                                }
+
+                                if (jogoJson.has("metacritic")) {
+                                    jogo.setNota(jogoJson.getDouble("metacritic"));
+                                }
+
+                                if (jogoJson.has("released")) {
+                                    jogo.setDataLancamento(jogoJson.getString("released"));
+                                }
+
+                                return jogo;
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                }, executorService);
+
+                futures.add(future);
+            }
+
+            // Aguardar todos os futuros completarem e coletar os resultados
+            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+            
+            for (CompletableFuture<Jogo> future : futures) {
+                Jogo jogo = future.get();
+                if (jogo != null) {
+                    jogos.add(jogo);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return jogos;
     }
 } 

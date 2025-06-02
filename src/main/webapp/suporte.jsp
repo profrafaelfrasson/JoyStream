@@ -241,7 +241,7 @@
     <div class="support-content">
         <div class="contact-form">
             <h2>Entre em Contato</h2>
-            <form id="supportForm">
+            <form id="formSuporte">
                 <div class="mb-3">
                     <label for="nome" class="form-label">Nome</label>
                     <input type="text" class="form-control" id="nome" name="nome" required>
@@ -306,10 +306,10 @@
     <script src="assets/js/alert.js"></script>
 
     <script>
-        document.getElementById('supportForm').addEventListener('submit', function(e) {
+        document.getElementById('formSuporte').addEventListener('submit', function(e) {
             e.preventDefault();
-            // Aqui implementará a lógica de envio do formulário quando tiver o backend pronto
-            alertResult('success', 'Mensagem enviada com sucesso! Entraremos em contato em breve.');
+            // Simular envio bem-sucedido
+            showSuccess('Sucesso', 'Mensagem enviada com sucesso! Entraremos em contato em breve.');
             this.reset();
         });
     </script>

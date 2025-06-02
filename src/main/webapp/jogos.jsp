@@ -741,7 +741,7 @@
                     <div class="game-card">
                         <img src="<%= jogo.getJSONArray("short_screenshots").length() > 0 ? jogo.getJSONArray("short_screenshots").getJSONObject(0).getString("image") : "assets/img/default-game.png" %>" alt="<%= jogo.getString("name") %>">
                         <% if (logado) { %>
-                            <button class="favorite-btn" onclick="toggleFavorito(this, <%= jogo.getInt("id") %>, '<%= jogo.getString("name").replace("'", "\\'") %>', '<%= jogo.getJSONArray("short_screenshots").length() > 0 ? jogo.getJSONArray("short_screenshots").getJSONObject(0).getString("image") : "assets/img/default-game.png" %>', '<%= jogo.getString("released") %>', <%= jogo.has("metacritic") ? jogo.getInt("metacritic") : "null" %>)">
+                            <button class="favorite-btn" onclick="toggleFavorito(<%= jogo.getInt("id") %>, this)">
                                 <i class="far fa-heart"></i>
                             </button>
                         <% } %>
@@ -963,7 +963,8 @@
     <jsp:include page="components/footer.jsp" />
 
     <!-- MDB JavaScript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.js"></script> -->
+    <script src="assets/js/alert.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize custom multiselect dropdowns
@@ -1169,38 +1170,29 @@
             .catch(error => console.error('Erro:', error));
     }
 
-    function toggleFavorito(btn, jogoId, nomeJogo, imagemUrl, dataLancamento, nota) {
-        const isActive = btn.classList.contains('active');
-        const action = isActive ? 'remover' : 'adicionar';
-        
-        const params = new URLSearchParams();
-        params.append('action', action);
-        params.append('jogoId', jogoId);
-        
-        if (!isActive) {
-            params.append('nomeJogo', nomeJogo);
-            params.append('imagemUrl', imagemUrl);
-            params.append('dataLancamento', dataLancamento);
-            if (nota !== null) {
-                params.append('nota', nota);
-            }
-        }
-
-        fetch('favorito', {
-            method: 'POST',
-            body: params
+    function toggleFavorito(jogoId, button) {
+        const isActive = button.classList.contains('active');
+        fetch('favorito?action=' + (isActive ? 'remover' : 'adicionar') + '&jogoId=' + jogoId, {
+            method: 'POST'
         }).then(response => {
             if (response.ok) {
-                btn.classList.toggle('active');
-                const icon = btn.querySelector('i');
-                icon.classList.toggle('far');
-                icon.classList.toggle('fas');
+                button.classList.toggle('active');
+                const icon = button.querySelector('i');
+                if (isActive) {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                    showSuccess('Sucesso', 'Jogo removido dos favoritos');
+                } else {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                    showSuccess('Sucesso', 'Jogo adicionado aos favoritos');
+                }
             } else {
-                alert('Erro ao ' + (isActive ? 'remover dos' : 'adicionar aos') + ' favoritos');
+                showError('Erro', 'Não foi possível ' + (isActive ? 'remover dos' : 'adicionar aos') + ' favoritos');
             }
         }).catch(error => {
             console.error('Erro:', error);
-            alert('Erro ao processar a requisição');
+            showError('Erro', 'Não foi possível processar a requisição');
         });
     }
 

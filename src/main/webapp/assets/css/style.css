@@ -449,4 +449,8 @@ nav {
   color: #f1c40f;
 }
 
+.swal2-timer-progress-bar {
+  background: #f1c40f !important;
+}
+
 /* ---------- ALERT ---------- */

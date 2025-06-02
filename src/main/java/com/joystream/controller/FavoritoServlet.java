@@ -14,10 +14,13 @@ import org.json.JSONObject;
 import com.joystream.dao.FavoritoDAO;
 import com.joystream.model.Favorito;
 import com.joystream.model.Usuario;
+import com.joystream.model.Jogo;
+import com.joystream.service.JogoService;
 
 @WebServlet("/favorito/*")
 public class FavoritoServlet extends HttpServlet {
     private FavoritoDAO favoritoDAO = new FavoritoDAO();
+    private JogoService jogoService = new JogoService();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -51,13 +54,16 @@ public class FavoritoServlet extends HttpServlet {
             
         } catch (NumberFormatException e) {
             System.out.println("Erro ao converter números: " + e.getMessage());
+            e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         } catch (IllegalArgumentException e) {
             System.out.println("Erro nos dados fornecidos: " + e.getMessage());
+            e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         } catch (Exception e) {
             System.out.println("Erro ao processar requisição: " + e.getMessage());
             System.out.println("Tipo de erro: " + e.getClass().getName());
+            e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
@@ -85,15 +91,18 @@ public class FavoritoServlet extends HttpServlet {
                 
             } catch (Exception e) {
                 System.out.println("Erro ao verificar favorito: " + e.getMessage());
+                e.printStackTrace();
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
         } else {
             try {
                 List<Favorito> favoritos = favoritoDAO.listarPorUsuario(usuario.getIdUsuario());
-                request.setAttribute("favoritos", favoritos);
+                List<Jogo> jogosFavoritos = jogoService.buscarDetalhesJogosFavoritos(favoritos);
+                request.setAttribute("favoritos", jogosFavoritos);
                 request.getRequestDispatcher("/favoritos.jsp").forward(request, response);
             } catch (Exception e) {
                 System.out.println("Erro ao listar favoritos: " + e.getMessage());
+                e.printStackTrace();
                 response.sendRedirect(request.getContextPath() + "/erro.jsp");
             }
         }

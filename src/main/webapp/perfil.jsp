@@ -202,7 +202,7 @@
     <div class="profile-container">
         <div class="profile-card">
             <% String erro = (String) request.getAttribute("erro"); if (erro != null && !erro.trim().isEmpty()) { %>
-                <div class="alert alert-danger" style="text-align:center; margin-bottom: 20px;"> <%= erro %> </div>
+                <script>showError('Erro', '<%= erro %>');</script>
             <% } %>
             <form id="profileForm" action="atualizar-perfil" method="post" enctype="multipart/form-data" onsubmit="return validarPerfil();">
                 <div class="profile-header">
@@ -256,81 +256,56 @@
 
     <script src="https://kit.fontawesome.com/your-font-awesome-kit.js"></script>
     <script>
-        // Preview da imagem do avatar
-        document.getElementById('avatar-input').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                // Validação de tamanho (máx 2MB) e formato
-                if (file.size > 2 * 1024 * 1024) {
-                    alertResult('error', 'O avatar deve ter no máximo 2MB.');
-                    e.target.value = '';
-                    return;
-                }
-                if (!file.type.startsWith('image/')) {
-                    alertResult('error', 'Selecione um arquivo de imagem válido.');
-                    e.target.value = '';
-                    return;
-                }
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.querySelector('.profile-avatar').src = e.target.result;
-                    document.querySelector('.user-avatar').src = e.target.result;
-                }
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // Validação do formulário
-        document.getElementById('profileForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const senha = document.getElementById('senha').value;
-            const confirmarSenha = document.getElementById('confirmarSenha').value;
-            const senhaAtual = document.getElementById('senhaAtual').value;
-
-            if (senha && senha !== confirmarSenha) {
-                alertResult('error', 'As senhas não coincidem!');
-                return;
-            }
-            if (senha && (!senhaAtual || senhaAtual.trim() === '')) {
-                alertResult('error', 'Para alterar a senha, preencha sua senha atual.');
-                return;
-            }
-            this.submit();
-        });
-
-        // Exibir mensagens de sucesso/erro
-        const urlParams = new URLSearchParams(window.location.search);
-        const sucesso = urlParams.get('sucesso');
-        const erro = '<%= request.getAttribute("erro") %>';
-
-        if (sucesso === 'true') {
-            alertResult('success', 'Perfil atualizado com sucesso!');
-        } else if (erro && erro !== 'null' && erro.trim() !== '') {
-            alertResult('error', erro);
-        }
-
         function validarPerfil() {
             var nome = document.getElementById('nome').value.trim();
-            var senha = document.getElementById('senha').value;
-            var erro = '';
+            var senhaAtual = document.getElementById('senhaAtual').value;
+            var novaSenha = document.getElementById('senha').value;
+            var confirmarSenha = document.getElementById('confirmarSenha').value;
+
             if (nome.length < 2) {
-                erro += 'Nome muito curto.\n';
-            }
-            if (senha.length > 0 && (senha.length < 6 || !/[a-zA-Z]/.test(senha) || !/\d/.test(senha))) {
-                erro += 'A nova senha deve ter pelo menos 6 caracteres, incluindo letras e números.\n';
-            }
-            if (erro) {
-                alertResult('error', erro);
+                showError('Erro', 'O nome deve ter pelo menos 2 caracteres.');
                 return false;
             }
+
+            if (senhaAtual || novaSenha || confirmarSenha) {
+                if (!senhaAtual) {
+                    showError('Erro', 'A senha atual é obrigatória para alterar a senha.');
+                    return false;
+                }
+                if (novaSenha !== confirmarSenha) {
+                    showError('Erro', 'As senhas não coincidem.');
+                    return false;
+                }
+                if (novaSenha.length < 6 || !/[a-zA-Z]/.test(novaSenha) || !/\d/.test(novaSenha)) {
+                    showError('Erro', 'A nova senha deve ter pelo menos 6 caracteres, incluindo letras e números.');
+                    return false;
+                }
+            }
+
             return true;
         }
 
-        document.getElementById('mostrarSenhaPerfil').addEventListener('change', function () {
-            const tipo = this.checked ? 'text' : 'password';
-            document.getElementById('senhaAtual').type = tipo;
-            document.getElementById('senha').type = tipo;
-            document.getElementById('confirmarSenha').type = tipo;
+        document.getElementById("mostrarSenhaPerfil").addEventListener("change", function () {
+            const tipo = this.checked ? "text" : "password";
+            document.getElementById("senhaAtual").type = tipo;
+            document.getElementById("senha").type = tipo;
+            document.getElementById("confirmarSenha").type = tipo;
+        });
+
+        document.getElementById('avatar-input').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) { // 5MB
+                    showError('Erro', 'O arquivo é muito grande. O tamanho máximo permitido é 5MB.');
+                    this.value = '';
+                    return;
+                }
+                if (!file.type.startsWith('image/')) {
+                    showError('Erro', 'Por favor, selecione apenas arquivos de imagem.');
+                    this.value = '';
+                    return;
+                }
+            }
         });
     </script>
 </body>

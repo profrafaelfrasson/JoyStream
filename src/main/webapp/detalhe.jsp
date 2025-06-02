@@ -32,6 +32,10 @@
     <title>Detalhes do Jogo</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Sweetalert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
         body { background: #121212; color: #fff; font-family: 'Segoe UI', sans-serif; }
         .container { max-width: 900px; margin: 40px auto; background: #1f1f1f; border-radius: 10px; padding: 30px; }
@@ -105,7 +109,7 @@
                                 data-imagem="<%= imagemJogo %>"
                                 data-lancamento="<%= dataLancamento %>"
                                 data-nota="<%= nota %>"
-                                onclick="toggleFavorito(this)">
+                                onclick="toggleFavorito(<%= jogo.getInt("id") %>, this)">
                                 <i class="far fa-heart"></i>
                             </button>
                         <% } %>
@@ -166,45 +170,31 @@
             <p>Jogo não encontrado.</p>
         <% } %>
     </div>
+    <script src="assets/js/alert.js"></script>
     <script>
-        function toggleFavorito(btn) {
-            const isActive = btn.classList.contains('active');
-            const action = isActive ? 'remover' : 'adicionar';
-            
-            const jogoId = btn.dataset.id;
-            const nomeJogo = btn.dataset.nome;
-            const imagemUrl = btn.dataset.imagem;
-            const dataLancamento = btn.dataset.lancamento;
-            const nota = btn.dataset.nota || null;
-
-            const params = new URLSearchParams();
-            params.append('action', action);
-            params.append('jogoId', jogoId);
-            
-            if (!isActive) {
-                params.append('nomeJogo', nomeJogo);
-                params.append('imagemUrl', imagemUrl);
-                params.append('dataLancamento', dataLancamento);
-                if (nota !== null && nota !== "") {
-                    params.append('nota', nota);
-                }
-            }
-
-            fetch('favorito', {
-                method: 'POST',
-                body: params
+        function toggleFavorito(jogoId, button) {
+            const isActive = button.classList.contains('active');
+            fetch('favorito?action=' + (isActive ? 'remover' : 'adicionar') + '&jogoId=' + jogoId, {
+                method: 'POST'
             }).then(response => {
                 if (response.ok) {
-                    btn.classList.toggle('active');
-                    const icon = btn.querySelector('i');
-                    icon.classList.toggle('far');
-                    icon.classList.toggle('fas');
+                    button.classList.toggle('active');
+                    const icon = button.querySelector('i');
+                    if (isActive) {
+                        icon.classList.remove('fas');
+                        icon.classList.add('far');
+                        showSuccess('Sucesso', 'Jogo removido dos favoritos');
+                    } else {
+                        icon.classList.remove('far');
+                        icon.classList.add('fas');
+                        showSuccess('Sucesso', 'Jogo adicionado aos favoritos');
+                    }
                 } else {
-                    alert('Erro ao ' + (isActive ? 'remover dos' : 'adicionar aos') + ' favoritos');
+                    showError('Erro', 'Não foi possível ' + (isActive ? 'remover dos' : 'adicionar aos') + ' favoritos');
                 }
             }).catch(error => {
                 console.error('Erro:', error);
-                alert('Erro ao processar a requisição');
+                showError('Erro', 'Não foi possível processar a requisição');
             });
         }
 

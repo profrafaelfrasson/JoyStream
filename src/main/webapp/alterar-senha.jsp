@@ -180,7 +180,7 @@
                 </div>
             <% } %>
 
-            <form id="formSenha" onsubmit="alterarSenha(event)">
+            <form id="formAlterarSenha" onsubmit="alterarSenha(event)">
                 <div class="form-group">
                     <label for="senhaAtual" class="form-label">Senha Atual</label>
                     <input type="password" id="senhaAtual" name="senhaAtual" class="form-input" required>
@@ -221,35 +221,49 @@
 
     <%@ include file="components/footer.jsp" %>
 
+    <script src="assets/js/alert.js"></script>
     <script>
-        function toggleSenha(id) {
-            const input = document.getElementById(id);
-            input.type = input.type === 'password' ? 'text' : 'password';
-        }
+        document.getElementById('formAlterarSenha').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const novaSenha = document.getElementById('novaSenha').value;
+            const confirmarSenha = document.getElementById('confirmarSenha').value;
 
-        function alterarSenha(event) {
-            event.preventDefault();
-            const formData = new FormData(event.target);
-
-            if (formData.get('novaSenha') !== formData.get('confirmarSenha')) {
-                alert('As senhas não coincidem');
+            if (novaSenha !== confirmarSenha) {
+                showError('Erro', 'As senhas não coincidem');
                 return;
             }
 
-            fetch('usuario/senha', {
+            if (novaSenha.length < 8 || !/[a-zA-Z]/.test(novaSenha) || !/\d/.test(novaSenha)) {
+                showError('Erro', 'A senha deve ter pelo menos 8 caracteres, incluindo letras e números');
+                return;
+            }
+
+            fetch('alterar-senha', {
                 method: 'POST',
-                body: formData
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams(new FormData(this))
             }).then(response => {
                 if (response.ok) {
-                    window.location.href = 'perfil.jsp';
+                    showSuccess('Sucesso', 'Senha alterada com sucesso!');
+                    setTimeout(() => {
+                        window.location.href = 'login.jsp';
+                    }, 2000);
                 } else {
-                    alert('Erro ao alterar senha');
+                    showError('Erro', 'Não foi possível alterar a senha');
                 }
             }).catch(error => {
                 console.error('Erro:', error);
-                alert('Erro ao alterar senha');
+                showError('Erro', 'Não foi possível alterar a senha');
             });
-        }
+        });
+
+        document.getElementById('mostrarSenha').addEventListener('change', function() {
+            const tipo = this.checked ? 'text' : 'password';
+            document.getElementById('novaSenha').type = tipo;
+            document.getElementById('confirmarSenha').type = tipo;
+        });
     </script>
 </body>
 </html> 

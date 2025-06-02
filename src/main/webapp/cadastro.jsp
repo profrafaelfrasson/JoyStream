@@ -214,15 +214,35 @@ request.setAttribute("pageKeywords", "cadastro joystream, criar conta, registro,
 
 
     <script>
-        document.getElementById("formCadastro").addEventListener("submit", function (event) {
-            const senha = document.getElementById("senha").value;
-            const confirmarSenha = document.getElementById("confirmarSenha").value;
+        function validarCadastro() {
+            var email = document.getElementById('email').value.trim();
+            var senha = document.getElementById('senha').value;
+            var confirmarSenha = document.getElementById('confirmarSenha').value;
+            var nome = document.getElementById('nome').value.trim();
+
+            if (nome.length < 2) {
+                showError('Erro', 'O nome deve ter pelo menos 2 caracteres.');
+                return false;
+            }
+
+            var emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+            if (!emailRegex.test(email)) {
+                showError('Erro', 'Por favor, insira um e-mail válido.');
+                return false;
+            }
+
+            if (senha.length < 8 || !/[a-zA-Z]/.test(senha) || !/\d/.test(senha)) {
+                showError('Erro', 'A senha deve ter pelo menos 8 caracteres, incluindo letras e números.');
+                return false;
+            }
 
             if (senha !== confirmarSenha) {
-                event.preventDefault();
-                alertResult('error', 'As senhas não coincidem!');
+                showError('Erro', 'As senhas não coincidem.');
+                return false;
             }
-        });
+
+            return true;
+        }
 
         document.getElementById("mostrarSenha").addEventListener("change", function () {
             const tipo = this.checked ? "text" : "password";
@@ -230,28 +250,14 @@ request.setAttribute("pageKeywords", "cadastro joystream, criar conta, registro,
             document.getElementById("confirmarSenha").type = tipo;
         });
 
-        function validarCadastro() {
-            var email = document.getElementById('email').value.trim();
-            var senha = document.getElementById('senha').value;
-            var nome = document.getElementById('nome').value.trim();
-            var erro = '';
-
-            var emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
-            if (!emailRegex.test(email)) {
-                erro += 'E-mail inválido.\n';
+        <%
+            String erroCadastro = (String) request.getAttribute("erroCadastro");
+            if (erroCadastro != null && !erroCadastro.trim().isEmpty()) {
+        %>
+            showError('Erro no Cadastro', '<%= erroCadastro %>');
+        <%
             }
-            if (nome.length < 2) {
-                erro += 'Nome muito curto.\n';
-            }
-            if (senha.length < 6 || !/[a-zA-Z]/.test(senha) || !/\d/.test(senha)) {
-                erro += 'A senha deve ter pelo menos 6 caracteres, incluindo letras e números.\n';
-            }
-            if (erro) {
-                alertResult('error', erro);
-                return false;
-            }
-            return true;
-        }
+        %>
     </script>
 </body>
 </html>
