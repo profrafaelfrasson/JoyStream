@@ -23,6 +23,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.joystream.dao.DBConfig;
+import com.joystream.model.Favorito;
 import com.joystream.model.Jogo;
 
 public class JogoService {
@@ -34,6 +35,8 @@ public class JogoService {
     private static final Map<Integer, CacheEntry> recomendacoesCache = new HashMap<>();
     // Cache global para destaques
     private static CacheEntry destaquesCache = null;
+    // Cache para detalhes dos favoritos por usuário
+    private static final Map<Integer, CacheEntry> favoritosDetalhesCache = new HashMap<>();
 
     private static class CacheEntry {
         List<Jogo> jogos;
@@ -236,14 +239,46 @@ public class JogoService {
                         JSONArray results = jsonObject.getJSONArray("results");
                         for (int i = 0; i < results.length(); i++) {
                             JSONObject jogoJson = results.getJSONObject(i);
-                            if (jogoJson.has("metacritic") && !jogoJson.isNull("metacritic") && jogoJson.getDouble("metacritic") > 60) {
-                                Jogo jogo = new Jogo();
-                                jogo.setId(Long.valueOf(jogoJson.getInt("id")));
-                                jogo.setNome(jogoJson.getString("name"));
-                                if (jogoJson.has("background_image")) {
-                                    jogo.setImagemUrl(jogoJson.getString("background_image"));
+                            // Garantir que jogos recomendados tenham nota > 60 E estejam lançados (opcional, se a API não garantir)
+                            // Se a API já filtrou por metacritic=61,100 e ordering=-rating, a verificação de nota já está feita
+
+                            Jogo jogo = new Jogo();
+                            jogo.setId(Long.valueOf(jogoJson.getInt("id")));
+                            jogo.setNome(jogoJson.getString("name"));
+                            jogo.setDescricao(jogoJson.optString("description_raw", "Já disponível")); // Adicionar descrição
+                            String imagemUrl = jogoJson.optString("background_image", "/assets/img/game1.jpg");
+                            jogo.setImagemUrl(imagemUrl != null ? imagemUrl : "/assets/img/game1.jpg");
+                            // jogo.setDestaque(false); // Recomendados não são destaque por padrão
+                            
+                            if (jogoJson.has("genres")) { // Adicionar gêneros
+                                JSONArray generos = jogoJson.getJSONArray("genres");
+                                List<String> generosList = new ArrayList<>();
+                                for (int j = 0; j < generos.length(); j++) {
+                                    generosList.add(generos.getJSONObject(j).getString("name"));
                                 }
+                                jogo.setGeneros(String.join(", ", generosList));
+                            }
+                            if (jogoJson.has("platforms")) { // Adicionar plataformas
+                                JSONArray plataformas = jogoJson.getJSONArray("platforms");
+                                List<String> plataformasList = new ArrayList<>();
+                                for (int j = 0; j < plataformas.length(); j++) {
+                                    plataformasList.add(plataformas.getJSONObject(j).getJSONObject("platform").getString("name"));
+                                }
+                                jogo.setPlataformas(String.join(", ", plataformasList));
+                            }
+                            if (jogoJson.has("metacritic") && !jogoJson.isNull("metacritic")) { // Adicionar nota
                                 jogo.setNota(jogoJson.getDouble("metacritic"));
+                            } else {
+                                jogo.setNota(null); // Definir como null se não houver nota
+                            }
+                            if (jogoJson.has("released")) { // Adicionar data de lançamento
+                                jogo.setDataLancamento(jogoJson.getString("released"));
+                            }
+                            List<String> screenshots = buscarScreenshots(jogoJson.getLong("id")); // Adicionar screenshots
+                            jogo.setScreenshots(screenshots);
+
+                            // Verificar filtro de conteúdo sexual ANTES de adicionar à lista
+                            if (!isConteudoSexualExplicito(jogo)) {
                                 recomendacoes.add(jogo);
                             }
                         }
@@ -277,5 +312,68 @@ public class JogoService {
             }
         }
         return false;
+    }
+
+    public List<Jogo> buscarDetalhesJogosFavoritos(List<Favorito> favoritos) {
+        if (favoritos == null || favoritos.isEmpty()) return new ArrayList<>();
+        int usuarioId = favoritos.get(0).getIdUsuario();
+        long now = System.currentTimeMillis();
+        CacheEntry cache = favoritosDetalhesCache.get(usuarioId);
+        if (cache != null && (now - cache.timestamp) < CACHE_EXPIRATION_MS) {
+            return cache.jogos;
+        }
+        List<Jogo> jogos = new ArrayList<>();
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
+            for (Favorito favorito : favoritos) {
+                try {
+                    String detalhesUrl = API_BASE_URL + "/" + favorito.getIdJogo() + "?key=" + API_KEY;
+                    HttpGet request = new HttpGet(detalhesUrl);
+                    request.setHeader("Accept", "application/json");
+                    try (CloseableHttpResponse response = client.execute(request)) {
+                        if (response.getStatusLine().getStatusCode() == 200) {
+                            String jsonResponse = EntityUtils.toString(response.getEntity());
+                            JSONObject jogoJson = new JSONObject(jsonResponse);
+                            Jogo jogo = new Jogo();
+                            jogo.setId(jogoJson.getLong("id"));
+                            jogo.setNome(jogoJson.getString("name"));
+                            jogo.setDescricao(jogoJson.optString("description_raw", ""));
+                            String imagemUrl = jogoJson.optString("background_image", "/assets/img/game1.jpg");
+                            jogo.setImagemUrl(imagemUrl != null ? imagemUrl : "/assets/img/game1.jpg");
+                            if (jogoJson.has("genres")) {
+                                JSONArray generos = jogoJson.getJSONArray("genres");
+                                List<String> generosList = new ArrayList<>();
+                                for (int j = 0; j < generos.length(); j++) {
+                                    generosList.add(generos.getJSONObject(j).getString("name"));
+                                }
+                                jogo.setGeneros(String.join(", ", generosList));
+                            }
+                            if (jogoJson.has("platforms")) {
+                                JSONArray plataformas = jogoJson.getJSONArray("platforms");
+                                List<String> plataformasList = new ArrayList<>();
+                                for (int j = 0; j < plataformas.length(); j++) {
+                                    plataformasList.add(plataformas.getJSONObject(j).getJSONObject("platform").getString("name"));
+                                }
+                                jogo.setPlataformas(String.join(", ", plataformasList));
+                            }
+                            if (jogoJson.has("metacritic") && !jogoJson.isNull("metacritic")) {
+                                jogo.setNota(jogoJson.getDouble("metacritic"));
+                            }
+                            if (jogoJson.has("released")) {
+                                jogo.setDataLancamento(jogoJson.getString("released"));
+                            }
+                            List<String> screenshots = buscarScreenshots(jogoJson.getLong("id"));
+                            jogo.setScreenshots(screenshots);
+                            jogos.add(jogo);
+                        }
+                    }
+                } catch (Exception e) {
+                    // Se der erro em um jogo, ignora e segue para o próximo
+                }
+            }
+        } catch (Exception e) {
+            // Se der erro geral, retorna o que conseguiu
+        }
+        favoritosDetalhesCache.put(usuarioId, new CacheEntry(jogos, now));
+        return jogos;
     }
 } 
