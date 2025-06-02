@@ -214,13 +214,13 @@
                         <input type="file" id="avatar-input" name="avatar" accept="image/*" style="display: none;">
                     </div>
                     <div class="profile-info">
-                        <h2><%= usuario.getNome() %></h2>
+                        <h2><%= usuario.getNmUsuario() %></h2>
                         <p><%= usuario.getEmail() %></p>
                     </div>
                 </div>
                 <div class="mb-3">
                     <label for="nome" class="form-label">Nome de Usuário</label>
-                    <input type="text" class="form-control" id="nome" name="nome" value="<%= usuario.getNome() %>" required>
+                    <input type="text" class="form-control" id="nome" name="nome" value="<%= usuario.getNmUsuario() %>" required>
                 </div>
                 <div class="mb-3">
                     <label for="email" class="form-label">E-mail</label>

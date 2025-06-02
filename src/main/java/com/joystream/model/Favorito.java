@@ -1,92 +1,51 @@
 package com.joystream.model;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 
 public class Favorito {
-    private int id;
-    private int usuarioId;
-    private int jogoId;
-    private String nomeJogo;
-    private String imagemUrl;
-    private Date dataLancamento;
-    private Integer nota;
-    private Timestamp dataFavoritado;
+    private int idFavorito;
+    private int idUsuario;
+    private int idJogo;
+    private Timestamp dtFavoritado;
 
     // Construtores
     public Favorito() {}
 
-    public Favorito(int usuarioId, int jogoId, String nomeJogo, String imagemUrl, Date dataLancamento, Integer nota) {
-        this.usuarioId = usuarioId;
-        this.jogoId = jogoId;
-        this.nomeJogo = nomeJogo;
-        this.imagemUrl = imagemUrl;
-        this.dataLancamento = dataLancamento;
-        this.nota = nota;
+    public Favorito(int idUsuario, int idJogo) {
+        this.idUsuario = idUsuario;
+        this.idJogo = idJogo;
     }
 
     // Getters e Setters
-    public int getId() {
-        return id;
+    public int getIdFavorito() {
+        return idFavorito;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setIdFavorito(int idFavorito) {
+        this.idFavorito = idFavorito;
     }
 
-    public int getUsuarioId() {
-        return usuarioId;
+    public int getIdUsuario() {
+        return idUsuario;
     }
 
-    public void setUsuarioId(int usuarioId) {
-        this.usuarioId = usuarioId;
+    public void setIdUsuario(int idUsuario) {
+        this.idUsuario = idUsuario;
     }
 
-    public int getJogoId() {
-        return jogoId;
+    public int getIdJogo() {
+        return idJogo;
     }
 
-    public void setJogoId(int jogoId) {
-        this.jogoId = jogoId;
+    public void setIdJogo(int idJogo) {
+        this.idJogo = idJogo;
     }
 
-    public String getNomeJogo() {
-        return nomeJogo;
+    public Timestamp getDtFavoritado() {
+        return dtFavoritado;
     }
 
-    public void setNomeJogo(String nomeJogo) {
-        this.nomeJogo = nomeJogo;
-    }
-
-    public String getImagemUrl() {
-        return imagemUrl;
-    }
-
-    public void setImagemUrl(String imagemUrl) {
-        this.imagemUrl = imagemUrl;
-    }
-
-    public Date getDataLancamento() {
-        return dataLancamento;
-    }
-
-    public void setDataLancamento(Date dataLancamento) {
-        this.dataLancamento = dataLancamento;
-    }
-
-    public Integer getNota() {
-        return nota;
-    }
-
-    public void setNota(Integer nota) {
-        this.nota = nota;
-    }
-
-    public Timestamp getDataFavoritado() {
-        return dataFavoritado;
-    }
-
-    public void setDataFavoritado(Timestamp dataFavoritado) {
-        this.dataFavoritado = dataFavoritado;
+    public void setDtFavoritado(Timestamp dtFavoritado) {
+        this.dtFavoritado = dtFavoritado;
     }
 } 

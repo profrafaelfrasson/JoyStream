@@ -28,7 +28,7 @@ public class CadastroServlet extends HttpServlet {
         email = email.toLowerCase().trim();
 
         Usuario usuario = new Usuario();
-        usuario.setNome(nome);
+        usuario.setNmUsuario(nome);
         usuario.setEmail(email);
         usuario.setSenha(senha);
         usuario.setAvatar("");
@@ -37,8 +37,6 @@ public class CadastroServlet extends HttpServlet {
         boolean sucesso = dao.cadastrar(usuario);
 
         if (sucesso) {
-
-            
             response.sendRedirect("login.jsp");
         } else {
             request.setAttribute("erroCadastro", "E-mail já cadastrado!");

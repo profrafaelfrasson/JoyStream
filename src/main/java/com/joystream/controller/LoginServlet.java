@@ -40,7 +40,7 @@ public class LoginServlet extends HttpServlet {
             // Criar nova sessão
             session = request.getSession(true);
             session.setAttribute("usuario", usuario);
-            session.setAttribute("nome", usuario.getNome());
+            session.setAttribute("nome", usuario.getNmUsuario());
             session.setAttribute("email", usuario.getEmail());
             
             // Limpar qualquer mensagem de erro anterior

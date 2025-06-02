@@ -135,18 +135,14 @@
         <div class="games-grid">
             <% if (favoritos != null && !favoritos.isEmpty()) { %>
                 <% for (Favorito favorito : favoritos) { %>
-                    <div class="game-card" id="game-<%= favorito.getJogoId() %>">
-                        <img src="<%= favorito.getImagemUrl() %>" alt="<%= favorito.getNomeJogo() %>">
-                        <button class="remove-favorite" onclick="removerFavorito(<%= favorito.getJogoId() %>)">
+                    <div class="game-card" id="game-<%= favorito.getIdJogo() %>">
+                        <button class="remove-favorite" onclick="removerFavorito(<%= favorito.getIdJogo() %>)">
                             <i class="fas fa-heart-broken"></i>
                         </button>
                         <div class="game-info">
-                            <h3 class="game-title"><%= favorito.getNomeJogo() %></h3>
+                            <h3 class="game-title">Jogo #<%= favorito.getIdJogo() %></h3>
                             <div class="game-details">
-                                <p>Lançamento: <%= favorito.getDataLancamento() %></p>
-                                <% if (favorito.getNota() != null) { %>
-                                    <p>Nota: <%= favorito.getNota() %></p>
-                                <% } %>
+                                <p>Favoritado em: <%= favorito.getDtFavoritado() %></p>
                             </div>
                         </div>
                     </div>

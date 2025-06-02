@@ -177,7 +177,7 @@
             <div class="dropdown">
                 <div class="user-info">
                     <img src="<%= avatarUrl %>" alt="Avatar" class="user-avatar">
-                    <span class="user-name"><%= usuario.getNome() %></span>
+                    <span class="user-name"><%= usuario.getNmUsuario() %></span>
                 </div>
                 <div class="dropdown-content">
                     <a href="<%= request.getContextPath() %>/perfil.jsp" class="<%= currentPage.equals("perfil.jsp") ? "active" : "" %>">Meu Perfil</a>

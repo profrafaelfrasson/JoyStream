@@ -14,9 +14,9 @@
     Usuario usuario = (Usuario) session.getAttribute("usuario");
     boolean logado = (usuario != null);
     List<Jogo> jogosRecomendados = null;
-    if (logado && usuario.getId() > 0) {
-        System.out.println("Usuário logado com ID: " + usuario.getId());
-        jogosRecomendados = jogoService.buscarJogosRecomendados(usuario.getId());
+    if (logado && usuario.getIdUsuario() > 0) {
+        System.out.println("Usuário logado com ID: " + usuario.getIdUsuario());
+        jogosRecomendados = jogoService.buscarJogosRecomendados(usuario.getIdUsuario());
         System.out.println("Jogos recomendados encontrados: " + (jogosRecomendados != null ? jogosRecomendados.size() : "null"));
     } else {
         System.out.println("Usuário não está logado ou ID inválido");

@@ -71,7 +71,7 @@ public class AtualizarPerfilServlet extends HttpServlet {
         UsuarioDAO dao = new UsuarioDAO();
         Usuario usuarioBanco = dao.buscarPorEmail(usuarioAtual.getEmail());
 
-        usuarioAtual.setNome(nome);
+        usuarioAtual.setNmUsuario(nome);
         usuarioAtual.setAvatar(avatarBase64);
 
         // Atualizar no banco de dados
@@ -91,7 +91,7 @@ public class AtualizarPerfilServlet extends HttpServlet {
         if (sucesso) {
             // Atualizar sessão
             session.setAttribute("usuario", usuarioAtual);
-            session.setAttribute("nome", usuarioAtual.getNome());
+            session.setAttribute("nome", usuarioAtual.getNmUsuario());
             
             // Redirecionar com mensagem de sucesso
             response.sendRedirect("perfil.jsp?sucesso=true");

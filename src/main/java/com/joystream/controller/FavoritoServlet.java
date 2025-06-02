@@ -33,35 +33,18 @@ public class FavoritoServlet extends HttpServlet {
             
             System.out.println("Ação solicitada: " + action);
             System.out.println("ID do jogo: " + jogoId);
-            System.out.println("ID do usuário: " + usuario.getId());
+            System.out.println("ID do usuário: " + usuario.getIdUsuario());
             
             if ("adicionar".equals(action)) {
-                String nomeJogo = request.getParameter("nomeJogo");
-                String imagemUrl = request.getParameter("imagemUrl");
-                String dataLancamento = request.getParameter("dataLancamento");
-                String notaStr = request.getParameter("nota");
-                
-                System.out.println("Dados do jogo:");
-                System.out.println("Nome: " + nomeJogo);
-                System.out.println("Imagem: " + imagemUrl);
-                System.out.println("Data: " + dataLancamento);
-                System.out.println("Nota: " + notaStr);
-                
                 Favorito favorito = new Favorito();
-                favorito.setUsuarioId(usuario.getId());
-                favorito.setJogoId(jogoId);
-                favorito.setNomeJogo(nomeJogo);
-                favorito.setImagemUrl(imagemUrl);
-                favorito.setDataLancamento(Date.valueOf(dataLancamento));
-                if (notaStr != null && !notaStr.isEmpty() && !"null".equals(notaStr)) {
-                    favorito.setNota(Integer.parseInt(notaStr));
-                }
+                favorito.setIdUsuario(usuario.getIdUsuario());
+                favorito.setIdJogo(jogoId);
                 
                 favoritoDAO.adicionar(favorito);
                 response.setStatus(HttpServletResponse.SC_OK);
                 
             } else if ("remover".equals(action)) {
-                favoritoDAO.remover(usuario.getId(), jogoId);
+                favoritoDAO.remover(usuario.getIdUsuario(), jogoId);
                 response.setStatus(HttpServletResponse.SC_OK);
             }
             
@@ -93,7 +76,7 @@ public class FavoritoServlet extends HttpServlet {
         if ("/check".equals(pathInfo)) {
             try {
                 int jogoId = Integer.parseInt(request.getParameter("jogoId"));
-                boolean isFavorito = favoritoDAO.isFavorito(usuario.getId(), jogoId);
+                boolean isFavorito = favoritoDAO.isFavorito(usuario.getIdUsuario(), jogoId);
                 
                 JSONObject json = new JSONObject();
                 json.put("isFavorito", isFavorito);
@@ -109,7 +92,7 @@ public class FavoritoServlet extends HttpServlet {
             }
         } else {
             try {
-                List<Favorito> favoritos = favoritoDAO.listarPorUsuario(usuario.getId());
+                List<Favorito> favoritos = favoritoDAO.listarPorUsuario(usuario.getIdUsuario());
                 request.setAttribute("favoritos", favoritos);
                 request.getRequestDispatcher("/favoritos.jsp").forward(request, response);
             } catch (Exception e) {

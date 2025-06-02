@@ -5,15 +5,15 @@ import java.sql.*;
 import org.mindrot.jbcrypt.BCrypt;
 
 public class UsuarioDAO {
-    private static final String INSERT_SQL = "INSERT INTO usuarios (nome, email, senha, avatar) VALUES (?, ?, ?, ?)";
-    private static final String SELECT_SQL = "SELECT * FROM usuarios WHERE email = ? AND senha = ?";
+    private static final String INSERT_SQL = "INSERT INTO usuario (nm_usuario, email, senha, avatar, dt_criacao, dt_atualizacao) VALUES (?, ?, ?, ?, NOW(), NOW())";
+    private static final String SELECT_SQL = "SELECT * FROM usuario WHERE email = ?";
 
     protected Connection getConnection() throws SQLException {
         return DBConfig.getConnection();
     }
 
     public boolean emailExiste(String email) {
-        String sql = "SELECT id FROM usuarios WHERE email = ?";
+        String sql = "SELECT id_usuario FROM usuario WHERE email = ?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, email);
@@ -32,7 +32,7 @@ public class UsuarioDAO {
 
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(INSERT_SQL)) {
-            stmt.setString(1, usuario.getNome());
+            stmt.setString(1, usuario.getNmUsuario());
             stmt.setString(2, usuario.getEmail());
             String senhaHash = BCrypt.hashpw(usuario.getSenha(), BCrypt.gensalt());
             stmt.setString(3, senhaHash);
@@ -48,7 +48,7 @@ public class UsuarioDAO {
 
     public Usuario login(String email, String senha) {
         try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM usuarios WHERE email = ?")) {
+             PreparedStatement stmt = conn.prepareStatement(SELECT_SQL)) {
             stmt.setString(1, email);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -57,17 +57,19 @@ public class UsuarioDAO {
                 // Se a senha não estiver no formato BCrypt, converte e atualiza
                 if (!senhaHash.startsWith("$2")) {
                     String novoHash = BCrypt.hashpw(senha, BCrypt.gensalt());
-                    atualizarSenha(rs.getInt("id"), novoHash);
+                    atualizarSenha(rs.getInt("id_usuario"), novoHash);
                     senhaHash = novoHash;
                 }
                 
                 if (BCrypt.checkpw(senha, senhaHash)) {
                     Usuario u = new Usuario();
-                    u.setId(rs.getInt("id"));
-                    u.setNome(rs.getString("nome"));
+                    u.setIdUsuario(rs.getInt("id_usuario"));
+                    u.setNmUsuario(rs.getString("nm_usuario"));
                     u.setEmail(rs.getString("email"));
                     u.setSenha(senhaHash);
                     u.setAvatar(rs.getString("avatar"));
+                    u.setDtCriacao(rs.getTimestamp("dt_criacao"));
+                    u.setDtAtualizacao(rs.getTimestamp("dt_atualizacao"));
                     return u;
                 }
             }
@@ -78,12 +80,12 @@ public class UsuarioDAO {
         return null;
     }
 
-    private void atualizarSenha(int userId, String novaSenhaHash) {
-        String sql = "UPDATE usuarios SET senha = ? WHERE id = ?";
+    private void atualizarSenha(int idUsuario, String novaSenhaHash) {
+        String sql = "UPDATE usuario SET senha = ?, dt_atualizacao = NOW() WHERE id_usuario = ?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, novaSenhaHash);
-            stmt.setInt(2, userId);
+            stmt.setInt(2, idUsuario);
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -91,21 +93,21 @@ public class UsuarioDAO {
     }
 
     public Usuario buscarPorEmail(String email) {
-        String sql = "SELECT * FROM usuarios WHERE email = ?";
-        
         try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(SELECT_SQL)) {
             
             stmt.setString(1, email);
             ResultSet rs = stmt.executeQuery();
             
             if (rs.next()) {
                 Usuario usuario = new Usuario();
-                usuario.setId(rs.getInt("id"));
-                usuario.setNome(rs.getString("nome"));
+                usuario.setIdUsuario(rs.getInt("id_usuario"));
+                usuario.setNmUsuario(rs.getString("nm_usuario"));
                 usuario.setEmail(rs.getString("email"));
                 usuario.setSenha(rs.getString("senha"));
                 usuario.setAvatar(rs.getString("avatar"));
+                usuario.setDtCriacao(rs.getTimestamp("dt_criacao"));
+                usuario.setDtAtualizacao(rs.getTimestamp("dt_atualizacao"));
                 return usuario;
             }
         } catch (SQLException e) {
@@ -115,12 +117,12 @@ public class UsuarioDAO {
     }
 
     public boolean atualizarPerfil(Usuario usuario) {
-        String sql = "UPDATE usuarios SET nome = ?, avatar = ? WHERE id = ?";
+        String sql = "UPDATE usuario SET nm_usuario = ?, avatar = ?, dt_atualizacao = NOW() WHERE id_usuario = ?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, usuario.getNome());
+            stmt.setString(1, usuario.getNmUsuario());
             stmt.setString(2, usuario.getAvatar());
-            stmt.setInt(3, usuario.getId());
+            stmt.setInt(3, usuario.getIdUsuario());
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -129,13 +131,13 @@ public class UsuarioDAO {
     }
 
     public boolean atualizarSenha(Usuario usuario) {
-        String sql = "UPDATE usuarios SET senha = ? WHERE id = ?";
+        String sql = "UPDATE usuario SET senha = ?, dt_atualizacao = NOW() WHERE id_usuario = ?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
             String senhaHash = BCrypt.hashpw(usuario.getSenha(), BCrypt.gensalt());
             stmt.setString(1, senhaHash);
-            stmt.setInt(2, usuario.getId());
+            stmt.setInt(2, usuario.getIdUsuario());
             
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
