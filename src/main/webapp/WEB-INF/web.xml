@@ -15,4 +15,71 @@
         <session-timeout>30</session-timeout>
     </session-config>
 
+    <!-- Erros HTTP comuns -->
+    <error-page>
+        <error-code>400</error-code>
+        <location>/erroGenerico.jsp</location>
+    </error-page>
+
+    <error-page>
+        <error-code>401</error-code>
+        <location>/erroGenerico.jsp</location>
+    </error-page>
+
+    <error-page>
+        <error-code>403</error-code>
+        <location>/erroGenerico.jsp</location>
+    </error-page>
+
+    <error-page>
+        <error-code>404</error-code>
+        <location>/erro404.jsp</location>
+    </error-page>
+
+    <error-page>
+        <error-code>405</error-code>
+        <location>/erroGenerico.jsp</location>
+    </error-page>
+
+    <error-page>
+        <error-code>500</error-code>
+        <location>/erro500.jsp</location>
+    </error-page>
+
+    <error-page>
+        <error-code>503</error-code>
+        <location>/erro500.jsp</location>
+    </error-page>
+
+    <!-- Exceções comuns -->
+    <error-page>
+        <exception-type>java.lang.Throwable</exception-type>
+        <location>/erro500.jsp</location>
+    </error-page>
+
+    <error-page>
+        <exception-type>java.lang.Exception</exception-type>
+        <location>/erro500.jsp</location>
+    </error-page>
+
+    <error-page>
+        <exception-type>java.lang.RuntimeException</exception-type>
+        <location>/erro500.jsp</location>
+    </error-page>
+
+    <error-page>
+        <exception-type>java.lang.NullPointerException</exception-type>
+        <location>/erro500.jsp</location>
+    </error-page>
+
+    <error-page>
+        <exception-type>javax.servlet.ServletException</exception-type>
+        <location>/erro500.jsp</location>
+    </error-page>
+
+    <error-page>
+        <exception-type>java.io.IOException</exception-type>
+        <location>/erro500.jsp</location>
+    </error-page>
+
 </web-app>
