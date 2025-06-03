@@ -251,6 +251,9 @@
                             <button class="remove-favorite" onclick="removerFavorito(<%= jogo.getId() %>)">
                                 <i class="fas fa-heart-broken"></i>
                             </button>
+                            <button class="analise-icone" id="analise-icone-<%= jogo.getId() %>" onclick="abrirModalAnalise(<%= jogo.getId() %>)" style="position:absolute;top:10px;left:10px;background:rgba(241,196,15,0.9);border:none;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;transition:background 0.3s;">
+                                <i class="fas fa-pen fa-lg" id="analise-icon-fa-<%= jogo.getId() %>" style="color:#222;"></i>
+                            </button>
                             <div class="game-image-container">
                                 <img src="<%= jogo.getImagemUrl() != null ? jogo.getImagemUrl() : request.getContextPath() + "/assets/img/game-placeholder.jpg" %>" 
                                      alt="<%= jogo.getNome() %>" 
@@ -285,6 +288,9 @@
                                 </div>
                                 <button class="more-info-btn" onclick="window.location.href='detalhe.jsp?id=<%= jogo.getId() %>'">
                                     Mais Informações <i class="fas fa-arrow-right"></i>
+                                </button>
+                                <button class="concluido-btn" id="btn-concluido-<%= jogo.getId() %>" onclick="toggleConcluido(<%= jogo.getId() %>)" style="width:100%;margin-top:8px;background:#c0392b;color:#fff;font-weight:bold;border:none;border-radius:6px;padding:10px 0;transition:background 0.3s, color 0.3s;font-family:'Segoe UI',sans-serif;font-size:15px;">
+                                    <span id="txt-concluido-<%= jogo.getId() %>">Não finalizado</span>
                                 </button>
                             </div>
                         </div>
@@ -343,6 +349,190 @@
                 }
             });
         }
+    </script>
+
+    <!-- Modal simples -->
+    <div id="modal-concluido" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);z-index:999;align-items:center;justify-content:center;">
+        <div style="background:#222;padding:24px 32px;border-radius:8px;text-align:center;min-width:260px;">
+            <p style="color:#fff;font-size:1.1em;">Você finalizou esse game?</p>
+            <div style="margin-top:16px;">
+                <button id="btn-sim" style="margin-right:16px;padding:8px 24px;background:#27ae60;color:#fff;border:none;border-radius:4px;cursor:pointer;">Sim</button>
+                <button id="btn-nao" style="padding:8px 24px;background:#c0392b;color:#fff;border:none;border-radius:4px;cursor:pointer;">Não</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    let jogoIdAtual = null;
+
+    function perguntarConcluido(jogoId) {
+        jogoIdAtual = jogoId;
+        document.getElementById('modal-concluido').style.display = 'flex';
+    }
+
+    document.getElementById('btn-sim').onclick = function() {
+        if (jogoIdAtual) {
+            localStorage.setItem('concluido_' + jogoIdAtual, '1');
+            atualizarBotaoConcluido(jogoIdAtual);
+        }
+        fecharModalConcluido();
+    };
+
+    document.getElementById('btn-nao').onclick = function() {
+        if (jogoIdAtual) {
+            localStorage.setItem('concluido_' + jogoIdAtual, '0');
+            atualizarBotaoConcluido(jogoIdAtual);
+        }
+        fecharModalConcluido();
+    };
+
+    function fecharModalConcluido() {
+        document.getElementById('modal-concluido').style.display = 'none';
+        jogoIdAtual = null;
+    }
+
+    function toggleConcluido(jogoId) {
+        const status = localStorage.getItem('concluido_' + jogoId);
+        if (status === '1') {
+            localStorage.setItem('concluido_' + jogoId, '0');
+        } else {
+            localStorage.setItem('concluido_' + jogoId, '1');
+        }
+        atualizarBotaoConcluido(jogoId);
+    }
+
+    function atualizarBotaoConcluido(jogoId) {
+        const status = localStorage.getItem('concluido_' + jogoId);
+        const btn = document.getElementById('btn-concluido-' + jogoId);
+        const txt = document.getElementById('txt-concluido-' + jogoId);
+        btn.style.fontWeight = 'bold';
+        btn.style.fontFamily = "'Segoe UI',sans-serif";
+        btn.style.fontSize = '15px';
+        btn.style.borderRadius = '6px';
+        btn.style.border = 'none';
+        btn.style.transition = 'background 0.3s, color 0.3s';
+        if (status === '1') {
+            btn.style.background = '#27ae60';
+            btn.style.color = '#fff';
+            txt.textContent = 'Finalizado!';
+        } else {
+            btn.style.background = '#c0392b';
+            btn.style.color = '#fff';
+            txt.textContent = 'Não finalizado';
+        }
+    }
+
+    function carregarConcluidos() {
+        document.querySelectorAll('.concluido-btn').forEach(function(btn) {
+            const jogoId = btn.id.replace('btn-concluido-', '');
+            atualizarBotaoConcluido(jogoId);
+        });
+    }
+
+    window.onload = function() {
+        carregarConcluidos();
+    };
+    </script>
+
+    <!-- Modal de análise -->
+    <div id="modal-analise" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);z-index:1001;align-items:center;justify-content:center;">
+        <div style="background:#222;padding:24px 32px;border-radius:8px;text-align:center;min-width:320px;max-width:90vw;">
+            <h3 style="color:#f1c40f;margin-bottom:16px;">Publique sua análise</h3>
+            <textarea id="analise-text" rows="5" style="width:100%;border-radius:6px;border:none;padding:10px;font-size:1em;resize:vertical;margin-bottom:16px;" placeholder="Escreva sua análise..."></textarea>
+            <div style="margin-bottom:16px;">
+                <label style="color:#fff;margin-right:8px;">Nota:</label>
+                <div id="analise-nota-btns" style="display:flex;gap:4px;justify-content:center;align-items:center;">
+                    <!-- Botões de nota de 0 a 10 -->
+                    <script>
+                    for (let i = 0; i <= 10; i++) {
+                        document.write('<button type="button" class="nota-btn" data-nota="'+i+'" style="background:#333;color:#fff;border:none;border-radius:4px;padding:4px 8px;font-size:1em;cursor:pointer;transition:background 0.2s;">'+i+'</button>');
+                    }
+                    </script>
+                </div>
+            </div>
+            <div style="margin-top:12px;">
+                <button id="btn-publicar-analise" style="background:#f1c40f;color:#222;font-weight:bold;border:none;border-radius:6px;padding:8px 24px;margin-right:12px;cursor:pointer;">Publicar</button>
+                <button id="btn-cancelar-analise" style="background:#c0392b;color:#fff;font-weight:bold;border:none;border-radius:6px;padding:8px 24px;cursor:pointer;">Cancelar</button>
+            </div>
+        </div>
+    </div>
+    <script>
+    let jogoIdAnalise = null;
+    let notaSelecionada = null;
+
+    function abrirModalAnalise(jogoId) {
+        jogoIdAnalise = jogoId;
+        document.getElementById('analise-text').value = localStorage.getItem('analise_' + jogoId) || '';
+        notaSelecionada = localStorage.getItem('nota_' + jogoId) || null;
+        destacarNotaSelecionada();
+        document.getElementById('modal-analise').style.display = 'flex';
+    }
+
+    function destacarNotaSelecionada() {
+        document.querySelectorAll('#analise-nota-btns .nota-btn').forEach(function(btn) {
+            if (btn.getAttribute('data-nota') === String(notaSelecionada)) {
+                btn.style.background = '#f1c40f';
+                btn.style.color = '#222';
+                btn.style.fontWeight = 'bold';
+            } else {
+                btn.style.background = '#333';
+                btn.style.color = '#fff';
+                btn.style.fontWeight = 'normal';
+            }
+        });
+    }
+
+    document.querySelectorAll('#analise-nota-btns .nota-btn').forEach(function(btn) {
+        btn.onclick = function() {
+            notaSelecionada = btn.getAttribute('data-nota');
+            destacarNotaSelecionada();
+        };
+    });
+
+    document.getElementById('btn-publicar-analise').onclick = function() {
+        if (jogoIdAnalise) {
+            const texto = document.getElementById('analise-text').value.trim();
+            localStorage.setItem('analise_' + jogoIdAnalise, texto);
+            localStorage.setItem('nota_' + jogoIdAnalise, notaSelecionada || '');
+            atualizarIconeAnalise(jogoIdAnalise);
+        }
+        fecharModalAnalise();
+    };
+
+    document.getElementById('btn-cancelar-analise').onclick = function() {
+        fecharModalAnalise();
+    };
+
+    function fecharModalAnalise() {
+        document.getElementById('modal-analise').style.display = 'none';
+        jogoIdAnalise = null;
+    }
+
+    function atualizarIconeAnalise(jogoId) {
+        const texto = localStorage.getItem('analise_' + jogoId);
+        const nota = localStorage.getItem('nota_' + jogoId);
+        const icone = document.getElementById('analise-icone-' + jogoId);
+        const faIcon = document.getElementById('analise-icon-fa-' + jogoId);
+        if ((texto && texto.length > 0) || (nota && nota.length > 0)) {
+            icone.style.background = '#27ae60';
+            faIcon.style.color = '#fff';
+        } else {
+            icone.style.background = 'rgba(241,196,15,0.9)';
+            faIcon.style.color = '#222';
+        }
+    }
+
+    function carregarAnalises() {
+        document.querySelectorAll('.analise-icone').forEach(function(btn) {
+            const jogoId = btn.id.replace('analise-icone-', '');
+            atualizarIconeAnalise(jogoId);
+        });
+    }
+
+    window.onload = function() {
+        carregarConcluidos();
+        carregarAnalises();
+    };
     </script>
 </body>
 </html> 
