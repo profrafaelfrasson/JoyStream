@@ -20,7 +20,7 @@ public class DBConfig {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
             // Se não encontrar o driver, lança uma exceção em tempo de inicialização
-            throw new ExceptionInInitializerError("Driver JDBC do MySQL não encontrado. Adicione o JAR ao classpath.");
+            e.printStackTrace();
         }
     }
 

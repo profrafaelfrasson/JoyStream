@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="com.joystream.model.*" %>
+<%@ page import="com.joystream.dao.*" %>
 <%@ page import="java.util.List" %>
 <%@ page session="true" %>
 <%
@@ -9,8 +10,9 @@
         return;
     }
     
-    List<Jogo> favoritos = (List<Jogo>) request.getAttribute("favoritos");
-    if (favoritos == null) {
+    List<Jogo> jogos = (List<Jogo>) request.getAttribute("favoritos");
+    List<Favorito> favoritos = (List<Favorito>) request.getAttribute("favoritos_detalhes");
+    if (favoritos == null || jogos == null) {
         response.sendRedirect("favorito");
         return;
     }
@@ -27,6 +29,10 @@
     request.setAttribute("pageTitle", "JoyStream - Meus Favoritos");
     request.setAttribute("pageDescription", "Meus jogos favoritos");
     request.setAttribute("pageKeywords", "favoritos, jogos favoritos, meus favoritos");
+
+    // Instanciar DAOs
+    AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
+    FavoritoDAO favoritoDAO = new FavoritoDAO();
 %>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -249,16 +255,216 @@
             padding: 4px 10px;
             font-size: 1em;
             cursor: pointer;
-            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+            transition: all 0.2s ease;
             margin: 0 1px;
             outline: none;
         }
-        .nota-btn.selected,
-        .nota-btn:focus {
+        .nota-btn:hover {
+            background: #444;
+            transform: translateY(-2px);
+        }
+
+        .nota-btn.selected {
             background: #f1c40f;
             color: #222;
             font-weight: bold;
-            box-shadow: 0 0 0 2px #f1c40f55;
+            box-shadow: 0 0 0 2px rgba(241,196,15,0.3);
+            transform: translateY(-2px);
+        }
+
+        .analise-icone {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 2;
+            transition: background 0.3s;
+        }
+        
+        .analise-icone.avaliado {
+            background: #27ae60;
+        }
+        
+        .analise-icone.nao-avaliado {
+            background: rgba(241,196,15,0.9);
+        }
+        
+        .analise-icone i {
+            font-size: 1.2em;
+        }
+        
+        .analise-icone.avaliado i {
+            color: #fff;
+        }
+        
+        .analise-icone.nao-avaliado i {
+            color: #222;
+        }
+        
+        .concluido-btn {
+            width: 100%;
+            margin-top: 8px;
+            color: #fff;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 0;
+            transition: background 0.3s, color 0.3s;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 15px;
+        }
+        
+        .concluido-btn.finalizado {
+            background: #27ae60;
+        }
+        
+        .concluido-btn.nao-finalizado {
+            background: #c0392b;
+        }
+        
+        .avaliacao-usuario {
+            background: #222;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 8px;
+        }
+        
+        .avaliacao-usuario h5 {
+            color: #f1c40f;
+            margin-bottom: 6px;
+            font-size: 1em;
+        }
+        
+        .avaliacao-nota {
+            background: #f1c40f;
+            color: #222;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        .avaliacao-comentario {
+            color: #fff;
+            white-space: pre-line;
+            font-size: 0.95em;
+        }
+
+        /* Estilos do Modal */
+        .modal-analise {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.8);
+            z-index: 1001;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: #222;
+            padding: 24px 32px;
+            border-radius: 8px;
+            text-align: center;
+            min-width: 320px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .modal-title {
+            color: #f1c40f;
+            margin-bottom: 16px;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .modal-textarea {
+            width: 100%;
+            border-radius: 6px;
+            border: 1px solid #333;
+            padding: 12px;
+            font-size: 1em;
+            resize: vertical;
+            margin-bottom: 16px;
+            background: #333;
+            color: #fff;
+            min-height: 120px;
+            max-height: 300px;
+            box-sizing: border-box;
+        }
+
+        .modal-textarea:focus {
+            outline: none;
+            border-color: #f1c40f;
+            box-shadow: 0 0 0 2px rgba(241,196,15,0.2);
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .modal-btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+        }
+
+        .modal-btn-publicar {
+            background: #f1c40f;
+            color: #222;
+        }
+
+        .modal-btn-publicar:hover {
+            background: #f39c12;
+            transform: translateY(-2px);
+        }
+
+        .modal-btn-cancelar {
+            background: #c0392b;
+            color: #fff;
+        }
+
+        .modal-btn-cancelar:hover {
+            background: #e74c3c;
+            transform: translateY(-2px);
+        }
+
+        .modal-btn-disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            margin-left: 8px;
+            border: 2px solid #222;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -270,14 +476,24 @@
             <h1 class="page-title">Meus Jogos Favoritos</h1>
             
             <div class="games-grid">
-                <% if (favoritos != null && !favoritos.isEmpty()) { %>
-                    <% for (Jogo jogo : favoritos) { %>
-                        <div class="game-card" id="game-<%= jogo.getId() %>">
-                            <button class="remove-favorite" onclick="removerFavorito(<%= jogo.getId() %>)">
+                <% if (jogos != null && !jogos.isEmpty()) { %>
+                    <% for (int i = 0; i < jogos.size(); i++) { %>
+                        <% 
+                            Jogo jogo = jogos.get(i);
+                            Favorito favorito = favoritos.get(i);
+                            Avaliacao avaliacao = favorito.getAvaliacao();
+                            boolean concluido = favorito.isConcluido();
+                            int jogoId = jogo.getId().intValue();
+                        %>
+                        <div class="game-card" id="game-<%= jogoId %>">
+                            <button class="remove-favorite" onclick="removerFavorito(<%= jogoId %>)">
                                 <i class="fas fa-heart-broken"></i>
                             </button>
-                            <button class="analise-icone" id="analise-icone-<%= jogo.getId() %>" onclick="abrirModalAnalise(<%= jogo.getId() %>)" style="position:absolute;top:10px;left:10px;background:rgba(241,196,15,0.9);border:none;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;transition:background 0.3s;">
-                                <i class="fas fa-pen fa-lg" id="analise-icon-fa-<%= jogo.getId() %>" style="color:#222;"></i>
+                            <button 
+                                class="analise-icone <%= avaliacao != null ? "avaliado" : "nao-avaliado" %>" 
+                                id="analise-icone-<%= jogoId %>" 
+                                onclick="abrirModalAnalise(<%= jogoId %>)">
+                                <i class="fas fa-pen fa-lg"></i>
                             </button>
                             <div class="game-image-container">
                                 <img src="<%= jogo.getImagemUrl() != null ? jogo.getImagemUrl() : request.getContextPath() + "/assets/img/game-placeholder.jpg" %>" 
@@ -311,13 +527,28 @@
                                         </div>
                                     <% } %>
                                 </div>
-                                <button class="more-info-btn" onclick="window.location.href='detalhe.jsp?id=<%= jogo.getId() %>'">
+                                <button class="more-info-btn" onclick="window.location.href='detalhe.jsp?id=<%= jogoId %>'">
                                     Mais Informações <i class="fas fa-arrow-right"></i>
                                 </button>
-                                <button class="concluido-btn" id="btn-concluido-<%= jogo.getId() %>" onclick="toggleConcluido(<%= jogo.getId() %>)" style="width:100%;margin-top:8px;background:#c0392b;color:#fff;font-weight:bold;border:none;border-radius:6px;padding:10px 0;transition:background 0.3s, color 0.3s;font-family:'Segoe UI',sans-serif;font-size:15px;">
-                                    <span id="txt-concluido-<%= jogo.getId() %>">Não finalizado</span>
+                                <button 
+                                    class="concluido-btn <%= concluido ? "finalizado" : "nao-finalizado" %>" 
+                                    id="btn-concluido-<%= jogoId %>" 
+                                    onclick="toggleConcluido(<%= jogoId %>)">
+                                    <span id="txt-concluido-<%= jogoId %>"><%= concluido ? "Finalizado!" : "Não finalizado" %></span>
                                 </button>
-                                <div id="avaliacao-usuario-<%= jogo.getId() %>" style="margin-top:12px;"></div>
+                                <% if (avaliacao != null) { %>
+                                    <div class="avaliacao-usuario">
+                                        <h5>Sua avaliação:</h5>
+                                        <div style="margin-bottom:4px;"><b><%= nomeUsuario %></b></div>
+                                        <div style="font-size:1em;margin-bottom:4px;">
+                                            <b>Nota:</b> <span class="avaliacao-nota"><%= avaliacao.getNota() %></span>
+                                        </div>
+                                        <% if (avaliacao.getComentario() != null && !avaliacao.getComentario().isEmpty()) { %>
+                                            <div style="margin-bottom:2px;"><b>Comentário:</b></div>
+                                            <div class="avaliacao-comentario"><%= avaliacao.getComentario().replace("<", "&lt;").replace(">", "&gt;") %></div>
+                                        <% } %>
+                                    </div>
+                                <% } %>
                             </div>
                         </div>
                     <% } %>
@@ -378,13 +609,13 @@
     </script>
 
     <!-- Modal de análise -->
-    <div id="modal-analise" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);z-index:1001;align-items:center;justify-content:center;">
-        <div style="background:#222;padding:24px 32px;border-radius:8px;text-align:center;min-width:320px;max-width:90vw;">
-            <h3 style="color:#f1c40f;margin-bottom:16px;">Publique sua análise</h3>
-            <textarea id="analise-text" rows="5" style="width:100%;border-radius:6px;border:none;padding:10px;font-size:1em;resize:vertical;margin-bottom:16px;" placeholder="Escreva sua análise..."></textarea>
-            <div style="margin-bottom:16px;">
+    <div id="modal-analise" class="modal-analise">
+        <div class="modal-content">
+            <h3 class="modal-title">Publique sua análise</h3>
+            <textarea id="analise-text" class="modal-textarea" placeholder="Escreva sua análise..."></textarea>
+            <div>
                 <label style="color:#fff;margin-right:8px;">Nota:</label>
-                <div id="analise-nota-btns" style="display:flex;gap:4px;justify-content:center;align-items:center;">
+                <div id="analise-nota-btns" style="display:flex;gap:4px;justify-content:center;align-items:center;margin-top:8px;">
                     <button type="button" class="nota-btn" data-nota="0">0</button>
                     <button type="button" class="nota-btn" data-nota="1">1</button>
                     <button type="button" class="nota-btn" data-nota="2">2</button>
@@ -398,9 +629,12 @@
                     <button type="button" class="nota-btn" data-nota="10">10</button>
                 </div>
             </div>
-            <div style="margin-top:12px;">
-                <button id="btn-publicar-analise" style="background:#f1c40f;color:#222;font-weight:bold;border:none;border-radius:6px;padding:8px 24px;margin-right:12px;cursor:pointer;">Publicar</button>
-                <button id="btn-cancelar-analise" style="background:#c0392b;color:#fff;font-weight:bold;border:none;border-radius:6px;padding:8px 24px;cursor:pointer;">Cancelar</button>
+            <div class="modal-buttons">
+                <button id="btn-cancelar-analise" class="modal-btn modal-btn-cancelar">Cancelar</button>
+                <button id="btn-publicar-analise" class="modal-btn modal-btn-publicar">
+                    <span>Publicar</span>
+                    <div class="loading-spinner"></div>
+                </button>
             </div>
         </div>
     </div>
@@ -410,10 +644,33 @@
 
     function abrirModalAnalise(jogoId) {
         jogoIdAnalise = jogoId;
-        document.getElementById('analise-text').value = localStorage.getItem('analise_' + jogoId) || '';
-        notaSelecionada = localStorage.getItem('nota_' + jogoId) || null;
-        destacarNotaSelecionada();
-        document.getElementById('modal-analise').style.display = 'flex';
+        // Buscar avaliação existente
+        fetch('avaliacao?jogoId=' + jogoId)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro ao buscar avaliação');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const textArea = document.getElementById('analise-text');
+                textArea.value = data.comentario || '';
+                
+                // Ajusta a altura do textarea baseado no conteúdo
+                textArea.style.height = 'auto';
+                textArea.style.height = Math.min(300, Math.max(120, textArea.scrollHeight)) + 'px';
+                
+                notaSelecionada = data.nota;
+                destacarNotaSelecionada();
+                document.getElementById('modal-analise').style.display = 'flex';
+            })
+            .catch(error => {
+                console.error('Erro ao buscar avaliação:', error);
+                document.getElementById('analise-text').value = '';
+                notaSelecionada = null;
+                destacarNotaSelecionada();
+                document.getElementById('modal-analise').style.display = 'flex';
+            });
     }
 
     function destacarNotaSelecionada() {
@@ -428,20 +685,62 @@
 
     document.querySelectorAll('#analise-nota-btns .nota-btn').forEach(function(btn) {
         btn.onclick = function() {
-            notaSelecionada = btn.getAttribute('data-nota');
-            destacarNotaSelecionada();
+            const clickedNota = btn.getAttribute('data-nota');
+            // Se a nota clicada já estava selecionada, remove a seleção
+            if (clickedNota === String(notaSelecionada)) {
+                notaSelecionada = null;
+                btn.classList.remove('selected');
+            } else {
+                notaSelecionada = clickedNota;
+                destacarNotaSelecionada();
+            }
         };
+    });
+
+    // Ajusta a altura do textarea automaticamente enquanto o usuário digita
+    document.getElementById('analise-text').addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = Math.min(300, Math.max(120, this.scrollHeight)) + 'px';
     });
 
     document.getElementById('btn-publicar-analise').onclick = function() {
         if (jogoIdAnalise) {
+            const btnPublicar = this;
             const texto = document.getElementById('analise-text').value.trim();
             const nota = notaSelecionada || '';
-            // Salvar apenas no localStorage
-            localStorage.setItem('analise_' + jogoIdAnalise, texto);
-            localStorage.setItem('nota_' + jogoIdAnalise, nota);
-            atualizarIconeAnalise(jogoIdAnalise);
-            fecharModalAnalise();
+            
+            if (!nota) {
+                showError('Erro', 'Por favor, selecione uma nota para o jogo');
+                return;
+            }
+
+            // Desabilitar botão e mostrar loading
+            btnPublicar.classList.add('modal-btn-disabled');
+            btnPublicar.querySelector('.loading-spinner').style.display = 'inline-block';
+
+            fetch('avaliacao', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                },
+                body: 'jogoId=' + jogoIdAnalise + '&nota=' + nota + '&comentario=' + encodeURIComponent(texto)
+            }).then(response => {
+                if (response.ok) {
+                    fecharModalAnalise();
+                    window.location.reload();
+                } else {
+                    showError('Erro', 'Não foi possível salvar sua avaliação');
+                    // Reabilitar botão e esconder loading em caso de erro
+                    btnPublicar.classList.remove('modal-btn-disabled');
+                    btnPublicar.querySelector('.loading-spinner').style.display = 'none';
+                }
+            }).catch(error => {
+                console.error('Erro:', error);
+                showError('Erro', 'Não foi possível salvar sua avaliação');
+                // Reabilitar botão e esconder loading em caso de erro
+                btnPublicar.classList.remove('modal-btn-disabled');
+                btnPublicar.querySelector('.loading-spinner').style.display = 'none';
+            });
         }
     };
 
@@ -452,91 +751,32 @@
     function fecharModalAnalise() {
         document.getElementById('modal-analise').style.display = 'none';
         jogoIdAnalise = null;
-    }
-
-    function atualizarIconeAnalise(jogoId) {
-        const texto = localStorage.getItem('analise_' + jogoId);
-        const nota = localStorage.getItem('nota_' + jogoId);
-        const icone = document.getElementById('analise-icone-' + jogoId);
-        const faIcon = document.getElementById('analise-icon-fa-' + jogoId);
-        if ((texto && texto.length > 0) || (nota && nota.length > 0)) {
-            icone.style.background = '#27ae60';
-            faIcon.style.color = '#fff';
-        } else {
-            icone.style.background = 'rgba(241,196,15,0.9)';
-            faIcon.style.color = '#222';
-        }
-    }
-
-    function carregarAnalises() {
-        document.querySelectorAll('.analise-icone').forEach(function(btn) {
-            const jogoId = btn.id.replace('analise-icone-', '');
-            atualizarIconeAnalise(jogoId);
-        });
+        // Limpar estado do botão publicar
+        const btnPublicar = document.getElementById('btn-publicar-analise');
+        btnPublicar.classList.remove('modal-btn-disabled');
+        btnPublicar.querySelector('.loading-spinner').style.display = 'none';
     }
 
     function toggleConcluido(jogoId) {
-        const status = localStorage.getItem('concluido_' + jogoId);
-        if (status === '1') {
-            localStorage.setItem('concluido_' + jogoId, '0');
-        } else {
-            localStorage.setItem('concluido_' + jogoId, '1');
-        }
-        atualizarBotaoConcluido(jogoId);
-    }
-
-    function atualizarBotaoConcluido(jogoId) {
-        const status = localStorage.getItem('concluido_' + jogoId);
         const btn = document.getElementById('btn-concluido-' + jogoId);
         const txt = document.getElementById('txt-concluido-' + jogoId);
-        btn.style.fontWeight = 'bold';
-        btn.style.fontFamily = "'Segoe UI',sans-serif";
-        btn.style.fontSize = '15px';
-        btn.style.borderRadius = '6px';
-        btn.style.border = 'none';
-        btn.style.transition = 'background 0.3s, color 0.3s';
-        if (status === '1') {
-            btn.style.background = '#27ae60';
-            btn.style.color = '#fff';
-            txt.textContent = 'Finalizado!';
-        } else {
-            btn.style.background = '#c0392b';
-            btn.style.color = '#fff';
-            txt.textContent = 'Não finalizado';
-        }
-    }
+        const isConcluido = txt.textContent === 'Não finalizado';
 
-    function carregarConcluidos() {
-        document.querySelectorAll('.concluido-btn').forEach(function(btn) {
-            const jogoId = btn.id.replace('btn-concluido-', '');
-            atualizarBotaoConcluido(jogoId);
-        });
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        carregarConcluidos();
-        carregarAnalises();
-        document.querySelectorAll('.game-card').forEach(function(card) {
-            var jogoId = card.id.replace('game-', '');
-            var comentario = localStorage.getItem('analise_' + jogoId);
-            var nota = localStorage.getItem('nota_' + jogoId);
-            if ((comentario && comentario.length > 0) || (nota && nota.length > 0)) {
-                var nomeUsuario = "<%= nomeUsuario.replace("\"","\\\"") %>";
-                var html = '<div style="background:#222;padding:12px;border-radius:6px;margin-top:8px;">';
-                html += '<h5 style="color:#f1c40f;margin-bottom:6px;font-size:1em;">Sua avaliação:</h5>';
-                html += '<div style="margin-bottom:4px;"><b>' + nomeUsuario + '</b></div>';
-                if (nota && nota.length > 0) {
-                    html += '<div style="font-size:1em;margin-bottom:4px;"><b>Nota:</b> <span style="background:#f1c40f;color:#222;padding:2px 8px;border-radius:4px;font-weight:bold;">' + nota + '</span></div>';
-                }
-                if (comentario && comentario.length > 0) {
-                    html += '<div style="margin-bottom:2px;"><b>Comentário:</b></div>';
-                    html += '<div style="color:#fff;white-space:pre-line;font-size:0.95em;">' + comentario.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</div>';
-                }
-                html += '</div>';
-                document.getElementById('avaliacao-usuario-' + jogoId).innerHTML = html;
+        fetch('favorito?action=concluido&jogoId=' + jogoId + '&concluido=' + isConcluido, {
+            method: 'POST'
+        }).then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                btn.style.background = data.concluido ? '#27ae60' : '#c0392b';
+                txt.textContent = data.concluido ? 'Finalizado!' : 'Não finalizado';
+            } else {
+                showError('Erro', 'Não foi possível atualizar o status do jogo');
             }
+        }).catch(error => {
+            console.error('Erro:', error);
+            showError('Erro', 'Não foi possível atualizar o status do jogo');
         });
-    });
+    }
     </script>
 </body>
 </html> 

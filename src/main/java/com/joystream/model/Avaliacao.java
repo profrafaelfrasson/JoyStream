@@ -3,12 +3,13 @@ package com.joystream.model;
 import java.sql.Timestamp;
 
 public class Avaliacao {
-    private int idAvaliacao;
-    private int idUsuario;
-    private int idFavorito;
-    private int nota;
+    private Integer idAvaliacao;
+    private Integer idUsuario;
+    private Integer idFavorito;
+    private Integer nota;
     private String comentario;
     private Timestamp dtAvaliacao;
+    private String nomeUsuario; // Campo adicional para exibição
 
     // Construtores
     public Avaliacao() {}
@@ -21,35 +22,35 @@ public class Avaliacao {
     }
 
     // Getters e Setters
-    public int getIdAvaliacao() {
+    public Integer getIdAvaliacao() {
         return idAvaliacao;
     }
 
-    public void setIdAvaliacao(int idAvaliacao) {
+    public void setIdAvaliacao(Integer idAvaliacao) {
         this.idAvaliacao = idAvaliacao;
     }
 
-    public int getIdUsuario() {
+    public Integer getIdUsuario() {
         return idUsuario;
     }
 
-    public void setIdUsuario(int idUsuario) {
+    public void setIdUsuario(Integer idUsuario) {
         this.idUsuario = idUsuario;
     }
 
-    public int getIdFavorito() {
+    public Integer getIdFavorito() {
         return idFavorito;
     }
 
-    public void setIdFavorito(int idFavorito) {
+    public void setIdFavorito(Integer idFavorito) {
         this.idFavorito = idFavorito;
     }
 
-    public int getNota() {
+    public Integer getNota() {
         return nota;
     }
 
-    public void setNota(int nota) {
+    public void setNota(Integer nota) {
         this.nota = nota;
     }
 
@@ -67,5 +68,13 @@ public class Avaliacao {
 
     public void setDtAvaliacao(Timestamp dtAvaliacao) {
         this.dtAvaliacao = dtAvaliacao;
+    }
+
+    public String getNomeUsuario() {
+        return nomeUsuario;
+    }
+
+    public void setNomeUsuario(String nomeUsuario) {
+        this.nomeUsuario = nomeUsuario;
     }
 } 

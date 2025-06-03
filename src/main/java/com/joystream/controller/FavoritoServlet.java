@@ -61,6 +61,17 @@ public class FavoritoServlet extends HttpServlet {
                 jogoService.removerJogoDoCacheFavoritos(usuario.getIdUsuario(), jogoId);
                 
                 response.setStatus(HttpServletResponse.SC_OK);
+            } else if ("concluido".equals(action)) {
+                boolean concluido = Boolean.parseBoolean(request.getParameter("concluido"));
+                favoritoDAO.atualizarConcluido(usuario.getIdUsuario(), jogoId, concluido);
+                
+                JSONObject json = new JSONObject();
+                json.put("success", true);
+                json.put("concluido", concluido);
+                
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().write(json.toString());
             }
             
         } catch (NumberFormatException e) {
@@ -107,9 +118,14 @@ public class FavoritoServlet extends HttpServlet {
             }
         } else {
             try {
+                // Carregar favoritos com avaliações em uma única query
                 List<Favorito> favoritos = favoritoDAO.listarPorUsuario(usuario.getIdUsuario());
+                
+                // Carregar detalhes dos jogos usando o cache
                 List<Jogo> jogosFavoritos = jogoService.buscarDetalhesJogosFavoritos(favoritos);
+                
                 request.setAttribute("favoritos", jogosFavoritos);
+                request.setAttribute("favoritos_detalhes", favoritos);
                 request.getRequestDispatcher("/favoritos.jsp").forward(request, response);
             } catch (Exception e) {
                 System.out.println("Erro ao listar favoritos: " + e.getMessage());
