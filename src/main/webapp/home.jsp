@@ -556,7 +556,7 @@
             font-size: 12px;
             margin-bottom: 6px;
             display: flex;
-            align-items: center;
+            align-items: baseline;
             gap: 5px;
         }
 
@@ -749,7 +749,6 @@
             font-size: 13px;
             margin-bottom: 6px;
             display: flex;
-            align-items: center;
             gap: 6px;
             opacity: 0.9;
         }

@@ -88,8 +88,9 @@
 
         .title-container {
             display: flex;
-            align-items: center;
             gap: 10px;
+            justify-content: space-between;
+            align-items: flex-start;
         }
     </style>
 </head>
@@ -142,7 +143,7 @@
                             </p>
                         <% } %>
                         <% if (jogo.has("website") && !jogo.getString("website").isEmpty()) { %>
-                            <p><a href="<%= jogo.getString("website") %>" target="_blank" style="color:#f1c40f;">Site Oficial</a></p>
+                            <p><a href="<%= jogo.getString("website") %>" target="_blank" style="color:#f1c40f;">Acessar Site Oficial</a></p>
                         <% } %>
                     </div>
                 </div>

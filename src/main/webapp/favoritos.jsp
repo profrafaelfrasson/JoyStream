@@ -119,7 +119,7 @@
             font-size: 0.9em;
             margin-bottom: 5px;
             display: flex;
-            align-items: center;
+            align-items: baseline;
             gap: 6px;
         }
 
@@ -521,12 +521,13 @@
                                             <%= jogo.getDataLancamento() %>
                                         </p>
                                     <% } %>
+                                </div>
+                                <div>
                                     <% if (jogo.getNota() != null) { %>
                                         <div class="metacritic-score <%= jogo.getNota() >= 85 ? "score-high" : jogo.getNota() >= 70 ? "score-medium" : "score-low" %>">
                                             <i class="fas fa-star"></i> <%= jogo.getNota() %>
                                         </div>
                                     <% } %>
-                                </div>
                                 <button class="more-info-btn" onclick="window.location.href='detalhe.jsp?id=<%= jogoId %>'">
                                     Mais Informações <i class="fas fa-arrow-right"></i>
                                 </button>
@@ -536,6 +537,7 @@
                                     onclick="toggleConcluido(<%= jogoId %>)">
                                     <span id="txt-concluido-<%= jogoId %>"><%= concluido ? "Finalizado!" : "Não finalizado" %></span>
                                 </button>
+                            </div>
                                 <% if (avaliacao != null) { %>
                                     <div class="avaliacao-usuario">
                                         <h5>Sua avaliação:</h5>

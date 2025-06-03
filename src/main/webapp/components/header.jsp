@@ -104,7 +104,7 @@
         font-weight: bold;
         cursor: pointer;
         padding: 8px 15px;
-        border-radius: 4px;
+        /* border-radius: 4px; */
         transition: background-color 0.3s;
     }
 
