@@ -191,5 +191,104 @@
                 <a href="<%= request.getContextPath() %>/cadastro.jsp" class="btn btn-warning <%= currentPage.equals("cadastro.jsp") ? "active" : "" %>">Registrar</a>
             </div>
         <% } %>
+
+        <!-- Menu Toggle Button -->
+        <button class="menu-toggle" aria-label="Toggle menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
     </nav>
-</header> 
+</header>
+
+<!-- Mobile Navigation -->
+<div class="mobile-nav">
+    <div class="mobile-nav-content">
+        <div class="mobile-nav-links">
+            <a href="<%= request.getContextPath() %>/home.jsp" class="<%= currentPage.equals("home.jsp") ? "active" : "" %>">HOME</a>
+            <a href="<%= request.getContextPath() %>/jogos.jsp" class="<%= currentPage.equals("jogos.jsp") ? "active" : "" %>">JOGOS</a>
+            <% if (logado) { %>
+                <a href="<%= request.getContextPath() %>/favoritos.jsp" class="<%= currentPage.equals("favoritos.jsp") ? "active" : "" %>">FAVORITOS</a>
+            <% } %>
+            <a href="<%= request.getContextPath() %>/suporte.jsp" class="<%= currentPage.equals("suporte.jsp") ? "active" : "" %>">SUPORTE</a>
+            <a href="<%= request.getContextPath() %>/sobre.jsp" class="<%= currentPage.equals("sobre.jsp") ? "active" : "" %>">SOBRE</a>
+        </div>
+        
+        <% if (logado) { %>
+            <div class="mobile-user-info">
+                <img src="<%= avatarUrl %>" alt="Avatar" class="mobile-user-avatar">
+                <span class="mobile-user-name"><%= usuario.getNmUsuario() %></span>
+                <div class="mobile-auth-buttons">
+                    <a href="<%= request.getContextPath() %>/perfil.jsp" class="btn btn-outline-warning <%= currentPage.equals("perfil.jsp") ? "active" : "" %>">Meu Perfil</a>
+                    <a href="<%= request.getContextPath() %>/logout.jsp" class="btn btn-warning">Sair</a>
+                </div>
+            </div>
+        <% } else { %>
+            <div class="mobile-auth-buttons">
+                <a href="<%= request.getContextPath() %>/login.jsp" class="btn btn-outline-warning <%= currentPage.equals("login.jsp") ? "active" : "" %>">Login</a>
+                <a href="<%= request.getContextPath() %>/cadastro.jsp" class="btn btn-warning <%= currentPage.equals("cadastro.jsp") ? "active" : "" %>">Registrar</a>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const menuToggle = document.querySelector('.menu-toggle');
+    const mobileNav = document.querySelector('.mobile-nav');
+    const mobileNavContent = document.querySelector('.mobile-nav-content');
+    let isOpen = false;
+
+    function closeMenu() {
+        if (!isOpen) return;
+        isOpen = false;
+        menuToggle.classList.remove('active');
+        mobileNav.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    function openMenu() {
+        if (isOpen) return;
+        isOpen = true;
+        menuToggle.classList.add('active');
+        mobileNav.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function toggleMenu(e) {
+        e.stopPropagation();
+        if (isOpen) {
+            closeMenu();
+        } else {
+            openMenu();
+        }
+    }
+
+    // Toggle menu on button click
+    menuToggle.addEventListener('click', toggleMenu);
+
+    // Close menu when clicking on links
+    document.querySelectorAll('.mobile-nav-links a, .mobile-auth-buttons a').forEach(link => {
+        link.addEventListener('click', closeMenu);
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', function(e) {
+        if (isOpen && !mobileNavContent.contains(e.target) && !menuToggle.contains(e.target)) {
+            closeMenu();
+        }
+    });
+
+    // Prevent menu from closing when clicking inside
+    mobileNavContent.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
+
+    // Close menu on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && isOpen) {
+            closeMenu();
+        }
+    });
+});
+</script> 
