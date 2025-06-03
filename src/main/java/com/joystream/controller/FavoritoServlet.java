@@ -49,6 +49,9 @@ public class FavoritoServlet extends HttpServlet {
                 // Adicionar o novo jogo ao cache existente
                 jogoService.adicionarJogoAoCacheFavoritos(usuario.getIdUsuario(), jogoId);
                 
+                // Atualizar o cache de recomendações
+                jogoService.atualizarCacheRecomendacoes(usuario.getIdUsuario(), jogoId);
+                
                 response.setStatus(HttpServletResponse.SC_OK);
                 
             } else if ("remover".equals(action)) {

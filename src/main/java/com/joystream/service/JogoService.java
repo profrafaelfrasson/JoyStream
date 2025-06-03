@@ -457,4 +457,116 @@ public class JogoService {
             }
         }
     }
+
+    public void atualizarCacheRecomendacoes(int usuarioId, int jogoId) {
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
+            // Buscar detalhes do novo jogo favorito
+            String detalhesUrl = API_BASE_URL + "/" + jogoId + "?key=" + API_KEY;
+            HttpGet request = new HttpGet(detalhesUrl);
+            request.setHeader("Accept", "application/json");
+
+            try (CloseableHttpResponse response = client.execute(request)) {
+                if (response.getStatusLine().getStatusCode() == 200) {
+                    String jsonResponse = EntityUtils.toString(response.getEntity());
+                    JSONObject jogoJson = new JSONObject(jsonResponse);
+
+                    // Coletar gêneros e plataformas do novo jogo
+                    List<String> novosGeneros = new ArrayList<>();
+                    List<String> novasPlataformas = new ArrayList<>();
+
+                    if (jogoJson.has("genres")) {
+                        JSONArray generos = jogoJson.getJSONArray("genres");
+                        for (int i = 0; i < generos.length(); i++) {
+                            String generoId = String.valueOf(generos.getJSONObject(i).getInt("id"));
+                            novosGeneros.add(generoId);
+                        }
+                    }
+
+                    if (jogoJson.has("platforms")) {
+                        JSONArray plataformas = jogoJson.getJSONArray("platforms");
+                        for (int i = 0; i < plataformas.length(); i++) {
+                            String plataformaId = String.valueOf(plataformas.getJSONObject(i).getJSONObject("platform").getInt("id"));
+                            novasPlataformas.add(plataformaId);
+                        }
+                    }
+
+                    // Buscar jogos similares com base nos novos gêneros e plataformas
+                    StringBuilder apiUrl = new StringBuilder(API_BASE_URL + "?key=" + API_KEY);
+                    apiUrl.append("&ordering=-rating");
+                    apiUrl.append("&page_size=20");
+                    apiUrl.append("&metacritic=61,100");
+
+                    if (!novosGeneros.isEmpty()) {
+                        apiUrl.append("&genres=").append(String.join(",", novosGeneros));
+                    }
+                    if (!novasPlataformas.isEmpty()) {
+                        apiUrl.append("&platforms=").append(String.join(",", novasPlataformas));
+                    }
+
+                    // Excluir o jogo que acabou de ser adicionado aos favoritos
+                    apiUrl.append("&exclude=").append(jogoId);
+
+                    HttpGet recomendacoesRequest = new HttpGet(apiUrl.toString());
+                    recomendacoesRequest.setHeader("Accept", "application/json");
+
+                    try (CloseableHttpResponse recomendacoesResponse = client.execute(recomendacoesRequest)) {
+                        if (recomendacoesResponse.getStatusLine().getStatusCode() == 200) {
+                            String recomendacoesJson = EntityUtils.toString(recomendacoesResponse.getEntity());
+                            JSONObject jsonObject = new JSONObject(recomendacoesJson);
+                            JSONArray results = jsonObject.getJSONArray("results");
+
+                            List<Jogo> novasRecomendacoes = new ArrayList<>();
+                            for (int i = 0; i < results.length(); i++) {
+                                JSONObject jogoRecomendadoJson = results.getJSONObject(i);
+                                Jogo jogo = new Jogo();
+                                jogo.setId(Long.valueOf(jogoRecomendadoJson.getInt("id")));
+                                jogo.setNome(jogoRecomendadoJson.getString("name"));
+                                jogo.setDescricao(jogoRecomendadoJson.optString("description_raw", "Já disponível"));
+                                String imagemUrl = jogoRecomendadoJson.optString("background_image", "/assets/img/game1.jpg");
+                                jogo.setImagemUrl(imagemUrl != null ? imagemUrl : "/assets/img/game1.jpg");
+
+                                if (jogoRecomendadoJson.has("genres")) {
+                                    JSONArray generos = jogoRecomendadoJson.getJSONArray("genres");
+                                    List<String> generosList = new ArrayList<>();
+                                    for (int j = 0; j < generos.length(); j++) {
+                                        generosList.add(generos.getJSONObject(j).getString("name"));
+                                    }
+                                    jogo.setGeneros(String.join(", ", generosList));
+                                }
+
+                                if (jogoRecomendadoJson.has("platforms")) {
+                                    JSONArray plataformas = jogoRecomendadoJson.getJSONArray("platforms");
+                                    List<String> plataformasList = new ArrayList<>();
+                                    for (int j = 0; j < plataformas.length(); j++) {
+                                        plataformasList.add(plataformas.getJSONObject(j).getJSONObject("platform").getString("name"));
+                                    }
+                                    jogo.setPlataformas(String.join(", ", plataformasList));
+                                }
+
+                                if (jogoRecomendadoJson.has("metacritic") && !jogoRecomendadoJson.isNull("metacritic")) {
+                                    jogo.setNota(jogoRecomendadoJson.getDouble("metacritic"));
+                                }
+
+                                if (jogoRecomendadoJson.has("released")) {
+                                    jogo.setDataLancamento(jogoRecomendadoJson.getString("released"));
+                                }
+
+                                List<String> screenshots = buscarScreenshots(jogoRecomendadoJson.getLong("id"));
+                                jogo.setScreenshots(screenshots);
+
+                                if (!isConteudoSexualExplicito(jogo)) {
+                                    novasRecomendacoes.add(jogo);
+                                }
+                            }
+
+                            // Atualizar o cache de recomendações
+                            recomendacoesCache.put(usuarioId, new CacheEntry(novasRecomendacoes, System.currentTimeMillis()));
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Erro ao atualizar cache de recomendações: " + e.getMessage());
+        }
+    }
 } 
