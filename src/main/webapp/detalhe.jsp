@@ -30,17 +30,37 @@
         com.joystream.model.Usuario usuario = (com.joystream.model.Usuario) session.getAttribute("usuario");
         nomeUsuario = usuario.getNmUsuario();
     }
+
+   if (jogo != null) {
+    // Configurar variáveis para o SEO da página
+    request.setAttribute("pageTitle", jogo.getString("name") + " - Detalhes do Jogo | JoyStream");
+    request.setAttribute("pageDescription", "Descubra mais sobre o jogo " + jogo.getString("name"));
+    
+    // Construir keywords com nome do jogo e gêneros
+    StringBuilder keywords = new StringBuilder(jogo.getString("name"));
+    
+    if (jogo.has("genres") && !jogo.isNull("genres")) {
+        JSONArray genres = jogo.getJSONArray("genres");
+        if (genres.length() > 0) {
+            keywords.append(", ");
+            for (int i = 0; i < genres.length(); i++) {
+                JSONObject genre = genres.getJSONObject(i);
+                keywords.append(genre.getString("name"));
+                if (i < genres.length() - 1) {
+                    keywords.append(", ");
+                }
+            }
+        }
+    }
+    
+    request.setAttribute("pageKeywords", keywords.toString());
+   }
 %>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Detalhes do Jogo</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <jsp:include page="components/head.jsp" />
     
-    <!-- Sweetalert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         body { background: #121212; color: #fff; font-family: 'Segoe UI', sans-serif; }
@@ -95,6 +115,9 @@
     </style>
 </head>
 <body>
+    <jsp:include page="components/header.jsp" />
+
+    <main>
     <div class="container">
         <a href="#" class="back-link" onclick="history.back(); return false;"><i class="fas fa-arrow-left"></i> Voltar</a>
         <% if (jogo != null) { %>
@@ -179,6 +202,9 @@
             <p>Jogo não encontrado.</p>
         <% } %>
     </div>
+</main>
+
+<jsp:include page="components/footer.jsp" />
     <script src="assets/js/alert.js"></script>
     <script>
         function toggleFavorito(jogoId, button) {
