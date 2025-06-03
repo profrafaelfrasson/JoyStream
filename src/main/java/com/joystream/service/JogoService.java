@@ -376,4 +376,85 @@ public class JogoService {
         favoritosDetalhesCache.put(usuarioId, new CacheEntry(jogos, now));
         return jogos;
     }
+
+    public void invalidarFavoritosDetalhesCache(int usuarioId) {
+        favoritosDetalhesCache.remove(usuarioId);
+    }
+
+    public void adicionarJogoAoCacheFavoritos(int usuarioId, int jogoId) {
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
+            String detalhesUrl = API_BASE_URL + "/" + jogoId + "?key=" + API_KEY;
+            HttpGet request = new HttpGet(detalhesUrl);
+            request.setHeader("Accept", "application/json");
+
+            try (CloseableHttpResponse response = client.execute(request)) {
+                if (response.getStatusLine().getStatusCode() == 200) {
+                    String jsonResponse = EntityUtils.toString(response.getEntity());
+                    JSONObject jogoJson = new JSONObject(jsonResponse);
+                    
+                    Jogo jogo = new Jogo();
+                    jogo.setId(jogoJson.getLong("id"));
+                    jogo.setNome(jogoJson.getString("name"));
+                    jogo.setDescricao(jogoJson.optString("description_raw", ""));
+                    String imagemUrl = jogoJson.optString("background_image", "/assets/img/game1.jpg");
+                    jogo.setImagemUrl(imagemUrl != null ? imagemUrl : "/assets/img/game1.jpg");
+                    
+                    if (jogoJson.has("genres")) {
+                        JSONArray generos = jogoJson.getJSONArray("genres");
+                        List<String> generosList = new ArrayList<>();
+                        for (int j = 0; j < generos.length(); j++) {
+                            generosList.add(generos.getJSONObject(j).getString("name"));
+                        }
+                        jogo.setGeneros(String.join(", ", generosList));
+                    }
+                    
+                    if (jogoJson.has("platforms")) {
+                        JSONArray plataformas = jogoJson.getJSONArray("platforms");
+                        List<String> plataformasList = new ArrayList<>();
+                        for (int j = 0; j < plataformas.length(); j++) {
+                            plataformasList.add(plataformas.getJSONObject(j).getJSONObject("platform").getString("name"));
+                        }
+                        jogo.setPlataformas(String.join(", ", plataformasList));
+                    }
+                    
+                    if (jogoJson.has("metacritic") && !jogoJson.isNull("metacritic")) {
+                        jogo.setNota(jogoJson.getDouble("metacritic"));
+                    }
+                    
+                    if (jogoJson.has("released")) {
+                        jogo.setDataLancamento(jogoJson.getString("released"));
+                    }
+                    
+                    List<String> screenshots = buscarScreenshots(jogoJson.getLong("id"));
+                    jogo.setScreenshots(screenshots);
+
+                    // Atualizar o cache existente
+                    CacheEntry cacheEntry = favoritosDetalhesCache.get(usuarioId);
+                    if (cacheEntry != null) {
+                        List<Jogo> jogosAtualizados = new ArrayList<>(cacheEntry.jogos);
+                        jogosAtualizados.add(jogo);
+                        favoritosDetalhesCache.put(usuarioId, new CacheEntry(jogosAtualizados, System.currentTimeMillis()));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Erro ao adicionar jogo ao cache: " + e.getMessage());
+        }
+    }
+
+    public void removerJogoDoCacheFavoritos(int usuarioId, int jogoId) {
+        CacheEntry cacheEntry = favoritosDetalhesCache.get(usuarioId);
+        if (cacheEntry != null) {
+            List<Jogo> jogosAtualizados = cacheEntry.jogos.stream()
+                .filter(jogo -> jogo.getId() != jogoId)
+                .collect(Collectors.toList());
+            
+            if (!jogosAtualizados.isEmpty()) {
+                favoritosDetalhesCache.put(usuarioId, new CacheEntry(jogosAtualizados, System.currentTimeMillis()));
+            } else {
+                // Se a lista ficar vazia, remove a entrada do cache
+                favoritosDetalhesCache.remove(usuarioId);
+            }
+        }
+    }
 } 

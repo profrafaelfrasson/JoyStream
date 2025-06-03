@@ -13,8 +13,8 @@ import org.json.JSONObject;
 
 import com.joystream.dao.FavoritoDAO;
 import com.joystream.model.Favorito;
-import com.joystream.model.Usuario;
 import com.joystream.model.Jogo;
+import com.joystream.model.Usuario;
 import com.joystream.service.JogoService;
 
 @WebServlet("/favorito/*")
@@ -45,10 +45,18 @@ public class FavoritoServlet extends HttpServlet {
                 favorito.setIdJogo(jogoId);
                 
                 favoritoDAO.adicionar(favorito);
+                
+                // Adicionar o novo jogo ao cache existente
+                jogoService.adicionarJogoAoCacheFavoritos(usuario.getIdUsuario(), jogoId);
+                
                 response.setStatus(HttpServletResponse.SC_OK);
                 
             } else if ("remover".equals(action)) {
                 favoritoDAO.remover(usuario.getIdUsuario(), jogoId);
+                
+                // Remover o jogo do cache existente
+                jogoService.removerJogoDoCacheFavoritos(usuario.getIdUsuario(), jogoId);
+                
                 response.setStatus(HttpServletResponse.SC_OK);
             }
             
