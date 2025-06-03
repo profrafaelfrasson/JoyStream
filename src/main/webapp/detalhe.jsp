@@ -234,7 +234,7 @@
                 const nota = localStorage.getItem('nota_' + jogoId);
                 if ((comentario && comentario.length > 0) || (nota && nota.length > 0)) {
                     let html = '<div style="background:#222;padding:20px;border-radius:8px;margin-top:30px;">';
-                    html += '<h4 style="color:#f1c40f;margin-bottom:10px;">Avaliação dos usuários:</h4>';
+                    html += '<h4 style="color:#f1c40f;margin-bottom:10px;">Sua avaliação:</h4>';
                     html += '<div style="margin-bottom:8px;"><b>' + nomeUsuario + '</b></div>';
                     if (nota && nota.length > 0) {
                         html += '<div style="font-size:1.2em;margin-bottom:8px;"><b>Nota:</b> <span style="background:#f1c40f;color:#222;padding:4px 12px;border-radius:6px;font-weight:bold;">' + nota + '</span></div>';
