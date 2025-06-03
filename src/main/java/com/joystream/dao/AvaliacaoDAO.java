@@ -107,6 +107,19 @@ public class AvaliacaoDAO {
         return null;
     }
     
+    public void salvarOuAtualizar(int idUsuario, int idFavorito, int nota, String comentario) throws SQLException {
+        String sql = "INSERT INTO avaliacao (id_usuario, id_favorito, nota, comentario, dt_avaliacao) VALUES (?, ?, ?, ?, NOW()) " +
+                     "ON DUPLICATE KEY UPDATE nota = VALUES(nota), comentario = VALUES(comentario), dt_avaliacao = NOW()";
+        try (Connection conn = DBConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idUsuario);
+            stmt.setInt(2, idFavorito);
+            stmt.setInt(3, nota);
+            stmt.setString(4, comentario);
+            stmt.executeUpdate();
+        }
+    }
+    
     private Avaliacao mapResultSetToAvaliacao(ResultSet rs) throws SQLException {
         Avaliacao avaliacao = new Avaliacao();
         avaliacao.setIdAvaliacao(rs.getInt("id_avaliacao"));

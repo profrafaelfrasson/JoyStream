@@ -24,6 +24,12 @@
             out.println("<p>Erro ao buscar detalhes do jogo.</p>");
         }
     }
+
+    String nomeUsuario = "";
+    if (session.getAttribute("usuario") != null) {
+        com.joystream.model.Usuario usuario = (com.joystream.model.Usuario) session.getAttribute("usuario");
+        nomeUsuario = usuario.getNmUsuario();
+    }
 %>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -89,7 +95,7 @@
 </head>
 <body>
     <div class="container">
-        <a href="jogos" class="back-link"><i class="fas fa-arrow-left"></i> Voltar para Jogos</a>
+        <a href="#" class="back-link" onclick="history.back(); return false;"><i class="fas fa-arrow-left"></i> Voltar</a>
         <% if (jogo != null) { %>
             <div class="game-header">
                 <img src="<%= jogo.has("background_image") ? jogo.getString("background_image") : "assets/img/default-game.png" %>" alt="<%= jogo.getString("name") %>">
@@ -166,6 +172,8 @@
                     </video>
                 </div>
             <% } } %>
+            <%-- Exibir avaliações do usuário (localStorage) --%>
+            <div id="avaliacao-usuario" style="margin-top:40px;"></div>
         <% } else { %>
             <p>Jogo não encontrado.</p>
         <% } %>
@@ -215,6 +223,34 @@
                     .catch(error => console.error('Erro:', error));
             }
         };
+
+        // Exibir avaliação do usuário (localStorage)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Pega o id do jogo da URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const jogoId = urlParams.get('id');
+            if (jogoId) {
+                const comentario = localStorage.getItem('analise_' + jogoId);
+                const nota = localStorage.getItem('nota_' + jogoId);
+                if ((comentario && comentario.length > 0) || (nota && nota.length > 0)) {
+                    let html = '<div style="background:#222;padding:20px;border-radius:8px;margin-top:30px;">';
+                    html += '<h4 style="color:#f1c40f;margin-bottom:10px;">Avaliação dos usuários:</h4>';
+                    html += '<div style="margin-bottom:8px;"><b>' + nomeUsuario + '</b></div>';
+                    if (nota && nota.length > 0) {
+                        html += '<div style="font-size:1.2em;margin-bottom:8px;"><b>Nota:</b> <span style="background:#f1c40f;color:#222;padding:4px 12px;border-radius:6px;font-weight:bold;">' + nota + '</span></div>';
+                    }
+                    if (comentario && comentario.length > 0) {
+                        html += '<div style="margin-bottom:4px;"><b>Comentário:</b></div>';
+                        html += '<div style="color:#fff;white-space:pre-line;">' + comentario.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</div>';
+                    }
+                    html += '</div>';
+                    document.getElementById('avaliacao-usuario').innerHTML = html;
+                }
+            }
+        });
+
+        var nomeUsuario = "<%= nomeUsuario.replace("\"","\\\"") %>";
+
     </script>
 </body>
 </html> 
