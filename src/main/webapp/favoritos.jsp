@@ -104,6 +104,7 @@
             flex: 1;
             display: flex;
             flex-direction: column;
+            justify-content: space-between;
         }
 
         .game-title {
@@ -286,9 +287,39 @@
             z-index: 2;
             transition: background 0.3s;
         }
+        .analise-icone-texto-avaliado {
+            position: absolute;
+            top: 10px;
+            left: 50px;
+            border: none;
+            border-radius: 10px;
+            width: auto;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 0 10px;
+            z-index: 2;
+            transition: background 0.3s;
+            /* border: 1px solid #f1c40f; */
+            font-size: 12px;
+            background: #27ae60;
+            color: #fff;
+        }
+
+        .analise-icone-texto-avaliado:hover,
+        .analise-icone:hover {
+            filter: brightness(1.2);
+            transform: scale(1.04);
+            transition: all 0.3s ease;
+            box-shadow: 0 0 0 2px rgba(241,196,15,0.3);
+        }
         
+        .analise-icone-texto-avaliado.avaliado,
         .analise-icone.avaliado {
             background: #27ae60;
+            box-shadow: 0 0 0 2px rgba(241,196,15,0.3);
         }
         
         .analise-icone.nao-avaliado {
@@ -494,6 +525,14 @@
                                 onclick="abrirModalAnalise(<%= jogoId %>)">
                                 <i class="fas fa-pen fa-lg"></i>
                             </button>
+                            <% if (avaliacao != null) { %>
+                                <button 
+                                    class="analise-icone-texto-avaliado avaliado" 
+                                    id="analise-icone-texto-avaliado-<%= jogoId %>" 
+                                    onclick="abrirModalAnalise(<%= jogoId %>)">
+                                    Ver Avaliação
+                                </button>
+                            <% } %>
                             <div class="game-image-container">
                                 <img src="<%= jogo.getImagemUrl() != null ? jogo.getImagemUrl() : request.getContextPath() + "/assets/img/game-placeholder.jpg" %>" 
                                      alt="<%= jogo.getNome() %>" 
@@ -537,19 +576,7 @@
                                     <span id="txt-concluido-<%= jogoId %>"><%= concluido ? "Finalizado!" : "Não finalizado" %></span>
                                 </button>
                             </div>
-                                <% if (avaliacao != null) { %>
-                                    <div class="avaliacao-usuario">
-                                        <h5>Sua avaliação:</h5>
-                                        <div style="margin-bottom:4px;"><b><%= nomeUsuario %></b></div>
-                                        <div style="font-size:1em;margin-bottom:4px;">
-                                            <b>Nota:</b> <span class="avaliacao-nota"><%= avaliacao.getNota() %></span>
-                                        </div>
-                                        <% if (avaliacao.getComentario() != null && !avaliacao.getComentario().isEmpty()) { %>
-                                            <div style="margin-bottom:2px;"><b>Comentário:</b></div>
-                                            <div class="avaliacao-comentario"><%= avaliacao.getComentario().replace("<", "&lt;").replace(">", "&gt;") %></div>
-                                        <% } %>
-                                    </div>
-                                <% } %>
+                               
                             </div>
                         </div>
                     <% } %>
