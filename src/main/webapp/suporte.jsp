@@ -286,9 +286,9 @@
             </div>
 
             <div class="faq-item">
-                <div class="faq-question">Como posso adicionar jogos à minha biblioteca?</div>
+                <div class="faq-question">Como posso adicionar jogos aos meus favoritos?</div>
                 <div class="faq-answer">
-                    Navegue até a página de jogos, encontre o jogo desejado e clique no botão "Adicionar à Biblioteca".
+                    Navegue até a página de jogos, encontre o jogo desejado e clique no ícone de coração para adicionar aos seus favoritos.
                 </div>
             </div>
 

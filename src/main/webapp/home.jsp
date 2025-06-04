@@ -1114,10 +1114,6 @@
             <div class="games-grid" id="recommended-games">
                 <% for (Jogo jogo : jogosRecomendados) { %>
                     <div class="game-card recommended-card">
-                        <div class="compatibility-score">
-                            <i class="fas fa-chart-line"></i>
-                            <%= String.format("%.0f%%", Math.random() * 30 + 70) %> compatível
-                        </div>
                         <div class="recommendation-badge">
                             Recomendado
                         </div>
@@ -1221,7 +1217,7 @@
                 this.nextButton = this.container.parentElement.querySelector('.scroll-button.next');
                 this.cardWidth = this.calculateCardWidth();
                 this.scrolling = false;
-                
+                this.setupInfiniteScroll();
                 this.setupNavigation();
                 this.updateButtonVisibility();
                 this.setupIntersectionObserver();
@@ -1239,6 +1235,10 @@
                 if (screenWidth <= 480) return 220;
                 if (screenWidth <= 768) return 260;
                 return 300;
+            }
+
+            setupInfiniteScroll() {
+                // Não faz mais nada: rolagem normal, sem duplicar cards nem looping
             }
 
             setupNavigation() {
@@ -1324,9 +1324,9 @@
                 
                 let newScroll;
                 if (direction === 'left') {
-                    newScroll = Math.max(0, currentScroll - this.cardWidth);
+                    newScroll = currentScroll - this.cardWidth;
                 } else {
-                    newScroll = Math.min(maxScroll, currentScroll + this.cardWidth);
+                    newScroll = currentScroll + this.cardWidth;
                 }
 
                 this.container.scrollTo({

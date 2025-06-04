@@ -22,7 +22,7 @@
     }
 
     header img {
-        height: 50px;
+        height: 53px;
     }
 
     nav {

@@ -104,7 +104,6 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
         }
 
         .game-title {
@@ -328,12 +327,12 @@
         .concluido-btn.nao-finalizado {
             background: #c0392b;
         }
-        
+
         .avaliacao-usuario {
             background: #222;
             padding: 12px;
             border-radius: 6px;
-            margin-top: 8px;
+            margin-top: 10px;
         }
         
         .avaliacao-usuario h5 {

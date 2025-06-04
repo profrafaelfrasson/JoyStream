@@ -239,7 +239,7 @@
                     <span class="role-badge">Banco de Dados</span>
                 </div>
                 <div class="team-member">
-                    <h3>Ewellim</h3>
+                    <h3>Ewellin</h3>
                     <span class="role-badge">Banco de Dados</span>
                 </div>
             </div>
