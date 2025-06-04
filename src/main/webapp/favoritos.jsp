@@ -632,6 +632,7 @@
             </div>
             <div class="modal-buttons">
                 <button id="btn-cancelar-analise" class="modal-btn modal-btn-cancelar">Cancelar</button>
+                <button id="btn-excluir-analise" class="modal-btn modal-btn-excluir" style="display:none;background:#c0392b;color:#fff;margin-right:8px;">Excluir Avaliação</button>
                 <button id="btn-publicar-analise" class="modal-btn modal-btn-publicar">
                     <span>Publicar</span>
                     <div class="loading-spinner"></div>
@@ -656,13 +657,18 @@
             .then(data => {
                 const textArea = document.getElementById('analise-text');
                 textArea.value = data.comentario || '';
-                
                 // Ajusta a altura do textarea baseado no conteúdo
                 textArea.style.height = 'auto';
                 textArea.style.height = Math.min(300, Math.max(120, textArea.scrollHeight)) + 'px';
-                
                 notaSelecionada = data.nota;
                 destacarNotaSelecionada();
+                // Exibir botão de excluir se houver avaliação
+                const btnExcluir = document.getElementById('btn-excluir-analise');
+                if (data.nota !== null && data.nota !== undefined) {
+                    btnExcluir.style.display = 'inline-block';
+                } else {
+                    btnExcluir.style.display = 'none';
+                }
                 document.getElementById('modal-analise').style.display = 'flex';
             })
             .catch(error => {
@@ -670,6 +676,7 @@
                 document.getElementById('analise-text').value = '';
                 notaSelecionada = null;
                 destacarNotaSelecionada();
+                document.getElementById('btn-excluir-analise').style.display = 'none';
                 document.getElementById('modal-analise').style.display = 'flex';
             });
     }
@@ -747,6 +754,40 @@
 
     document.getElementById('btn-cancelar-analise').onclick = function() {
         fecharModalAnalise();
+    };
+
+    document.getElementById('btn-excluir-analise').onclick = function() {
+        if (jogoIdAnalise) {
+            console.log('Tentando excluir avaliação do jogoId:', jogoIdAnalise);
+            confirmAction(
+                'Excluir Avaliação',
+                'Tem certeza que deseja excluir sua avaliação deste jogo? Esta ação não pode ser desfeita.',
+                'Sim, excluir',
+                'Cancelar',
+                'warning'
+            ).then((result) => {
+                if (result.isConfirmed) {
+                    fetch('avaliacao?jogoId=' + jogoIdAnalise, {
+                        method: 'DELETE'
+                    }).then(async response => {
+                        if (response.ok) {
+                            fecharModalAnalise();
+                            showSuccess('Avaliação excluída com sucesso!');
+                            setTimeout(() => window.location.reload(), 1200);
+                        } else {
+                            let msg = 'Não foi possível excluir sua avaliação.';
+                            try {
+                                const text = await response.text();
+                                if (text) msg += '\n' + text;
+                            } catch(e) {}
+                            showError('Erro', msg);
+                        }
+                    }).catch(error => {
+                        showError('Erro', 'Não foi possível excluir sua avaliação.\n' + error);
+                    });
+                }
+            });
+        }
     };
 
     function fecharModalAnalise() {
