@@ -1006,7 +1006,7 @@
     <div class="hero">
         <div class="hero-content">
             <h1>Bem-vindo ao JoyStream</h1>
-            <p>Descubra, recomende e compartilhe seus jogos favoritos</p>
+            <p>Descubra, recomende e compartilhe seus jogos favoritos!</p>
         </div>
     </div>
     <div class="games-section">

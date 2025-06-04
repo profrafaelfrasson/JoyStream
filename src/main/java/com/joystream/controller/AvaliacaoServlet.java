@@ -11,6 +11,7 @@ import com.joystream.dao.FavoritoDAO;
 import com.joystream.model.Avaliacao;
 import com.joystream.model.Usuario;
 import org.json.JSONObject;
+import org.json.JSONArray;
 
 @WebServlet("/avaliacao/*")
 public class AvaliacaoServlet extends HttpServlet {
@@ -38,6 +39,22 @@ public class AvaliacaoServlet extends HttpServlet {
 
         try {
             int jogoId = Integer.parseInt(request.getParameter("jogoId"));
+            String all = request.getParameter("all");
+            if (all != null && all.equals("true")) {
+                // Retornar todas as avaliações do jogo
+                java.util.List<Avaliacao> avaliacoes = avaliacaoDAO.listarPorJogo(jogoId);
+                JSONArray arr = new JSONArray();
+                for (Avaliacao av : avaliacoes) {
+                    JSONObject obj = new JSONObject();
+                    obj.put("nota", av.getNota());
+                    obj.put("comentario", av.getComentario());
+                    obj.put("nomeUsuario", av.getNomeUsuario());
+                    obj.put("dtAvaliacao", av.getDtAvaliacao() != null ? av.getDtAvaliacao().toString() : "");
+                    arr.put(obj);
+                }
+                response.getWriter().write(arr.toString());
+                return;
+            }
             
             // Primeiro busca o id_favorito
             Integer idFavorito = favoritoDAO.buscarIdFavorito(usuario.getIdUsuario(), jogoId);
