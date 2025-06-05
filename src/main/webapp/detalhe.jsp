@@ -65,7 +65,7 @@
     <style>
         body { background: #121212; color: #fff; font-family: 'Segoe UI', sans-serif; }
         .container { max-width: 900px; margin: 40px auto; background: #1f1f1f; border-radius: 10px; padding: 30px; }
-        .game-header { display: flex; gap: 30px; align-items: flex-start; }
+        .game-header { display: flex; gap: 30px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
         .game-header img { width: 300px; border-radius: 10px; }
         .game-info { flex: 1; }
         .game-title { font-size: 2em; color: #f1c40f; margin-bottom: 10px; }
