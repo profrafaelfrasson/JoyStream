@@ -223,7 +223,7 @@
                     <span class="role-badge">Desenvolvedor</span>
                 </div>
                 <div class="team-member">
-                    <h3>Patrick</h3>
+                    <h3>Patrick Farias</h3>
                     <span class="role-badge">Desenvolvedor</span>
                 </div>
                 <div class="team-member">
@@ -235,7 +235,7 @@
                     <span class="role-badge">Líder do Projeto</span>
                 </div>
                 <div class="team-member">
-                    <h3>Ana Carolina</h3>
+                    <h3>Ana Karoline</h3>
                     <span class="role-badge">Banco de Dados</span>
                 </div>
                 <div class="team-member">

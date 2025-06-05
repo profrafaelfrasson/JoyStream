@@ -105,7 +105,7 @@ Para problemas e sugestões, por favor abra uma issue no repositório do projeto
 
 ## 👥 Membros da Equipe:
 
-- Ana Carolina Bitencourt;
+- Ana Karoline Bitencourt;
 - Ewellin Barreto;
 - Felipe Martins;
 - Manoel Vitor;
