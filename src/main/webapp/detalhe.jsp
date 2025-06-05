@@ -2,6 +2,7 @@
 <%@ page import="java.net.*" %>
 <%@ page import="java.io.*" %>
 <%@ page import="org.json.*" %>
+<%@ page import="com.joystream.util.DateUtil" %>
 <%
     String id = request.getParameter("id");
     String apiKey = "5c0f001717fe48498900310b7ca4aa41";
@@ -70,6 +71,7 @@
         .game-info { flex: 1; }
         .game-title { font-size: 2em; color: #f1c40f; margin-bottom: 10px; }
         .game-meta { color: #aaa; margin-bottom: 10px; }
+        .game-meta span { font-weight: bold; color: #d5ab00; }
         .game-description { margin-top: 20px; }
         .back-link { color: #f1c40f; text-decoration: none; margin-bottom: 20px; display: inline-block; }
         .back-link:hover { text-decoration: underline; }
@@ -130,7 +132,7 @@
                             <% 
                                 String nomeJogo = jogo.getString("name").replace("'", "\\'");
                                 String imagemJogo = (jogo.has("background_image") ? jogo.getString("background_image") : "assets/img/default-game.png").replace("'", "\\'");
-                                String dataLancamento = jogo.optString("released", "").replace("'", "\\'");
+                                String dataLancamento = DateUtil.formatarDataBrasileira(jogo.optString("released", "")).replace("'", "\\'");
                                 String nota = (jogo.has("metacritic") && !jogo.isNull("metacritic")) ? String.valueOf(jogo.getInt("metacritic")) : "";
                             %>
                             <button class="favorite-btn"
@@ -145,12 +147,12 @@
                         <% } %>
                     </div>
                     <div class="game-meta">
-                        <p>Lançamento: <%= jogo.optString("released", "N/A") %></p>
+                        <p><span>Lançamento:</span> <%= DateUtil.formatarDataBrasileira(jogo.optString("released", "N/A")) %></p>
                         <% if (jogo.has("metacritic") && !jogo.isNull("metacritic")) { %>
-                            <p>Nota: <%= jogo.getInt("metacritic") %></p>
+                            <p><span>Nota:</span> <%= jogo.getInt("metacritic") %></p>
                         <% } %>
                         <% if (jogo.has("platforms")) { %>
-                            <p>Plataformas: 
+                            <p><span>Plataformas:</span> 
                                 <% JSONArray plats = jogo.getJSONArray("platforms");
                                    for (int p = 0; p < plats.length(); p++) { %>
                                     <%= plats.getJSONObject(p).getJSONObject("platform").getString("name") %><%= p < plats.length() - 1 ? ", " : "" %>
@@ -158,7 +160,7 @@
                             </p>
                         <% } %>
                         <% if (jogo.has("genres")) { %>
-                            <p>Gêneros: 
+                            <p><span>Gêneros:</span> 
                                 <% JSONArray gens = jogo.getJSONArray("genres");
                                    for (int g = 0; g < gens.length(); g++) { %>
                                     <%= gens.getJSONObject(g).getString("name") %><%= g < gens.length() - 1 ? ", " : "" %>

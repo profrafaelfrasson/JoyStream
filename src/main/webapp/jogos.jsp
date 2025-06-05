@@ -2,6 +2,7 @@
 <%@ page import="com.joystream.model.Usuario" %>
 <%@ page import="org.json.JSONObject" %>
 <%@ page import="java.util.List" %>
+<%@ page import="com.joystream.util.DateUtil" %>
 <%@ page session="true" %>
 <%
     Usuario usuario = (Usuario) session.getAttribute("usuario");
@@ -748,7 +749,9 @@
                         <div class="game-info">
                             <h3 class="game-title"><%= jogo.getString("name") %></h3>
                             <div class="game-details">
-                                <p>Lançamento: <%= jogo.getString("released") %></p>
+                                <% if (jogo.has("released")) { %>
+                                    <p>Lançamento: <%= DateUtil.formatarDataBrasileira(jogo.getString("released")) %></p>
+                                <% } %>
                                 <% if (jogo.has("metacritic")) { %>
                                     <p>Nota: <%= jogo.getInt("metacritic") %></p>
                                 <% } %>

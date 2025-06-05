@@ -25,11 +25,13 @@ import org.json.JSONObject;
 import com.joystream.dao.DBConfig;
 import com.joystream.model.Favorito;
 import com.joystream.model.Jogo;
+import com.joystream.util.DateUtil;
 
 public class JogoService {
     private static final String API_KEY = "5c0f001717fe48498900310b7ca4aa41";
     private static final String API_BASE_URL = "https://api.rawg.io/api/games";
     private static final long CACHE_EXPIRATION_MS = 60 * 60 * 1000; // 1 hora
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     // Cache para recomendações por usuário
     private static final Map<Integer, CacheEntry> recomendacoesCache = new HashMap<>();
@@ -112,7 +114,7 @@ public class JogoService {
                             jogo.setNota(gameJson.getDouble("metacritic"));
                         }
                         if (gameJson.has("released")) {
-                            jogo.setDataLancamento(gameJson.getString("released"));
+                            jogo.setDataLancamento(DateUtil.formatarDataBrasileira(gameJson.getString("released")));
                         }
                         List<String> screenshots = buscarScreenshots(gameJson.getLong("id"));
                         jogo.setScreenshots(screenshots);
@@ -271,8 +273,8 @@ public class JogoService {
                             } else {
                                 jogo.setNota(null); // Definir como null se não houver nota
                             }
-                            if (jogoJson.has("released")) { // Adicionar data de lançamento
-                                jogo.setDataLancamento(jogoJson.getString("released"));
+                            if (jogoJson.has("released")) {
+                                jogo.setDataLancamento(DateUtil.formatarDataBrasileira(jogoJson.getString("released")));
                             }
                             List<String> screenshots = buscarScreenshots(jogoJson.getLong("id")); // Adicionar screenshots
                             jogo.setScreenshots(screenshots);
@@ -359,7 +361,7 @@ public class JogoService {
                                 jogo.setNota(jogoJson.getDouble("metacritic"));
                             }
                             if (jogoJson.has("released")) {
-                                jogo.setDataLancamento(jogoJson.getString("released"));
+                                jogo.setDataLancamento(DateUtil.formatarDataBrasileira(jogoJson.getString("released")));
                             }
                             List<String> screenshots = buscarScreenshots(jogoJson.getLong("id"));
                             jogo.setScreenshots(screenshots);
@@ -422,7 +424,7 @@ public class JogoService {
                     }
                     
                     if (jogoJson.has("released")) {
-                        jogo.setDataLancamento(jogoJson.getString("released"));
+                        jogo.setDataLancamento(DateUtil.formatarDataBrasileira(jogoJson.getString("released")));
                     }
                     
                     List<String> screenshots = buscarScreenshots(jogoJson.getLong("id"));
@@ -548,7 +550,7 @@ public class JogoService {
                                 }
 
                                 if (jogoRecomendadoJson.has("released")) {
-                                    jogo.setDataLancamento(jogoRecomendadoJson.getString("released"));
+                                    jogo.setDataLancamento(DateUtil.formatarDataBrasileira(jogoRecomendadoJson.getString("released")));
                                 }
 
                                 List<String> screenshots = buscarScreenshots(jogoRecomendadoJson.getLong("id"));
