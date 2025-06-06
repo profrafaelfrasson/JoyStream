@@ -16,7 +16,7 @@
 <html lang="pt-BR">
 <head>
     <%
-        request.setAttribute("pageTitle", "Alterar Senha - JoyStream");
+        request.setAttribute("pageTitle", "Alterar Senha | JoyStream");
         request.setAttribute("pageDescription", "Altere sua senha da JoyStream de forma segura.");
         request.setAttribute("pageKeywords", "alterar senha, segurança, conta, joystream");
     %>

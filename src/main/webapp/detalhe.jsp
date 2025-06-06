@@ -34,7 +34,7 @@
 
    if (jogo != null) {
     // Configurar variáveis para o SEO da página
-    request.setAttribute("pageTitle", jogo.getString("name") + " - Detalhes do Jogo | JoyStream");
+    request.setAttribute("pageTitle", jogo.getString("name") + " | Detalhes do Jogo - JoyStream");
     request.setAttribute("pageDescription", "Descubra mais sobre o jogo " + jogo.getString("name"));
     
     // Construir keywords com nome do jogo e gêneros

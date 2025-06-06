@@ -7,7 +7,7 @@
 <html lang="pt-BR">
 <head>
     <%
-        request.setAttribute("pageTitle", "Termos de Uso - JoyStream");
+        request.setAttribute("pageTitle", "Termos de Uso | JoyStream");
         request.setAttribute("pageDescription", "Leia os termos de uso da JoyStream.");
         request.setAttribute("pageKeywords", "termos de uso, termos e condições, regras, joystream");
     %>

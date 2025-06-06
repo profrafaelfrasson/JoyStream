@@ -8,7 +8,7 @@
 <html lang="pt-BR">
 <head>
     <%
-        request.setAttribute("pageTitle", "Política de Privacidade - JoyStream");
+        request.setAttribute("pageTitle", "Política de Privacidade | JoyStream");
         request.setAttribute("pageDescription", "Saiba como coletamos e protegemos suas informações pessoais na JoyStream.");
         request.setAttribute("pageKeywords", "política de privacidade, privacidade, dados pessoais, joystream");
     %>

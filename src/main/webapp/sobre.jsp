@@ -7,7 +7,7 @@
     String avatarUrl = (usuario != null && usuario.getAvatar() != null && !usuario.getAvatar().isEmpty()) ? ("data:image/png;base64," + usuario.getAvatar()) : (request.getContextPath() + "/assets/img/default-avatar.png");
 
     // Configurar variáveis para o SEO da página
-    request.setAttribute("pageTitle", "JoyStream - Sobre Nós | Nossa História e Missão");
+    request.setAttribute("pageTitle", "Sobre a JoyStream | JoyStream");
     request.setAttribute("pageDescription", "Conheça a JoyStream, nossa missão de conectar gamers e criar a melhor plataforma de recomendação de jogos. Descubra nossa história e valores.");
     request.setAttribute("pageKeywords", "sobre joystream, história, missão, valores, plataforma de jogos, comunidade gamer, quem somos");
 %>

@@ -13,7 +13,7 @@
 
         
     // Configurar variáveis para o SEO da página
-    request.setAttribute("pageTitle", "JoyStream - Seu Perfil de Jogador | Preferências e Favoritos");
+    request.setAttribute("pageTitle", "Seu Perfil de Jogador | Preferências e Favoritos - JoyStream");
     request.setAttribute("pageDescription", "Gerencie seu perfil na JoyStream, atualize suas preferências, veja seus jogos favoritos e acompanhe suas recomendações personalizadas de jogos.");
     request.setAttribute("pageKeywords", "perfil gamer, jogos favoritos, preferências de jogos, conta jogador, personalização, recomendações personalizadas");
     
@@ -23,6 +23,8 @@
 <head>
 
     <jsp:include page="components/head.jsp" />
+
+    <meta name="robots" content="noindex">
 
     <style>
         body {

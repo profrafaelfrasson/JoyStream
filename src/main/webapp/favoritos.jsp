@@ -26,9 +26,9 @@
     }
     
     // Configurar variáveis para o SEO da página
-    request.setAttribute("pageTitle", "JoyStream - Meus Favoritos");
-    request.setAttribute("pageDescription", "Meus jogos favoritos");
-    request.setAttribute("pageKeywords", "favoritos, jogos favoritos, meus favoritos");
+    request.setAttribute("pageTitle", "Meus Favoritos | JoyStream");
+    request.setAttribute("pageDescription", "Meus jogos favoritos salvo na JoyStream");
+    request.setAttribute("pageKeywords", "favoritos, jogos favoritos, meus favoritos, salvar favoritos, JoyStream");
 
     // Instanciar DAOs
     AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
@@ -39,6 +39,7 @@
 <head>
     <jsp:include page="components/head.jsp" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <meta name="robots" content="noindex">
     <style>
         body {
             margin: 0;

@@ -57,7 +57,7 @@
 
     
     // Configurar variáveis para o SEO da página
-    request.setAttribute("pageTitle", "JoyStream - Explore e Descubra Novos Jogos | Catálogo Completo");
+    request.setAttribute("pageTitle", "Catálogo Completo | Explore e Descubra Novos Jogos - JoyStream");
     request.setAttribute("pageDescription", "Explore nossa biblioteca completa de jogos, filtre por gênero, plataforma e avaliações. Encontre os melhores jogos com recomendações personalizadas e avaliações da comunidade.");
     request.setAttribute("pageKeywords", "catálogo de jogos, jogos online, filtro de jogos, metacritic, avaliações de jogos, biblioteca de jogos, plataformas de jogos, gêneros de jogos");
     

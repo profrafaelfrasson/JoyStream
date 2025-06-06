@@ -7,7 +7,7 @@
     String avatarUrl = (usuario != null && usuario.getAvatar() != null && !usuario.getAvatar().isEmpty()) ? ("data:image/png;base64," + usuario.getAvatar()) : (request.getContextPath() + "/assets/img/default-avatar.png");
 
     // Configurar variáveis para o SEO da página
-    request.setAttribute("pageTitle", "JoyStream - Suporte | Central de Ajuda");
+    request.setAttribute("pageTitle", "Suporte | Central de Ajuda - JoyStream");
     request.setAttribute("pageDescription", "Precisa de ajuda? Acesse nossa central de suporte para encontrar respostas para suas dúvidas, tutoriais e entre em contato com nossa equipe.");
     request.setAttribute("pageKeywords", "suporte joystream, ajuda, faq, contato, tutoriais, dúvidas frequentes, atendimento");
 %>

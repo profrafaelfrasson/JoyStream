@@ -50,6 +50,7 @@
 <html lang="pt-BR">
 <head>
     <jsp:include page="components/head.jsp" />
+    <meta name="robots" content="index, follow">
     <style>
         /* ===== HERO SECTION ===== */
         .hero {
