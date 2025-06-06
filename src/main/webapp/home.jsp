@@ -1025,7 +1025,7 @@
                 %>
                 <div class="carousel-slide<%= (i == 0) ? " active" : "" %>" data-index="<%= i %>">
                     <div class="carousel-main">
-                            <img src="<%= jogo.getImagemUrl() %>" alt="<%= jogo.getNome() %>" class="carousel-banner">
+                            <img src="<%= jogo.getImagemUrl() %>" alt="<%= jogo.getNome() %>" class="carousel-banner" draggable="false">
                     </div>
                     <div class="carousel-info">
                         <div class="carousel-info-top">
@@ -1042,7 +1042,7 @@
                         <div class="carousel-thumbnails">
                                 <% if (screenshots != null) {
                                     for (int j = 0; j < Math.min(screenshots.size(), 3); j++) { %>
-                                        <img src="<%= screenshots.get(j) %>" alt="Screenshot" onclick="showScreenshot(this.src)">
+                                        <img src="<%= screenshots.get(j) %>" alt="Screenshot" draggable="false" onclick="showScreenshot(this.src)">
                                 <% }
                                 } %>
                         </div>
@@ -1074,7 +1074,7 @@
                 <% for (Jogo jogo : jogosDestaque) { %>
         <div class="game-card">
                         <div class="game-image-container">
-                            <img src="<%= jogo.getImagemUrl() %>" alt="<%= jogo.getNome() %>" class="game-image">
+                            <img src="<%= jogo.getImagemUrl() %>" alt="<%= jogo.getNome() %>" draggable="false" class="game-image">
         </div>
                         <div class="game-info">
                             <h3 class="game-title"><%= jogo.getNome() %></h3>
@@ -1119,7 +1119,7 @@
                             Recomendado
                         </div>
                         <div class="game-image-container">
-                            <img src="<%= jogo.getImagemUrl() %>" alt="<%= jogo.getNome() %>" class="game-image">
+                            <img src="<%= jogo.getImagemUrl() %>" alt="<%= jogo.getNome() %>" draggable="false" class="game-image">
                         </div>
                         <div class="game-info">
                             <h3 class="game-title"><%= jogo.getNome() %></h3>

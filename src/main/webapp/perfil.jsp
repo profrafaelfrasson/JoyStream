@@ -209,7 +209,7 @@
             <form id="profileForm" action="atualizar-perfil" method="post" enctype="multipart/form-data" onsubmit="return validarPerfil();">
                 <div class="profile-header">
                     <div class="avatar-upload">
-                        <img src="<%= avatarUrl %>" alt="Avatar" class="profile-avatar">
+                        <img src="<%= avatarUrl %>" alt="Avatar" draggable="false" class="profile-avatar">
                         <label for="avatar-input">
                             <i class="fas fa-camera"></i>
                         </label>

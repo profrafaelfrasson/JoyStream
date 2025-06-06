@@ -162,7 +162,7 @@
 </style>
 
 <header>
-    <img src="<%= request.getContextPath() %>/assets/img/logo.png" alt="Logo JoyStream">
+    <img src="<%= request.getContextPath() %>/assets/img/logo.png" alt="Logo JoyStream" draggable="false">
     <nav>
         <div class="nav-links">
             <a href="<%= request.getContextPath() %>/home.jsp" class="<%= currentPage.equals("home.jsp") ? "active" : "" %>">HOME</a>
@@ -176,7 +176,7 @@
         <% if (logado) { %>
             <div class="dropdown">
                 <div class="user-info">
-                    <img src="<%= avatarUrl %>" alt="Avatar" class="user-avatar">
+                    <img src="<%= avatarUrl %>" alt="Avatar" draggable="false" class="user-avatar">
                     <span class="user-name"><%= usuario.getNmUsuario() %></span>
                 </div>
                 <div class="dropdown-content">
@@ -216,7 +216,7 @@
         
         <% if (logado) { %>
             <div class="mobile-user-info">
-                <img src="<%= avatarUrl %>" alt="Avatar" class="mobile-user-avatar">
+                <img src="<%= avatarUrl %>" alt="Avatar" draggable="false" class="mobile-user-avatar">
                 <span class="mobile-user-name"><%= usuario.getNmUsuario() %></span>
                 <div class="mobile-auth-buttons">
                     <a href="<%= request.getContextPath() %>/perfil.jsp" class="btn btn-outline-warning <%= currentPage.equals("perfil.jsp") ? "active" : "" %>">Meu Perfil</a>

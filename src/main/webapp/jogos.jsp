@@ -740,7 +740,7 @@
             <% } else if (jogos != null && !jogos.isEmpty()) { %>
                 <% for (JSONObject jogo : jogos) { %>
                     <div class="game-card">
-                        <img src="<%= jogo.getJSONArray("short_screenshots").length() > 0 ? jogo.getJSONArray("short_screenshots").getJSONObject(0).getString("image") : "assets/img/default-game.png" %>" alt="<%= jogo.getString("name") %>">
+                        <img src="<%= jogo.getJSONArray("short_screenshots").length() > 0 ? jogo.getJSONArray("short_screenshots").getJSONObject(0).getString("image") : "assets/img/default-game.png" %>" alt="<%= jogo.getString("name") %>" draggable="false">
                         <% if (logado) { %>
                             <button class="favorite-btn" onclick="toggleFavorito(<%= jogo.getInt("id") %>, this)">
                                 <i class="far fa-heart"></i>

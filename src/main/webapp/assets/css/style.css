@@ -34,6 +34,14 @@ main {
   color: #000;
 }
 
+img {
+  -webkit-user-drag: none; /* Bloqueia arraste em Chrome e Safari */
+  -moz-user-select: none; /* Bloqueia seleção no Firefox */
+  -ms-user-select: none; /* Bloqueia seleção no Edge antigo */
+  user-select: none; /* Bloqueia seleção em navegadores modernos */
+  pointer-events: none; /* Impede interações do mouse */
+}
+
 main {
   min-height: calc(100vh - var(--height-header) - var(--height-footer)) !important;
 }

@@ -537,7 +537,8 @@
                             <div class="game-image-container">
                                 <img src="<%= jogo.getImagemUrl() != null ? jogo.getImagemUrl() : request.getContextPath() + "/assets/img/game-placeholder.jpg" %>" 
                                      alt="<%= jogo.getNome() %>" 
-                                     class="game-image">
+                                     class="game-image"
+                                     draggable="false">
                             </div>
                             <div class="game-info">
                                 <div>
