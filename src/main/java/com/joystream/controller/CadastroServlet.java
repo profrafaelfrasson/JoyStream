@@ -1,14 +1,16 @@
 package com.joystream.controller; 
 
+import java.io.IOException;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import com.joystream.dao.UsuarioDAO;
 import com.joystream.model.Usuario;
-
-import javax.servlet.*;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.*;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.text.Normalizer;
 
 @WebServlet("/CadastroServlet")
 public class CadastroServlet extends HttpServlet {
@@ -37,6 +39,7 @@ public class CadastroServlet extends HttpServlet {
         boolean sucesso = dao.cadastrar(usuario);
 
         if (sucesso) {
+            request.getSession().setAttribute("mensagemSucesso", "Cadastro realizado com sucesso! Faça login para continuar.");
             response.sendRedirect("login.jsp");
         } else {
             request.setAttribute("erroCadastro", "E-mail já cadastrado!");

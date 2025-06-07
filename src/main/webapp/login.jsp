@@ -120,6 +120,20 @@
             color: #f39c12;
         }
 
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+
         @media (max-width: 768px) {
             .login-container {
                 max-width: 80%;
@@ -138,6 +152,18 @@
     <div class="login-container">
         <h1>Login</h1>
         <p class="login-subtitle">Bem-vindo de volta à JoyStream</p>
+        
+        <%
+            String mensagemSucesso = (String) session.getAttribute("mensagemSucesso");
+            if (mensagemSucesso != null && !mensagemSucesso.trim().isEmpty()) {
+                session.removeAttribute("mensagemSucesso");
+        %>
+                <div class="alert alert-success" role="alert">
+                    <%= mensagemSucesso %>
+                </div>
+        <%
+            }
+        %>
         
         <form action="login" method="post" id="loginForm">
             <div class="form-group">
