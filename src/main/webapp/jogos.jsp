@@ -559,25 +559,111 @@
         }
 
         .modal-filter {
-            background-color: #1f1f1f;
+            background-color: #1f1f1fe8;
+            backdrop-filter: blur(8px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1050;
+            display: none;
+            overflow-y: auto;
+            margin-top: var(--height-header);
+            transition: all 0.4s ease-in-out;
+        }
+
+        .modal-filter.show {
+            display: block;
+        }
+
+        .modal-filter .modal-dialog {
+            position: relative;
+            width: auto;
+            margin: 0.5rem;
+            pointer-events: none;
+            max-width: 500px;
+            margin: 1.75rem auto;
+            transition: transform 0.3s ease-out;
+        }
+
+        .modal-filter.show .modal-dialog {
+            transform: none;
+        }
+
+        .modal-filter:not(.show) .modal-dialog {
+            transform: translateY(-50px);
         }
 
         .modal-filter .modal-content {
             background-color: #1f1f1f;
             color: white;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            pointer-events: auto;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.5rem;
+            outline: 0;
         }
 
         .modal-filter .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
             border-bottom: 1px solid #3a3a3a;
         }
 
+        .modal-filter .modal-body {
+            position: relative;
+            flex: 1 1 auto;
+            padding: 1rem;
+        }
+
         .modal-filter .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            padding: 1rem;
             border-top: 1px solid #3a3a3a;
         }
 
         .modal-filter .btn-close {
+            background: transparent;
+            border: none;
+            color: #aaa;
+            font-size: 1.5rem;
+            padding: 0.5rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .modal-filter .btn-close:hover {
+            background-color: rgba(255, 255, 255, 0.1);
             color: white;
-            filter: invert(1) grayscale(100%) brightness(200%);
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1040;
+            display: none;
+        }
+
+        .modal-backdrop.show {
+            display: block;
         }
 
         @media (max-width: 768px) {
@@ -846,17 +932,20 @@
     </div>
 </main>
 
-    <button type="button" class="filter-fab" data-mdb-toggle="modal" data-mdb-target="#filterModal">
+    <button type="button" class="filter-fab" onclick="openFilterModal()">
         <i class="fas fa-filter"></i>
     </button>
 
+    <div class="modal-backdrop"></div>
     <!-- Modal de Filtros -->
-    <div class="modal fade modal-filter" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-filter" id="filterModal">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="filterModalLabel">Filtros</h5>
-                    <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title">Filtros</h5>
+                    <button type="button" class="btn-close" onclick="closeFilterModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
                 <div class="modal-body">
                     <form action="jogos" method="GET" id="filterFormMobile">
@@ -969,8 +1058,164 @@
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.js"></script> -->
     <script src="assets/js/alert.js"></script>
     <script>
+    // Definição das funções principais primeiro
+    function initializeMultiselect() {
+        const multiselects = document.querySelectorAll('.custom-multiselect-wrapper');
+        
+        // Remove any existing global click handler
+        document.removeEventListener('click', closeAllDropdowns);
+        document.removeEventListener('touchstart', closeAllDropdowns);
+        
+        // Function to close all dropdowns
+        function closeAllDropdowns(e) {
+            if (!e.target.closest('.custom-multiselect-wrapper')) {
+                document.querySelectorAll('.custom-multiselect-dropdown').forEach(dropdown => {
+                    dropdown.classList.remove('show');
+                });
+            }
+        }
+        
+        // Add global handlers
+        document.addEventListener('click', closeAllDropdowns);
+        document.addEventListener('touchstart', closeAllDropdowns);
+        
+        multiselects.forEach(wrapper => {
+            const button = wrapper.querySelector('.custom-multiselect-button');
+            const dropdown = wrapper.querySelector('.custom-multiselect-dropdown');
+            const options = dropdown.querySelectorAll('input[type="checkbox"]:not(.select-all)');
+            const selectAll = dropdown.querySelector('.select-all');
+            
+            // Remove existing listeners
+            const newButton = button.cloneNode(true);
+            button.parentNode.replaceChild(newButton, button);
+            
+            function countCheckedOptions() {
+                return Array.from(options).reduce((count, option) => count + (option.checked ? 1 : 0), 0);
+            }
+            
+            function updateButtonText() {
+                const checkedCount = countCheckedOptions();
+                const totalOptions = options.length;
+                
+                if (checkedCount === 0) {
+                    newButton.textContent = newButton.getAttribute('data-target').includes('platform') ? 
+                        'Selecione as Plataformas' : 'Selecione os Gêneros';
+                } else if (checkedCount === totalOptions) {
+                    newButton.textContent = newButton.getAttribute('data-target').includes('platform') ? 
+                        'Todas as Plataformas' : 'Todos os Gêneros';
+                } else {
+                    newButton.textContent = checkedCount + ' selecionado(s)';
+                }
+            }
+
+            function updateSelectAllState() {
+                if (selectAll) {
+                    const checkedCount = countCheckedOptions();
+                    const totalOptions = options.length;
+                    selectAll.checked = checkedCount === totalOptions;
+                    selectAll.indeterminate = checkedCount > 0 && checkedCount < totalOptions;
+                }
+            }
+
+            function handleInteraction(e) {
+                e.stopPropagation();
+                if (e.type === 'click') {
+                    e.preventDefault();
+                }
+                
+                const isOpen = dropdown.classList.contains('show');
+                
+                // Fecha todos os outros dropdowns primeiro
+                document.querySelectorAll('.custom-multiselect-dropdown').forEach(d => {
+                    if (d !== dropdown) {
+                        d.classList.remove('show');
+                    }
+                });
+                
+                if (isOpen) {
+                    dropdown.classList.remove('show');
+                } else {
+                    dropdown.classList.add('show');
+                }
+            }
+
+            // Adiciona os event listeners
+            newButton.addEventListener('click', handleInteraction);
+            newButton.addEventListener('touchstart', function(e) {
+                if (e.cancelable) {
+                    e.preventDefault();
+                }
+                handleInteraction(e);
+            });
+
+            // Handle select all
+            if (selectAll) {
+                selectAll.addEventListener('change', function(e) {
+                    e.stopPropagation();
+                    const isChecked = this.checked;
+                    options.forEach(option => {
+                        option.checked = isChecked;
+                    });
+                    updateButtonText();
+                });
+            }
+
+            // Handle individual options
+            options.forEach(option => {
+                option.addEventListener('change', function(e) {
+                    e.stopPropagation();
+                    updateSelectAllState();
+                    updateButtonText();
+                });
+
+                // Prevent dropdown from closing when clicking options
+                option.addEventListener('click', e => e.stopPropagation());
+            });
+
+            // Prevent dropdown from closing when clicking inside
+            dropdown.addEventListener('click', e => e.stopPropagation());
+
+            // Initialize states
+            updateSelectAllState();
+            updateButtonText();
+        });
+    }
+
+    function showLoader() {
+        const loader = document.getElementById('loader');
+        if (loader) {
+            loader.style.display = 'flex';
+        }
+    }
+
+    function hideLoader() {
+        const loader = document.getElementById('loader');
+        if (loader) {
+            loader.style.display = 'none';
+        }
+    }
+
+    // Funções do Modal
+    function openFilterModal() {
+        document.querySelector('.modal-backdrop').classList.add('show');
+        document.querySelector('.modal-filter').classList.add('show');
+        document.body.style.overflow = 'hidden'; // Previne rolagem do body
+        
+        // Reinicializa os multiselects quando o modal é aberto
+        setTimeout(() => {
+            initializeMultiselect();
+        }, 100);
+    }
+
+    function closeFilterModal() {
+        document.querySelector('.modal-backdrop').classList.remove('show');
+        document.querySelector('.modal-filter').classList.remove('show');
+        document.body.style.overflow = ''; // Restaura rolagem do body
+    }
+
+    // Event Listeners quando o DOM estiver pronto
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize custom multiselect dropdowns
+        // Inicializa os multiselects da página principal
         initializeMultiselect();
 
         // Melhora a interação dos selects múltiplos no desktop
@@ -1029,112 +1274,24 @@
                 }
             });
         });
+
+        // Event listeners do modal
+        document.querySelector('.modal-filter').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeFilterModal();
+            }
+        });
+
+        document.querySelector('.modal-filter .modal-content').addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeFilterModal();
+            }
+        });
     });
-
-    function initializeMultiselect() {
-        const multiselects = document.querySelectorAll('.custom-multiselect-wrapper');
-        
-        // Close dropdowns when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.custom-multiselect-wrapper')) {
-                document.querySelectorAll('.custom-multiselect-dropdown').forEach(dropdown => {
-                    dropdown.classList.remove('show');
-                });
-            }
-        });
-
-        multiselects.forEach(wrapper => {
-            const button = wrapper.querySelector('.custom-multiselect-button');
-            const dropdown = wrapper.querySelector('.custom-multiselect-dropdown');
-            const options = dropdown.querySelectorAll('input[type="checkbox"]:not(.select-all)');
-            const selectAll = dropdown.querySelector('.select-all');
-            
-            function countCheckedOptions() {
-                return Array.from(options).reduce((count, option) => count + (option.checked ? 1 : 0), 0);
-            }
-            
-            function updateButtonText() {
-                const checkedCount = countCheckedOptions();
-                const totalOptions = options.length;
-                
-                if (checkedCount === 0) {
-                    button.textContent = button.getAttribute('data-target').includes('platform') ? 
-                        'Selecione as Plataformas' : 'Selecione os Gêneros';
-                } else if (checkedCount === totalOptions) {
-                    button.textContent = button.getAttribute('data-target').includes('platform') ? 
-                        'Todas as Plataformas' : 'Todos os Gêneros';
-                } else {
-                    button.textContent = checkedCount + ' selecionado(s)';
-                }
-            }
-
-            function updateSelectAllState() {
-                if (selectAll) {
-                    const checkedCount = countCheckedOptions();
-                    const totalOptions = options.length;
-                    selectAll.checked = checkedCount === totalOptions;
-                    selectAll.indeterminate = checkedCount > 0 && checkedCount < totalOptions;
-                }
-            }
-            
-            // Toggle dropdown
-            button.addEventListener('click', function(e) {
-                e.stopPropagation();
-                
-                // Close all other dropdowns first
-                document.querySelectorAll('.custom-multiselect-dropdown').forEach(d => {
-                    if (d !== dropdown) {
-                        d.classList.remove('show');
-                    }
-                });
-                
-                // Toggle current dropdown
-                dropdown.classList.toggle('show');
-            });
-
-            // Handle select all
-            if (selectAll) {
-                selectAll.addEventListener('change', function() {
-                    const isChecked = this.checked;
-                    options.forEach(option => {
-                        option.checked = isChecked;
-                    });
-                    updateButtonText();
-                });
-            }
-
-            // Handle individual options
-            options.forEach(option => {
-                option.addEventListener('change', function() {
-                    updateSelectAllState();
-                    updateButtonText();
-                });
-            });
-
-            // Initialize states
-            updateSelectAllState();
-            updateButtonText();
-            
-            // Prevent dropdown from closing when clicking inside
-            dropdown.addEventListener('click', function(e) {
-                e.stopPropagation();
-            });
-        });
-    }
-
-    function showLoader() {
-        const loader = document.getElementById('loader');
-        if (loader) {
-            loader.style.display = 'flex';
-        }
-    }
-
-    function hideLoader() {
-        const loader = document.getElementById('loader');
-        if (loader) {
-            loader.style.display = 'none';
-        }
-    }
 
     function limparFiltros() {
         // Limpar campo de busca
@@ -1201,31 +1358,6 @@
             showError('Erro', 'Não foi possível processar a requisição');
         });
     }
-
-    window.onload = function() {
-        hideLoader();
-    };
-
-    // Function to handle form submission and reset pagination
-    document.addEventListener('DOMContentLoaded', function() {
-        const searchForm = document.querySelector('form');
-        if (searchForm) {
-            searchForm.addEventListener('submit', function(e) {
-                // Remove any existing page parameter from the form
-                const pageInput = searchForm.querySelector('input[name="page"]');
-                if (pageInput) {
-                    pageInput.remove();
-                }
-                
-                // Always add pagina=1 when submitting the form
-                const newPageInput = document.createElement('input');
-                newPageInput.type = 'hidden';
-                newPageInput.name = 'page';
-                newPageInput.value = '1';
-                searchForm.appendChild(newPageInput);
-            });
-        }
-    });
 
     function aplicarFiltrosMobile() {
         document.getElementById('filterFormMobile').submit();
