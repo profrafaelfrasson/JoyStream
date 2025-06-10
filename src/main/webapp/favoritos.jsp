@@ -645,18 +645,22 @@
             <textarea id="analise-text" class="modal-textarea" placeholder="Escreva sua análise..."></textarea>
             <div>
                 <label style="color:#fff;margin-right:8px;">Nota:</label>
-                <div id="analise-nota-btns" style="display:flex;gap:4px;justify-content:center;align-items:center;margin-top:8px;">
+                <div id="analise-nota-btns" style="display:flex;gap:4px;justify-content:center;align-items:center;margin-top:8px;flex-wrap: wrap;">
+                    <span>
                     <button type="button" class="nota-btn" data-nota="0">0</button>
                     <button type="button" class="nota-btn" data-nota="1">1</button>
                     <button type="button" class="nota-btn" data-nota="2">2</button>
                     <button type="button" class="nota-btn" data-nota="3">3</button>
                     <button type="button" class="nota-btn" data-nota="4">4</button>
                     <button type="button" class="nota-btn" data-nota="5">5</button>
+                    </span>
+                    <span>
                     <button type="button" class="nota-btn" data-nota="6">6</button>
                     <button type="button" class="nota-btn" data-nota="7">7</button>
                     <button type="button" class="nota-btn" data-nota="8">8</button>
                     <button type="button" class="nota-btn" data-nota="9">9</button>
                     <button type="button" class="nota-btn" data-nota="10">10</button>
+                    </span>
                 </div>
             </div>
             <div class="modal-buttons">
