@@ -569,7 +569,7 @@
             z-index: 1050;
             display: none;
             overflow-y: auto;
-            margin-top: var(--height-header);
+            padding-top: var(--height-header);
             transition: all 0.4s ease-in-out;
         }
 
