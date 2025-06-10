@@ -1022,7 +1022,10 @@
                 if (!this.parentElement.classList.contains('disabled')) {
                     e.preventDefault();
                     showLoader();
-                    window.location.href = this.href;
+                    setTimeout(() => {
+                        hideLoader();
+                        window.location.href = this.href;
+                    }, 200);
                 }
             });
         });
