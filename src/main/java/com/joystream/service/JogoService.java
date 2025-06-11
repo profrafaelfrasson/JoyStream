@@ -28,7 +28,7 @@ import com.joystream.model.Jogo;
 import com.joystream.util.DateUtil;
 
 public class JogoService {
-    private static final String API_KEY = "5c0f001717fe48498900310b7ca4aa41";
+    private static final String API_KEY = "e8c8ed1f44d54169b5b06a88a45348d1";
     private static final String API_BASE_URL = "https://api.rawg.io/api/games";
     private static final long CACHE_EXPIRATION_MS = 60 * 60 * 1000; // 1 hora
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");

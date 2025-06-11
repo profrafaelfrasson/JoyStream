@@ -22,7 +22,7 @@ import org.json.JSONObject;
 
 @WebServlet("/jogos")
 public class JogosServlet extends HttpServlet {
-    private static final String API_KEY = "5c0f001717fe48498900310b7ca4aa41";
+    private static final String API_KEY = "e8c8ed1f44d54169b5b06a88a45348d1";
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
