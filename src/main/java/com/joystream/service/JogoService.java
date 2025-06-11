@@ -26,10 +26,10 @@ import com.joystream.dao.DBConfig;
 import com.joystream.model.Favorito;
 import com.joystream.model.Jogo;
 import com.joystream.util.DateUtil;
+import com.joystream.config.ApiConfig;
 
 public class JogoService {
-    private static final String API_KEY = "e8c8ed1f44d54169b5b06a88a45348d1";
-    private static final String API_BASE_URL = "https://api.rawg.io/api/games";
+    private static final String API_BASE_URL = ApiConfig.RAWG_API_BASE_URL;
     private static final long CACHE_EXPIRATION_MS = 60 * 60 * 1000; // 1 hora
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
@@ -62,7 +62,7 @@ public class JogoService {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             String dataInicio = umAnoAtras.format(formatter);
             String dataFim = hoje.format(formatter);
-            String urlApi = API_BASE_URL + "?key=" + API_KEY + "&ordering=-rating&page_size=20&dates=" + dataInicio + "," + dataFim;
+            String urlApi = API_BASE_URL + "?key=" + ApiConfig.RAWG_API_KEY + "&ordering=-rating&page_size=20&dates=" + dataInicio + "," + dataFim;
             HttpGet request = new HttpGet(urlApi);
             request.setHeader("Accept", "application/json");
 
@@ -133,7 +133,7 @@ public class JogoService {
     private List<String> buscarScreenshots(Long gameId) {
         List<String> screenshots = new ArrayList<>();
         try (CloseableHttpClient client = HttpClients.createDefault()) {
-            String url = API_BASE_URL + "/" + gameId + "/screenshots?key=" + API_KEY;
+            String url = API_BASE_URL + "/" + gameId + "/screenshots?key=" + ApiConfig.RAWG_API_KEY;
             HttpGet request = new HttpGet(url);
             request.setHeader("Accept", "application/json");
 
@@ -179,7 +179,7 @@ public class JogoService {
                     List<String> todosGeneros = new ArrayList<>();
                     List<String> todasPlataformas = new ArrayList<>();
                     for (Integer jogoId : jogosFavoritos) {
-                        String detalhesUrl = API_BASE_URL + "/" + jogoId + "?key=" + API_KEY;
+                        String detalhesUrl = API_BASE_URL + "/" + jogoId + "?key=" + ApiConfig.RAWG_API_KEY;
                         HttpGet request = new HttpGet(detalhesUrl);
                         request.setHeader("Accept", "application/json");
                         try (CloseableHttpResponse response = client.execute(request)) {
@@ -217,7 +217,7 @@ public class JogoService {
                         .map(e -> e.getKey())
                         .collect(Collectors.joining(","));
                     // Buscar jogos similares com nota > 60
-                    StringBuilder apiUrl = new StringBuilder(API_BASE_URL + "?key=" + API_KEY);
+                    StringBuilder apiUrl = new StringBuilder(API_BASE_URL + "?key=" + ApiConfig.RAWG_API_KEY);
                     apiUrl.append("&ordering=-rating");
                     apiUrl.append("&page_size=20");
                     apiUrl.append("&metacritic=61,100");
@@ -328,7 +328,7 @@ public class JogoService {
         try (CloseableHttpClient client = HttpClients.createDefault()) {
             for (Favorito favorito : favoritos) {
                 try {
-                    String detalhesUrl = API_BASE_URL + "/" + favorito.getIdJogo() + "?key=" + API_KEY;
+                    String detalhesUrl = API_BASE_URL + "/" + favorito.getIdJogo() + "?key=" + ApiConfig.RAWG_API_KEY;
                     HttpGet request = new HttpGet(detalhesUrl);
                     request.setHeader("Accept", "application/json");
                     try (CloseableHttpResponse response = client.execute(request)) {
@@ -385,7 +385,7 @@ public class JogoService {
 
     public void adicionarJogoAoCacheFavoritos(int usuarioId, int jogoId) {
         try (CloseableHttpClient client = HttpClients.createDefault()) {
-            String detalhesUrl = API_BASE_URL + "/" + jogoId + "?key=" + API_KEY;
+            String detalhesUrl = API_BASE_URL + "/" + jogoId + "?key=" + ApiConfig.RAWG_API_KEY;
             HttpGet request = new HttpGet(detalhesUrl);
             request.setHeader("Accept", "application/json");
 
@@ -463,7 +463,7 @@ public class JogoService {
     public void atualizarCacheRecomendacoes(int usuarioId, int jogoId) {
         try (CloseableHttpClient client = HttpClients.createDefault()) {
             // Buscar detalhes do novo jogo favorito
-            String detalhesUrl = API_BASE_URL + "/" + jogoId + "?key=" + API_KEY;
+            String detalhesUrl = API_BASE_URL + "/" + jogoId + "?key=" + ApiConfig.RAWG_API_KEY;
             HttpGet request = new HttpGet(detalhesUrl);
             request.setHeader("Accept", "application/json");
 
@@ -493,7 +493,7 @@ public class JogoService {
                     }
 
                     // Buscar jogos similares com base nos novos gêneros e plataformas
-                    StringBuilder apiUrl = new StringBuilder(API_BASE_URL + "?key=" + API_KEY);
+                    StringBuilder apiUrl = new StringBuilder(API_BASE_URL + "?key=" + ApiConfig.RAWG_API_KEY);
                     apiUrl.append("&ordering=-rating");
                     apiUrl.append("&page_size=20");
                     apiUrl.append("&metacritic=61,100");

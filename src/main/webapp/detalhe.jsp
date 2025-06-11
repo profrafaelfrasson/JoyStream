@@ -3,13 +3,13 @@
 <%@ page import="java.io.*" %>
 <%@ page import="org.json.*" %>
 <%@ page import="com.joystream.util.DateUtil" %>
+<%@ page import="com.joystream.config.ApiConfig" %>
 <%
     String id = request.getParameter("id");
-    String apiKey = "5c0f001717fe48498900310b7ca4aa41";
     JSONObject jogo = null;
     if (id != null && !id.isEmpty()) {
         try {
-            URL url = new URL("https://api.rawg.io/api/games/" + id + "?key=" + apiKey);
+            URL url = new URL(ApiConfig.RAWG_API_BASE_URL + "/" + id + "?key=" + ApiConfig.RAWG_API_KEY);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
