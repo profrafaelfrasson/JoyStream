@@ -185,7 +185,6 @@
         
         <div class="links-container">
             <p>Não tem uma conta? <a href="cadastro.jsp">Cadastre-se</a></p>
-            <p><a href="recuperar-senha.jsp">Esqueceu sua senha?</a></p>
         </div>
     </div>
 
