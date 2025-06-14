@@ -46,19 +46,33 @@ public class FavoritoServlet extends HttpServlet {
                 
                 favoritoDAO.adicionar(favorito);
                 
-                // Adicionar o novo jogo ao cache existente
-                jogoService.adicionarJogoAoCacheFavoritos(usuario.getIdUsuario(), jogoId);
-                
-                // Atualizar o cache de recomendações
-                jogoService.atualizarCacheRecomendacoes(usuario.getIdUsuario(), jogoId);
+                // Make cache operations asynchronous
+                new Thread(() -> {
+                    try {
+                        // Adicionar o novo jogo ao cache existente
+                        jogoService.adicionarJogoAoCacheFavoritos(usuario.getIdUsuario(), jogoId);
+                        
+                        // Atualizar o cache de recomendações
+                        jogoService.atualizarCacheRecomendacoes(usuario.getIdUsuario(), jogoId);
+                    } catch (Exception e) {
+                        System.out.println("Erro ao atualizar caches em background: " + e.getMessage());
+                    }
+                }).start();
                 
                 response.setStatus(HttpServletResponse.SC_OK);
                 
             } else if ("remover".equals(action)) {
                 favoritoDAO.remover(usuario.getIdUsuario(), jogoId);
                 
-                // Remover o jogo do cache existente
-                jogoService.removerJogoDoCacheFavoritos(usuario.getIdUsuario(), jogoId);
+                // Make cache operations asynchronous
+                new Thread(() -> {
+                    try {
+                        // Remover o jogo do cache existente
+                        jogoService.removerJogoDoCacheFavoritos(usuario.getIdUsuario(), jogoId);
+                    } catch (Exception e) {
+                        System.out.println("Erro ao atualizar caches em background: " + e.getMessage());
+                    }
+                }).start();
                 
                 response.setStatus(HttpServletResponse.SC_OK);
             } else if ("concluido".equals(action)) {
