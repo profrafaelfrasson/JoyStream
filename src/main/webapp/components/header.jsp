@@ -162,7 +162,9 @@
 </style>
 
 <header>
+<a href="<%= request.getContextPath() %>/home.jsp" class="<%= currentPage.equals("home.jsp") ? "active" : "" %>">
     <img src="<%= request.getContextPath() %>/assets/img/logo.png" alt="Logo JoyStream" draggable="false">
+    </a>
     <nav>
         <div class="nav-links">
             <a href="<%= request.getContextPath() %>/home.jsp" class="<%= currentPage.equals("home.jsp") ? "active" : "" %>">HOME</a>
