@@ -20,12 +20,20 @@ request.setAttribute("pageKeywords", "cadastro joystream, criar conta, registro,
         body {
             margin: 0;
             font-family: 'Segoe UI', sans-serif;
-            background-color: #121212;
+            background-color: #121212 !important;
             color: white;
-            min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-direction: column;
+        }
+
+        main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #121212 !important;
         }
 
         .register-container {
@@ -165,6 +173,8 @@ request.setAttribute("pageKeywords", "cadastro joystream, criar conta, registro,
     </style>
 </head>
 <body>
+    <jsp:include page="components/header.jsp" />
+    <main>
     <div class="register-container">
         <h1>Criar Conta</h1>
         <p class="register-subtitle">Junte-se à comunidade JoyStream</p>
@@ -208,7 +218,8 @@ request.setAttribute("pageKeywords", "cadastro joystream, criar conta, registro,
             <p>Já tem uma conta? <a href="login.jsp">Fazer Login</a></p>
         </div>
     </div>
-
+    </main>
+    <jsp:include page="components/footer.jsp" />
     <script src="assets/js/alert.js"></script>
     <script src="assets/js/auto-focus.js"></script>
 

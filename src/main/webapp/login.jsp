@@ -23,10 +23,18 @@
             font-family: 'Segoe UI', sans-serif;
             background-color: #121212;
             color: white;
-            min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-direction: column;
+        }
+
+        main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #121212 !important;
         }
 
         .login-container {
@@ -149,6 +157,8 @@
     </style>
 </head>
 <body>
+    <jsp:include page="components/header.jsp" />
+    <main>
     <div class="login-container">
         <h1>Login</h1>
         <p class="login-subtitle">Bem-vindo de volta à JoyStream</p>
@@ -187,6 +197,9 @@
             <p>Não tem uma conta? <a href="cadastro.jsp">Cadastre-se</a></p>
         </div>
     </div>
+    </main>
+
+        <jsp:include page="components/footer.jsp" />
 
     <script src="assets/js/alert.js"></script>
     <script src="assets/js/auto-focus.js"></script>
