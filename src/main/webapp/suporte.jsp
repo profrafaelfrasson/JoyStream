@@ -281,7 +281,7 @@
             <div class="faq-item">
                 <div class="faq-question">Esqueci minha senha, o que fazer?</div>
                 <div class="faq-answer">
-                    Na página de login, clique em "Esqueci minha senha" e siga as instruções para redefinir sua senha.
+                    Envie um e-mail para <a href="mailto:projetojoystream@gmail.com?subject=Redefinição de senha&body=Solicito a redefinição de senha para o usuário: (Digite seu Nome e E-mail aqui)"><strong>projetojoystream@gmail.com</strong></a> com o assunto <strong>"Redefinição de senha"</strong> e aguarde até 48 horas que nossa equipe irá entrar em contato para resolver seu problema.
                 </div>
             </div>
 
@@ -294,7 +294,7 @@
 
             <div class="contact-info">
                 <h3>Outras formas de contato</h3>
-                <p>E-mail: suporte@joystream.com</p>
+                <p>E-mail: <a href="mailto:projetojoystream@gmail.com">projetojoystream@gmail.com</a></p>
                 <p>Horário de atendimento: Segunda a Sexta, 9h às 18h</p>
             </div>
         </div>
