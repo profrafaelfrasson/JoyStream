@@ -1,6 +1,7 @@
 package com.joystream.controller;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
 
 import com.joystream.dao.FavoritoDAO;
+import com.joystream.dao.AvaliacaoDAO;
 import com.joystream.model.Favorito;
 import com.joystream.model.Jogo;
 import com.joystream.model.Usuario;
@@ -20,6 +22,7 @@ import com.joystream.service.JogoService;
 @WebServlet("/favorito/*")
 public class FavoritoServlet extends HttpServlet {
     private FavoritoDAO favoritoDAO = new FavoritoDAO();
+    private AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
     private JogoService jogoService = new JogoService();
 
     @Override
@@ -62,19 +65,34 @@ public class FavoritoServlet extends HttpServlet {
                 response.setStatus(HttpServletResponse.SC_OK);
                 
             } else if ("remover".equals(action)) {
-                favoritoDAO.remover(usuario.getIdUsuario(), jogoId);
+                // Primeiro, buscar o id_favorito
+                Integer idFavorito = favoritoDAO.buscarIdFavorito(usuario.getIdUsuario(), jogoId);
                 
-                // Make cache operations asynchronous
-                new Thread(() -> {
+                if (idFavorito != null) {
+                    // Remover a avaliação primeiro, se existir
                     try {
-                        // Remover o jogo do cache existente
-                        jogoService.removerJogoDoCacheFavoritos(usuario.getIdUsuario(), jogoId);
-                    } catch (Exception e) {
-                        System.out.println("Erro ao atualizar caches em background: " + e.getMessage());
+                        avaliacaoDAO.remover(usuario.getIdUsuario(), idFavorito);
+                    } catch (SQLException e) {
+                        // Ignora erro se não houver avaliação
                     }
-                }).start();
-                
-                response.setStatus(HttpServletResponse.SC_OK);
+                    
+                    // Agora remove o favorito
+                    favoritoDAO.remover(usuario.getIdUsuario(), jogoId);
+                    
+                    // Make cache operations asynchronous
+                    new Thread(() -> {
+                        try {
+                            // Remover o jogo do cache existente
+                            jogoService.removerJogoDoCacheFavoritos(usuario.getIdUsuario(), jogoId);
+                        } catch (Exception e) {
+                            System.out.println("Erro ao atualizar caches em background: " + e.getMessage());
+                        }
+                    }).start();
+                    
+                    response.setStatus(HttpServletResponse.SC_OK);
+                } else {
+                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                }
             } else if ("concluido".equals(action)) {
                 boolean concluido = Boolean.parseBoolean(request.getParameter("concluido"));
                 favoritoDAO.atualizarConcluido(usuario.getIdUsuario(), jogoId, concluido);
