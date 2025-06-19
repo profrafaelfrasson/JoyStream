@@ -254,10 +254,10 @@
                     <label for="assunto" class="form-label">Assunto</label>
                     <select class="form-control" id="assunto" name="assunto" required>
                         <option value="">Selecione um assunto</option>
-                        <option value="tecnico">Problema Técnico</option>
-                        <option value="conta">Problema com Conta</option>
-                        <option value="sugestao">Sugestão</option>
-                        <option value="outro">Outro</option>
+                        <option value="Problema Técnico">Problema Técnico</option>
+                        <option value="Problemas com a conta">Problema com Conta</option>
+                        <option value="Sugestão">Sugestão</option>
+                        <option value="Outros assuntos">Outro</option>
                     </select>
                 </div>
                 <div class="mb-3">
@@ -308,9 +308,21 @@
     <script>
         document.getElementById('formSuporte').addEventListener('submit', function(e) {
             e.preventDefault();
-            // Simular envio bem-sucedido
-            showSuccess('Sucesso', 'Mensagem enviada com sucesso! Entraremos em contato em breve.');
-            this.reset();
+            var nome = document.getElementById('nome').value;
+            var email = document.getElementById('email').value;
+            var assunto = document.getElementById('assunto').value;
+            var mensagem = document.getElementById('mensagem').value;
+
+            var destinatario = "projetojoystream@gmail.com";
+            var assuntoEmail = encodeURIComponent("Suporte JoyStream - " + assunto);
+            var corpoEmail = encodeURIComponent(
+                "Nome: " + nome + "\n" +
+                "E-mail: " + email + "\n" +
+                "Assunto: " + assunto + "\n" +
+                "Mensagem:\n" + mensagem
+            );
+
+            window.location.href = "mailto:" + destinatario + "?subject=" + assuntoEmail + "&body=" + corpoEmail;
         });
     </script>
 </body>
